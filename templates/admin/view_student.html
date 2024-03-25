@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Students</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Students</li>
+                </ul>
+            </div>
+
+            <div class="col-auto text-right float-right ml-auto">
+                <a href="#" class="btn btn-outline-primary mr-2" id="downloadBtn"><i class="fas fa-download"></i> Download</a>
+
+                <a href="{% url 'admin-student-add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+
+
+                
+            </div>
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+    <form method="get" action="{% url 'admin-student-view' %}">
+        <div class="form-group">
+            <label for="search_query">Filter by Name:</label>
+            <input type="text" class="form-control" placeholder="Search by name" name="search_query" id="search_query" value="{{ search_query }}">
+        </div>
+        <div class="form-group">
+            <label for="class_filter">Filter by Class:</label>
+            <select class="form-control" id="class_filter" name="class_filter" >
+                <option value="">All Classes</option>
+                {% for class_instance in classes %}
+                <option value="{{ class_instance.id }}" {% if class_instance.id|stringformat:"s" == selected_class %}selected{% endif %}>{{ class_instance.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="roll_number_filter">Filter by Roll Number:</label>
+            <input type="text" class="form-control" id="roll_number_filter" placeholder="Enter Roll Number" name="roll_number_filter" value="{{ roll_number_query }}">
+        </div>
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+    
+
+   
+    
+    <br>
+    
+    
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class="table table-hover table-center mb-0 ">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Class</th>
+                                    <th>Roll</th>
+                                    
+                                    <th>Father's Name</th>
+                                    <th>Mother's Name</th>
+                                    <th>Gender</th>
+                                    <th>Mobile Number</th>
+                                    <th>Address</th>
+                                    <th>Session</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in student%}
+                                <tr>
+                                    <td>{{ i.id }}</td>
+                                    <td>
+                                        <h2 class="table-avatar">
+                                            <a href="student-details.html" class="avatar avatar-sm mr-2">
+                                                {% if i.admin.profile_pic == "" %}
+                                                <img class="avatar-img rounded-circle" src="{% static 'assets/img/no-image-icon-23483.png' %}" alt="User Image">
+                                                {%else %}
+                 
+                  
+                                                <img class="avatar-img rounded-circle" src="/{{ i.admin.profile_pic}}"  alt="User Image">
+                                                {% endif%}
+                                               
+                                            </a>
+                                            <a href="student-details.html">{{ i.admin.first_name }} &nbsp; {{ i.admin.last_name }}</a>
+                                        </h2>
+                                    </td>
+                                    <td>{{ i.admin.username }}</td>
+                                    <td>{{ i.class_id.name }}</td>
+                                    <td>{{ i.roll_number }}</td>
+                                    
+                                    <td>{{ i.fathers_name }}</td>
+                                    <td>{{ i.mothers_name }}</td>
+                                    <td>{{ i.gender }}</td>
+                                    <td>{{ i.phone_number }}</td>
+                                    <td>{{ i.address }}</td>
+                                    <td>{{ i.session_year_id.session_start }} To {{ i.session_year_id.session_end }}</td>
+                                    <td class="text-right">
+                                        <div class="actions">
+                                            <a href="{% url 'admin-student-edit' i.id %}" class="btn btn-sm bg-success-light mr-2">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            <a href="{% url 'admin-student-delete' i.admin.id %}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                 <!-- Delete Confirmation Modal -->
+                                 <div class="modal fade" id="deleteConfirmationModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this student?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <a href="{% url 'admin-student-delete' i.admin.id %}" class="btn btn-danger">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Delete Confirmation Modal -->
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<br>
+
+<div class="text-center">
+    <form method='post' action='{% url "admin-delete-all-expire-student" %}' >
+        {% csrf_token%}
+        <button type="submit" class="btn btn-outline-primary mr-2" style="margin-left: 40px;">Delete All Expire Student</button>
+    </form>
+</div>
+
+
+
+<br><br><br>
+
+
+
+{% endblock %}

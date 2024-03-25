@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content%}
+
+
+<div class="content container-fluid">
+   <div class="page-header">
+       <div class="row align-items-center">
+           <div class="col">
+               <h3 class="page-title">Notice</h3>
+               <ul class="breadcrumb">
+                   <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+                   <li class="breadcrumb-item active">Notice</li>
+               </ul>
+           </div>
+           
+           
+       </div>
+   </div>
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action="{% url 'teacher-add-notice'%}">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Add Notice</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Notice Details</label>
+                         <input type="text" class="form-control" name='notice'required >
+                      </div>
+                  </div>
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Add Notice</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+</div>
+{% endblock%}

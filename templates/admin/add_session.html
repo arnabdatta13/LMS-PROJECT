@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Session</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Session</li>
+               </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+
+               <a href="{% url 'admin-session-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+            </div>
+         </div>
+         
+      </div>
+      {% include "base_desine/massages.html" %}
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+               <div class="card-body">
+                  <form action="{% url 'admin-session-add' %}" method="post">
+                     {% csrf_token %}
+                     <div class="row">
+                        <div class="col-12">
+                           <h5 class="form-title"><span>Session Information</span></h5>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>Session Year Start</label>
+                              <div>
+                                 <input type="date" class="form-control" name="session_year_start" required>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>Session Year End</label>
+                              <div>
+                                 <input type="date" class="form-control" name="session_year_end" required>
+                              </div>
+                           </div>
+                        </div>
+                        
+                        
+                        <div class="col-12 mt-4" >
+                           <button type="submit" class="btn btn-primary">Add Session</button>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+
+ 
+{% endblock %}

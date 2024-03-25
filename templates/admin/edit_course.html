@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content%}
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action="{% url 'admin-course-update'%}">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Edit Course</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+                  
+
+                   <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id' required>
+                        <option value="" disabled selected>Select Class</option>
+                        {% for i in class %}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Course Name</label>
+                         <input type="text" class="form-control" name='course_name'required  value= "{{course.name}}">
+                         <input type="text" class="form-control" name='course_id'required value="{{course.id}}" hidden>
+                      </div>
+                  </div>
+                  
+                  
+                   
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Update Course</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock%}

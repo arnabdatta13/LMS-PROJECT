@@ -1,0 +1,193 @@
+"""student_management_system URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.1/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from .import views,admin_views,teacher_views,student_views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    #all user interface
+    path('', views.HOME,name=''),
+    path('contract', views.CONTRACT,name='contract'),
+    path('about', views.ABOUT,name='about'),
+
+    path('clear-notifications', views.clear_notifications, name='clear_notifications'),
+    
+    path('base/', views.BASE,name='base'),
+    path('join_now', views.JOIN_NOW,name='join_now'),
+    #login path
+    path('login', views.LOGIN,name='login'),
+    path('dologin', views.dologin,name='dologin'), 
+    path('dologout', views.dologout,name='logout'),
+    #profile update 
+    path('profile', views.PROFILE,name='profile'),
+    path('profile/update', views.PROFILE_UPDATE,name='profile_update'),
+    
+    #this is admin panel url
+    path('admin-home', admin_views.Home,name='admin_home'),
+
+
+    path('admin-student-add', admin_views.STUDENT_ADD,name='admin-student-add'),
+    path('admin-student-view', admin_views.STUDENT_VIEW,name='admin-student-view'),
+    path('admin-student-edit/<str:id>', admin_views.STUDENT_EDIT,name='admin-student-edit'),
+    path('admin-student-update', admin_views.STUDENT_UPDATE,name='admin-student-update'),
+    path('admin-student-delete/<str:admin>', admin_views.STUDENT_DELETE,name='admin-student-delete'),
+
+    path('admin-teacher-add', admin_views.TEACHER_ADD,name='admin-teacher-add'),
+    path('admin-teacher-view', admin_views.TEACHER_VIEW,name='admin-teacher-view'),
+    path('admin-teacher-edit/<str:id>', admin_views.TEACHER_EDIT,name='admin-teacher-edit'),
+    path('admin-teacher-update', admin_views.TEACHER_UPDATE,name='admin-teacher-update'),
+    path('admin-teacher-delete/<str:admin>', admin_views.TEACHER_DELETE,name='admin-teacher-delete'),
+
+
+    path('admin-class-add', admin_views.CLASS_ADD,name='admin-class-add'),
+    path('admin-class-view', admin_views.CLASS_VIEW,name='admin-class-view'),
+    path('admin-class-edit/<str:id>', admin_views.CLASS_EDIT,name='admin-class-edit'),
+    path('admin-class-update', admin_views.CLASS_UPDATE,name='admin-class-update'),
+    path('admin-class-delete/<str:id>', admin_views.CLASS_DELETE,name='admin-class-delete'),
+
+
+
+    path('admin-course-add', admin_views.COURSE_ADD,name='admin-course-add'),
+    path('admin-course-view', admin_views.COURSE_VIEW,name='admin-course-view'),
+    path('admin-course-edit/<str:id>', admin_views.COURSE_EDIT,name='admin-course-edit'),
+    path('admin-course-update', admin_views.COURSE_UPDATE,name='admin-course-update'),
+    path('admin-course-delete/<str:id>', admin_views.COURSE_DELETE,name='admin-course-delete'),
+
+
+    path('admin-subject-add', admin_views.SUBJECT_ADD,name='admin-subject-add'),
+    path('admin-subject-view', admin_views.SUBJECT_VIEW,name='admin-subject-view'),
+    path('admin-subject-edit/<str:id>', admin_views.SUBJECT_EDIT,name='admin-subject-edit'),
+    path('admin-subject-update', admin_views.SUBJECT_UPDATE,name='admin-subject-update'),
+    path('admin-subject-delete/<str:id>', admin_views.SUBJECT_DELETE,name='admin-subject-delete'),
+
+
+    path('admin-session-add', admin_views.SESSION_ADD,name='admin-session-add'),
+    path('admin-session-view', admin_views.SESSION_VIEW,name='admin-session-view'),
+    path('admin-session-edit/<str:id>', admin_views.SESSION_EDIT,name='admin-session-edit'),
+    path('admin-session-update', admin_views.SESSION_UPDATE,name='admin-session-update'),
+    path('admin-session-delete/<str:id>', admin_views.SESSION_DELETE,name='admin-session-delete'),
+
+
+    path('admin-practice-exam-add', admin_views.PRACTICE_EXAM_ADD,name='admin-practice-exam-add'),
+    path('admin-practice-exam-save', admin_views.PRACTICE_EXAM_SAVE,name='admin-practice-exam-save'),
+    path('admin-practice-exam-delete/<str:id>', admin_views.PRACTICE_EXAM_DELETE,name='admin-practice-exam-delete'),
+    path('admin-practice-exam-edit/<str:id>', admin_views.PRACTICE_EXAM_EDIT,name='admin-practice-exam-edit'),
+    path('admin-practice-exam-update', admin_views.PRACTICE_EXAM_UPDATE,name='admin-practice-exam-update'),
+
+
+    path('admin-practice-exam-view', admin_views.PRACTICE_EXAM_VIEW,name='admin-practice-exam-view'),
+    path('admin-add-question', admin_views.ADD_QUESTION,name='admin-add-question'),
+    path('admin-save-question', admin_views.SAVE_QUESTION,name='admin-save-question'),
+    path('admin-view-question', admin_views.VIEW_QUESTION,name='admin-view-question'),
+    path('admin-edit-question/<str:id>', admin_views.EDIT_QUESTION,name='admin-edit-question'),
+    path('admin-delete-question/<str:id>', admin_views.DELETE_QUESTION,name='admin-delete-question'),
+
+
+
+    path('admin-star-student-add', admin_views.STAR_STUDENT_ADD,name='admin-star-student-add'),
+    path('admin-star-student-edit/<str:id>', admin_views.STAR_STUDENT_EDIT,name='admin-star-student-edit'),
+    path('admin-star-student-update', admin_views.STAR_STUDENT_UPDATE,name='admin-star-student-update'),
+    path('admin-star-student-delete/<str:id>', admin_views.STAR_STUDENT_DELETE,name='admin-star-student-delete'),
+
+
+
+    path('admin-student-activity-add', admin_views.STUDENT_ACTIVITY_ADD,name='admin-student-activity-add'),
+    path('admin-student-activity-view', admin_views.STUDENT_ACTIVITY_VIEW,name='admin-student-activity-view'),
+    path('admin-student-activity-edit/<str:id>', admin_views.STUDENT_ACTIVITY_EDIT,name='admin-student-activity-edit'),
+    path('admin-student-activity-update', admin_views.STUDENT_ACTIVITY_UPDATE,name='admin-student-activity-update'),
+    path('admin-student-activity-delete/<str:id>', admin_views.STUDENT_ACTIVITY_DELETE,name='admin-student-activity-delete'),
+
+
+    path('admin-teacher-send-notification', admin_views.TEACHER_SEND_NOTIFICATION,name='admin-teacher-send-notification'),
+    path('admin-teacher-save-notification', admin_views.TEACHER_SAVE_NOTIFICATION,name='admin-teacher-save-notification'),
+
+    path('admin-teacher-feedback', admin_views.TEACHER_Feedback,name='admin-teacher-feedback'),
+    path('admin-teacher-save', admin_views.TEACHER_Feedback_SAVE,name='admin-teacher-feedback-save'),
+
+
+    
+
+
+    path('admin-student-send-notification', admin_views.STUDENT_SEND_NOTIFICATION,name='admin-student-send-notification'),
+    path('admin-student-save-notification', admin_views.STUDENT_SAVE_NOTIFICATION,name='admin-student-save-notification'),
+
+
+    path('admin-view-attendance', admin_views.ADMIN_VIEW_ATTENDANCE,name='admin-view-attendance'),
+    
+
+    path('admin-delete-all-expire-student', admin_views.ADMIN_DELETE_ALL_EXPIRE_STUDENT,name='admin-delete-all-expire-student'),
+
+ 
+    #this is teacher panel url
+    path('teacher-home', teacher_views.HOME,name='teacher-home'),
+    path('teacher-notification', teacher_views.NOTIFICATION,name='teacher-notification'),
+    path('teacher/mark_as_done/<str:status>', teacher_views.TEACHER_NOTIFICATION_MARK_AS_DONE,name='teacher-mark-as-done'),
+
+    path('teacher-feedback', teacher_views.TEACHER_FEEDBACK,name='teacher-feedback'),
+    path('teacher-feedback-save', teacher_views.TEACHER_FEEDBACK_SAVE,name='teacher-feedback-save'),
+
+    path('teacher-student-feedback', teacher_views.STUDENT_FEEDBACK,name='teacher-student-feedback'),
+    path('teacher-student-save', teacher_views.STUDENT_FEEDBACK_SAVE,name='teacher-student-feedback-save'),
+
+
+    path('teacher-take-attendance', teacher_views.TEACHER_TAKE_ATTENDANCE,name='teacher-take-attendance'),
+    path('teacher-save-attendance', teacher_views.TEACHER_SAVE_ATTENDANCE,name='teacher-save-attendance'),
+    path('teacher-view-attendance', teacher_views.TEACHER_VIEW_ATTENDANCE,name='teacher-view-attendance'),
+    
+    path('teacher-add-notice', teacher_views.TEACHER_ADD_NOTICE,name='teacher-add-notice'),
+  
+
+
+    path('teacher-add-result', teacher_views.TEACHER_ADD_RESULT,name='teacher-add-result'),
+    path('teacher-save-result', teacher_views.TEACHER_SAVE_RESULT,name='teacher-save-result'),
+    path('teacher-view-result', teacher_views.TEACHER_VIEW_RESULT,name='teacher-view-result'),
+    path('teacher-show-result/<str:id>', teacher_views.TEACHER_SHOW_RESULT,name='teacher-show-result'),
+    path('teacher-edit-result/<str:id>', teacher_views.TEACHER_EDIT_RESULT,name='teacher-edit-result'),
+    path('admin-update-result', teacher_views.TEACHER_UPDATE_RESULT,name='teacher-update-result'),
+    path('teacher-delete-result/<str:id>', teacher_views.TEACHER_DELETE_RESULT,name='teacher-delete-result'),
+
+
+
+
+    #this is student panel url
+    path('student-home', student_views.HOME,name='student-home'),
+    path('student-notification', student_views.NOTIFICATION,name='student-notification'),
+    path('student/mark_as_done/<str:status>', student_views.STUDENT_NOTIFICATION_MARK_AS_DONE,name='student-mark-as-done'),
+
+
+    path('student-feedback',student_views.STUDENT_FEEDBACK,name='student-feedback'),
+    path('student-feedback-save', student_views.STUDENT_FEEDBACK_SAVE,name='student-feedback-save'),
+
+    path('student-view-attendance',student_views.STUDENT_VIEW_ATTENDANCE,name='student-view-attendance'),
+
+    path('student-view-result',student_views.STUDENT_VIEW_RESULT,name='student-view-result'),
+
+    path('student-exam',student_views.STUDENT_EXAM,name='student-exam'),
+    path('student-take-exam/<str:id>',student_views.STUDENT_TAKE_EXAM,name='student-take-exam'),
+    path('student-start-exam/<str:id>',student_views.STUDENT_START_EXAM,name='student-start-exam'),
+
+    path('student-mark',student_views.STUDENT_MARK,name='student-mark'),
+    path('student-view-mark/<str:id>',student_views.STUDENT_VIEW_MARK,name='student-view-mark'),
+
+    path('student-calculate-marks',student_views.STUDENT_CALCULATE_MARKS,name='student-calculate-marks'),
+
+    path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
+
+
+    
+] + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

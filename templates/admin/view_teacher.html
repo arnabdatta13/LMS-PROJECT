@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Teachers</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Teachers</li>
+                </ul>
+            </div>
+
+            <div class="col-auto text-right float-right ml-auto">
+                <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
+                <a href="{% url 'admin-teacher-add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+            </div>
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+
+
+   
+    
+    <br>
+    <script>
+        // JavaScript code for real-time filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');  // Get the form element
+            const searchQueryInput = document.getElementById('search_query');
+            const classFilterSelect = document.getElementById('class_filter');
+            const rollNumberFilterInput = document.getElementById('roll_number_filter');
+    
+            const applyFilters = () => {
+                // Prevent the default form submission
+                event.preventDefault();
+    
+                // Trigger the form submission programmatically
+                form.submit();
+            };
+    
+            [searchQueryInput, classFilterSelect, rollNumberFilterInput].forEach(element => {
+                element.addEventListener('input', () => {
+                    // Delay the filtering by 500 milliseconds to avoid rapid updates while typing
+                    clearTimeout(element.timeout);
+                    element.timeout = setTimeout(() => {
+                        applyFilters();
+                    }, 500);
+                });
+            });
+    
+            // Handle clearing all filters
+            document.getElementById('clear_filters').addEventListener('click', () => {
+                searchQueryInput.value = '';
+                classFilterSelect.value = '';
+                rollNumberFilterInput.value = '';
+                applyFilters();
+            });
+        });
+    </script>
+    
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class="table table-hover table-center mb-0 ">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    
+                                    
+                                    <th>Gender</th>
+                                    <th>Mobile Number</th>
+                                    <th>Address</th>
+                                    
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in teacher %}
+                                <tr>
+                                    <td>{{ i.id }}</td>
+                                    <td>
+                                        <h2 class="table-avatar">
+                                            <a href="student-details.html" class="avatar avatar-sm mr-2">
+                                                {% if i.admin.profile_pic == "" %}
+                                                <img class="avatar-img rounded-circle" src="{% static 'assets/img/no-image-icon-23483.png' %}" alt="User Image">
+                                                {%else %}
+                 
+                  
+                                                <img class="avatar-img rounded-circle" src="/{{ i.admin.profile_pic}}"  alt="User Image">
+                                                {% endif%}
+                                            </a>
+                                            <a href="student-details.html">{{ i.admin.first_name }} &nbsp; {{ i.admin.last_name }}</a>
+                                        </h2>
+                                    </td>
+                                    
+                                    <td>{{ i.gender }}</td>
+                                    <td>{{ i.phone_number }}</td>
+                                    <td>{{ i.address }}</td>
+                                    
+                                    <td class="text-right">
+                                        <div class="actions">
+                                            <a href="{% url 'admin-teacher-edit' i.id %}" class="btn btn-sm bg-success-light mr-2">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            <a href="{% url 'admin-teacher-delete' i.admin.id %}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <div class="modal fade" id="deleteConfirmationModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this teacher?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <a href="{% url 'admin-teacher-delete' i.admin.id %}" class="btn btn-danger">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

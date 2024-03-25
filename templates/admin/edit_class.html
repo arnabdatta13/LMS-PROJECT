@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content%}
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action="{% url 'admin-class-update'%}">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Edit Class</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Class Name</label>
+                         <input type="text" class="form-control" name='class_name'required  value= "{{class.name}}">
+                         <input type="text" class="form-control" name='class_id'required value="{{class.id}}" hidden>
+                      </div>
+                  </div>
+                  
+                  
+                   
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Update Class</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock%}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+   <div class="page-header">
+       <div class="row align-items-center">
+           <div class="col">
+               <h3 class="page-title">Student Activities</h3>
+               <ul class="breadcrumb">
+                   <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+                   <li class="breadcrumb-item active">Student Activities</li>
+               </ul>
+           </div>
+           
+           
+       </div>
+   </div>
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action='{% url "admin-student-activity-update" %}' enctype="multipart/form-data">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Add Student Activity</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+                   <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                       <label>Date</label>
+                       <div>
+                          <input type="date" class="form-control" name="date" required >
+                          <input type="text" class="form-control" name='student_activity_id' value='{{student_activity.id}}' hidden>
+                       </div>
+                    </div>
+                 </div>
+
+                  
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Discription</label>
+                        <textarea class="form-control" name='description'required >{{ student_activity.description }}</textarea>
+                     </div>
+                  </div>
+                  
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Edit Student Activity</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock %}

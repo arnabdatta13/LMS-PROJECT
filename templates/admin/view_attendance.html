@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+            {% if action is None %}
+             <form method='post' action='?action=view_student' enctype="multipart/form-data">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>View Attendance</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+                  
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id' required>
+                        <option value="" disabled selected>Select Class</option>
+                        {% for i in class %}
+                        <option value='{{ i.id }}'>{{ i.name }}</option>
+                        {% endfor %}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <label>Session Year</label>
+                        <select class="form-control" name='session_year_id' required>
+                        <option value="" disabled selected>Select Session Year</option>
+                        {% for i in session_year %}
+                        <option value='{{ i.id }}'>{{ i.session_start }} To {{ i.session_end }}</option>
+                        {% endfor %}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Attendance Date</label>
+                       <input type="date" class="form-control" name='attendance_date' required>
+                    </div>
+                   </div>
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Show Student Attendance</button>
+                   </div>
+                
+             </form>
+             {% else %}
+             
+             <form method='post' action='{% url "teacher-save-attendance" %}' enctype="multipart/form-data">
+               {% csrf_token %}
+                  <div class="col-12">
+                     <h5 class="form-title"><span>View Attendance</span></h5>
+                  </div>
+                  {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id' required disabled>
+                        <option value='{{ get_class.id }}'>{{ get_class }}</option>
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <label>Session Year</label>
+                        <select class="form-control" name='session_year_id' required disabled>
+                        <option value='{{ get_session_year.id }}'>{{ get_session_year }}</option>
+                        </select>
+                  </div>
+                 <br>
+                 
+                 <div class="col-sm-11">
+                  <div class="form-group">
+                     <label>Attendance Date</label>
+                     <input type="date" class="form-control" name='attendance_date' value="{{ attendance_date }}" required disabled>
+                  </div>
+                 </div>
+
+               <br><br>
+               
+               <div class="row">
+                  <div class="col-sm-12">
+                      <div class="card card-table">
+                          <div class="card-body">
+                              <div class="table-responsive">
+                                  <table id="table_id" class=" table table-hover table-center mb-0 ">
+                                      <thead>
+                                          <tr>
+                                              <th>ID</th>
+                                              <th>Name</th>
+                                              <th>Class</th>
+                                              <th>Roll</th>
+                                              <th>Status</th>
+                                              
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                       {% for student in students %}
+                                       <tr>
+                                           <td>{{ student.id }}</td>
+                                           <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+                                           <td>{{ student.class_id }}</td>
+                                           <td>{{ student.roll_number }}</td>
+                                           <td>
+                                             {% if student_attendance_report %}
+                                                {% if student in student_attendance_report %}
+                                                   Present
+                                                {% else %}
+                                                   Absent
+                                                {% endif %}
+                                             {% else %}
+                                                Absent
+                                             {% endif %}
+                                           </td>
+                                       </tr>
+                                       {% endfor %}
+                                   </tbody>
+                                   
+                                  </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </form>
+            {% endif %}
+          </div>
+       </div>
+    </div>
+ </div>
+
+
+
+{% endblock %}

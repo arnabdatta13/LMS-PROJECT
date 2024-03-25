@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+<div class="content container-fluid">
+   <div class="page-header">
+       <div class="row align-items-center">
+           <div class="col">
+               <h3 class="page-title">Subjects</h3>
+               <ul class="breadcrumb">
+                   <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                   <li class="breadcrumb-item active">Subjects</li>
+               </ul>
+           </div>
+
+           <div class="col-auto text-right float-right ml-auto">
+
+               <a href="{% url 'admin-subject-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+           </div>
+       </div>
+   </div>
+
+
+
+<div class="row">
+   <div class="col-sm-12">
+      <div class="card">
+         <div class="card-body">
+            <form method='post' action='{% url "admin-subject-add" %}' enctype="multipart/form-data">
+               {% csrf_token%}
+                  <div class="col-12">
+                     <h5 class="form-title"><span>Add Subject</span></h5>
+                  </div>
+                  {% include "base_desine/massages.html" %}
+
+                 <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Subject Name</label>
+                        <input type="text" class="form-control" name='subject_name'required >
+                     </div>
+                 </div>
+                
+                 <div class="col-sm-11">
+                    <label>Class</label>
+                       <select class="form-control" name='class_id'required>
+                       <option value="" disabled selected>Select Class</option>
+                       {% for i in class%}
+                       <option value = '{{i.id}}'>{{i.name}}</option>
+                       {% endfor%}
+                       </select>
+                 </div>
+                 <br>
+                 <div class="col-sm-11">
+                    <label>Teacher</label>
+                       <select class="form-control" name='teacher_id'required>
+                       <option value="" disabled selected>Select Teacher</option>
+                       {% for i in teacher%}
+                       <option value = '{{i.id}}'>{{i.admin.first_name}}&nbsp;{{i.admin.last_name}}</option>
+                       {% endfor%}
+                       </select>
+                 </div>
+                 <br>
+                 
+                  
+                  
+                 
+                 
+                  <div class="col-12">
+                     <button type="submit" class="btn btn-primary">Add Subject</button>
+                  </div>
+               
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

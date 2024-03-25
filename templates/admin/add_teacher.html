@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">Students</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">Students</li>
+           </ul>
+       </div>
+
+       <div class="col-auto text-right float-right ml-auto">
+        
+           <a href="{% url 'admin-teacher-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+       </div>
+   </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action='{% url "admin-teacher-add" %}' enctype="multipart/form-data">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Add Teacher</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>First Name</label>
+                         <input type="text" class="form-control" name='first_name'required >
+                      </div>
+                  </div>
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Last Name</label>
+                         <input type="text" class="form-control" name='last_name'required>
+                      </div>
+                  </div>
+                   
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Username </label>
+                        <input type="text" class="form-control" name='username'required>
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name='password' required>
+                     </div>
+                  </div>
+                  
+
+
+                  <div class="col-sm-11">
+                     <label>Gender</label>
+                        <select class="form-control" name='gender'required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value = 'Female'>Female</option>
+                        <option value='Male'>Male</option>
+                        <option value='Others'>Others</option>
+                        </select>
+                  </div>
+                  <br>
+                  
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" class="form-control " name='phone_number'  required>
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Address</label>
+                        <textarea class="form-control" name='address'required></textarea>
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label> Profile Pic</label>
+                         <input type="file" class="form-control" name='profile_pic'>
+                      </div>
+                  </div>
+                   
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Add Teacher</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+{% endblock %}

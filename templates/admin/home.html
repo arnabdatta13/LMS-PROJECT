@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-header">
+    <div class="row">
+       <div class="col-sm-12">
+          <h3 class="page-title">Welcome Admin!</h3>
+          <ul class="breadcrumb">
+             <li class="breadcrumb-item active">Dashboard</li>
+          </ul>
+       </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+       <div class="card bg-one w-100">
+          <div class="card-body">
+             <div class="db-widgets d-flex justify-content-between align-items-center">
+                <div class="db-icon">
+                   <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="db-info">
+                   <h3>{{student_count}}</h3>
+                   <h6>Student</h6>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+       <div class="card bg-two w-100">
+          <div class="card-body">
+             <div class="db-widgets d-flex justify-content-between align-items-center">
+                <div class="db-icon">
+                   <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="db-info">
+                   <h3>{{teacher_count}}</h3>
+                   <h6>Teacher</h6>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+       <div class="card bg-three w-100">
+          <div class="card-body">
+             <div class="db-widgets d-flex justify-content-between align-items-center">
+                <div class="db-icon">
+                   <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="db-info">
+                   <h3>{{course_count}}</h3>
+                   <h6>Course</h6>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+       <div class="card bg-four w-100">
+          <div class="card-body">
+             <div class="db-widgets d-flex justify-content-between align-items-center">
+                <div class="db-icon">
+                   <i class="fas fa-book"></i>
+                </div>
+                <div class="db-info">
+                   <h3>{{exam_count}}</h3>
+                   <h6>Exam</h6>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+ </div>
+ <div class="row">
+    <div class="col-md-12 col-lg-6">
+       <div class="card card-chart">
+          <div class="card-header">
+             <div class="row align-items-center">
+                <div class="col-6">
+                   <h5 class="card-title">All Data</h5>
+                </div>
+                
+             </div>
+          </div>
+          <div class="card-body">
+             <div id="all_details"></div>
+          </div>
+       </div>
+    </div>
+    <div class="col-md-12 col-lg-6">
+       <div class="card card-chart">
+          <div class="card-header">
+             <div class="row align-items-center">
+                <div class="col-6">
+                   <h5 class="card-title">Number of Students</h5>
+                </div>
+                
+             </div>
+          </div>
+          <div class="card-body">
+             <div id="student_gender"></div>
+          </div>
+       </div>
+    </div>
+    <div class="col-md-12 col-lg-6">
+      <div class="card card-chart">
+         <div class="card-header">
+            <div class="row align-items-center">
+               <div class="col-6">
+                  <h5 class="card-title">Students History</h5>
+               </div>
+               
+            </div>
+         </div>
+         <div class="card-body">
+            <div id="student_history"></div>
+         </div>
+      </div>
+   </div>
+ </div>
+ <div class="row">
+    <div class="col-md-6 d-flex">
+       <div class="card flex-fill">
+          <div class="card-header d-flex  justify-content-between align-items-center ">
+             <h5 class="card-title">Star Students</h5>
+             <div >
+             <a href="{% url 'admin-star-student-add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+             
+             </div>
+          </div>
+          
+          <div class="card-body">
+             <div class="table-responsive">
+                <table class="table table-hover table-center">
+                   <thead class="thead-light">
+                      <tr>
+                         
+                         <th>Name</th>
+                         <th class="text-center">Class</th>
+                         <th class="text-center">Roll</th>
+                         <th class="text-center">Marks</th>
+                         <th class="text-center">Percentage</th>
+                         <th class="text-center">Year</th>
+                         <th class="text-right">Action</th>
+                         <th class="text-right">&nbsp;</th>
+                      </tr>
+                   </thead>  
+                   <tbody>
+                     {% for i in star_student %}
+                      <tr>
+                        
+                         <td class="text-nowrap">{{ i.student_name}}</td>
+                         <td class="text-center">{{ i.user_class}}</td>
+                         <td class="text-center">{{ i.roll}}</td>
+                         <td class="text-center">{{ i.mark}}</td>
+                         <td class="text-center">{{ i.persentage}}</td>
+                         <td class="text-center">
+                            <div>{{ i.year}}</div>
+                         </td>
+                         <td class="text-right">
+                           
+                               <a href="{% url 'admin-star-student-edit' i.id %}" class="btn btn-primary "><i class="fas fa-pen"></i></a>
+                              
+                         
+                         </td>
+                         <td class="text-right">
+                      
+                               
+                                            </a>
+                                            <a href="{% url 'admin-star-student-delete' i.id %}" class="btn btn-primary" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}"><i class="fas fa-trash"></i></a>
+                           
+                         </td>
+                      </tr>
+                      <!-- Delete Confirmation Modal -->
+                      <div class="modal fade" id="deleteConfirmationModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete this star student?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a href="{% url 'admin-star-student-delete' i.id %}" class="btn btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                      {% endfor %}
+                   </tbody>
+                </table>
+             </div>
+          </div>
+       </div>
+    </div>
+    <div class="col-md-6 d-flex">
+       <div class="card flex-fill">
+          <div class="card-header  d-flex  justify-content-between align-items-center ">
+             <h5 class="card-title">Student Activity</h5>
+             <div >
+               <a href="{% url 'admin-student-activity-add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+               <a href="{% url 'admin-student-activity-view' %}" class="btn btn-primary ml-2">
+                 <i class="fa fa-eye"></i>
+              </a>
+              
+               </div>
+          </div>
+          <div class="card-body">
+             <ul class="activity-feed">
+               {% for i in student_activity %}
+                <li class="feed-item">
+                   <div class="feed-date">{{i.date}}</div>
+                   <span class="feed-text">{{i.description}}</span>
+                </li>
+                {% endfor %}
+             </ul>
+          </div>
+       </div>
+    </div>
+ </div>
+ <div class="row">
+    <div class="col-xl-3 col-sm-6 col-12">
+       <div class="card flex-fill fb sm-box">
+          <i class="fab fa-facebook"></i>
+          <h6>50,095</h6>
+          <p>Likes</p>
+       </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+       <div class="card flex-fill twitter sm-box">
+          <i class="fab fa-twitter"></i>
+          <h6>48,596</h6>
+          <p>Follows</p>
+       </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+       <div class="card flex-fill insta sm-box">
+          <i class="fab fa-instagram"></i>
+          <h6>52,085</h6>
+          <p>Follows</p>
+       </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+       <div class="card flex-fill linkedin sm-box">
+          <i class="fab fa-linkedin-in"></i>
+          <h6>69,050</h6>
+          <p>Follows</p>
+       </div>
+    </div>
+ </div>
+</div>
+
+
+{% include 'base_desine/chart.html' %}
+
+
+{% endblock %}
