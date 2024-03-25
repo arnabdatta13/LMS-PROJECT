@@ -1,6 +1,11 @@
 from django.shortcuts import render,redirect
 from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,Question,Online_Exam_Result,Course
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def HOME(request):
     notice = Add_Notice.objects.all()
 
@@ -10,6 +15,9 @@ def HOME(request):
     return render(request,'student/home.html',context)
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def NOTIFICATION(request):
     student = Student.objects.filter(admin=request.user.id)
     for i in student:
@@ -23,6 +31,9 @@ def NOTIFICATION(request):
         return render(request,'student/notification.html',context)
     
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_NOTIFICATION_MARK_AS_DONE(request,status):
         notification = Student_Notification.objects.get(id= status)
         notification.status=1
@@ -32,6 +43,9 @@ def STUDENT_NOTIFICATION_MARK_AS_DONE(request,status):
         return redirect('student-notification')
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_FEEDBACK(request):
     student_id = Student.objects.get(admin = request.user.id)
 
@@ -43,6 +57,9 @@ def STUDENT_FEEDBACK(request):
     return render(request,'student/feedback.html',context)
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_FEEDBACK_SAVE(request):
     if request.method=="POST":
         feedback = request.POST.get('feedback')
@@ -60,6 +77,9 @@ def STUDENT_FEEDBACK_SAVE(request):
         return redirect('student-feedback')
     
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_VIEW_ATTENDANCE(request):
     student = request.user.student  # Assuming request.user is the logged-in user
 
@@ -75,6 +95,8 @@ def STUDENT_VIEW_ATTENDANCE(request):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_VIEW_RESULT(request):
     mark = None
     student = Student.objects.get(admin=request.user.id)
@@ -95,12 +117,16 @@ def STUDENT_VIEW_RESULT(request):
     return render(request,'student/view_result.html',context)
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_ASK_QUESTION(request):
     return render(request,'student/q&a.html')
 
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PRACTICE_EXAM(request):
     user = request.user
     student = Student.objects.get(admin=user)
@@ -116,6 +142,8 @@ def STUDENT_PRACTICE_EXAM(request):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_TAKE_PRACTICE_EXAM(request,id):
     exam = Practice_Exam.objects.get(id = id)
     total_question = Question.objects.all().filter(exam = exam).count()
@@ -123,8 +151,6 @@ def STUDENT_TAKE_PRACTICE_EXAM(request,id):
     total_marks=0
     for q in questions:
         total_marks=total_marks + q.marks
-
-
 
     context = {
         'exam':exam,
@@ -134,7 +160,8 @@ def STUDENT_TAKE_PRACTICE_EXAM(request,id):
     return render(request,'student/take_practice_exam.html',context)
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_START_PRACTICE_EXAM(request,id):
     exam=Practice_Exam.objects.get(id=id)
     questions=Question.objects.all().filter(exam=exam)
@@ -147,6 +174,9 @@ def STUDENT_START_PRACTICE_EXAM(request,id):
     return render(request,'student/start_practice_exam.html',context)
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id') 
@@ -173,8 +203,9 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
 
 
 
-
-def STUDENT_MARK(request):
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_PRACTICE_EXAM_MARK(request):
     user = request.user
     student = Student.objects.get(admin=user)
     student_class = student.class_id
@@ -185,11 +216,13 @@ def STUDENT_MARK(request):
         'exam':exams,
         'course':courses,
     }
-    return render(request,'student/mark.html',context)
+    return render(request,'student/practice_exam_mark.html',context)
 
 
 
-def STUDENT_VIEW_MARK(request,id):
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_VIEW_PRACTICE_EXAM_MARK(request,id):
     exam=Practice_Exam.objects.get(id=id)
     student =Student.objects.get(admin=request.user.id)
     results=Online_Exam_Result.objects.all().filter(exam=exam).filter(student=student)
@@ -197,4 +230,4 @@ def STUDENT_VIEW_MARK(request,id):
     context = {
         'result':results,
     }
-    return render(request,'student/view_mark.html',context)
+    return render(request,'student/view_practice_exam_mark.html',context)

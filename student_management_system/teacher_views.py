@@ -5,11 +5,14 @@ from operator import attrgetter
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required
 
 
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def HOME(request):
     notice = Add_Notice.objects.all()
 
@@ -19,6 +22,9 @@ def HOME(request):
     return render(request,'teacher/home.html',context)
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def NOTIFICATION(request):
     teacher = Teacher.objects.filter(admin=request.user.id)
     for i in teacher:
@@ -32,6 +38,9 @@ def NOTIFICATION(request):
         return render(request,'teacher/notification.html',context)
     
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_NOTIFICATION_MARK_AS_DONE(request,status):
     notification = Teacher_Notification.objects.get(id= status)
     notification.status=1
@@ -41,6 +50,9 @@ def TEACHER_NOTIFICATION_MARK_AS_DONE(request,status):
     return redirect('teacher-notification')
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_FEEDBACK(request):
     teacher_id = Teacher.objects.get(admin = request.user.id)
 
@@ -51,6 +63,10 @@ def TEACHER_FEEDBACK(request):
     }
     return render(request,'teacher/feedback.html',context)
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_FEEDBACK_SAVE(request):
     if request.method=="POST":
         feedback = request.POST.get('feedback')
@@ -69,6 +85,9 @@ def TEACHER_FEEDBACK_SAVE(request):
     
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def STUDENT_FEEDBACK(request):
     student_feedback = Student_Feedback.objects.all()
 
@@ -77,6 +96,10 @@ def STUDENT_FEEDBACK(request):
     }
     return render(request,"teacher/student_feedback.html",context)
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def STUDENT_FEEDBACK_SAVE(request):
     if request.method== "POST":
         feedback_id= request.POST.get('feedback_id')
@@ -92,14 +115,15 @@ def STUDENT_FEEDBACK_SAVE(request):
         return redirect('teacher-student-feedback')
     
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_TAKE_ATTENDANCE(request):
 
     session_year = Session_Year.objects.all()
     class1 = Class.objects.all()
 
     action = request.GET.get('action')
-
-
     get_class = None
     get_session_year= None
     student=None
@@ -117,7 +141,6 @@ def TEACHER_TAKE_ATTENDANCE(request):
                 student_id = i.id
                 student= Student.objects.filter(class_id=student_id)
 
-
     context = {
         'class':class1,
         'session_year':session_year,
@@ -130,6 +153,10 @@ def TEACHER_TAKE_ATTENDANCE(request):
 
     return render(request,'teacher/take_attendance.html',context)
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_SAVE_ATTENDANCE(request):
     if request.method == "POST":
         class_id = request.POST.get('class_id')
@@ -161,6 +188,10 @@ def TEACHER_SAVE_ATTENDANCE(request):
     return redirect('teacher-take-attendance')
 
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_VIEW_ATTENDANCE(request):
     session_year = Session_Year.objects.all()
     class1 = Class.objects.all()
@@ -215,7 +246,8 @@ def TEACHER_VIEW_ATTENDANCE(request):
 
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_ADD_RESULT(request):
 
     class1 = Class.objects.all()
@@ -259,6 +291,9 @@ def TEACHER_ADD_RESULT(request):
 
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_SAVE_RESULT(request):
     if request.method == "POST":
       
@@ -293,6 +328,8 @@ def TEACHER_SAVE_RESULT(request):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_VIEW_RESULT(request):
 
   
@@ -326,12 +363,13 @@ def TEACHER_VIEW_RESULT(request):
         'action':action,
         'student':student,
     }
-
-
-
     return render(request,'teacher/view_result.html',context)
 
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_SHOW_RESULT(request,id):
 
     mark = None
@@ -351,14 +389,13 @@ def TEACHER_SHOW_RESULT(request,id):
         'result':result,
         'mark':mark,
     }
-
-
-
-   
     return render(request,'teacher/show_result.html',context)
 
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_EDIT_RESULT(request,id):
     result = StudentResult.objects.get(id=id)
 
@@ -367,6 +404,10 @@ def TEACHER_EDIT_RESULT(request,id):
     }
     return render(request,'teacher/edit_result.html',context)
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_UPDATE_RESULT(request):
     if request.method == "POST":
         result_id = request.POST.get('result_id')
@@ -391,7 +432,8 @@ def TEACHER_UPDATE_RESULT(request):
     
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_DELETE_RESULT(request,id):
     
     result = StudentResult.objects.get(id=id)
@@ -404,7 +446,8 @@ def TEACHER_DELETE_RESULT(request,id):
 
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_ADD_NOTICE(request):
 
     if request.method== "POST":
