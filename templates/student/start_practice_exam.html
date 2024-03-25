@@ -2,7 +2,7 @@
 {% block content %}
 {% load static %}
 <div class="jumbotron my-4">
-  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-calculate-marks'%}" method="POST">
+  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-practice-exam-calculate-marks'%}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="exam_id" value="{{ exam.id }}">
     <h1 style="text-align: center;">{{ exam.exam_name }}</h1>

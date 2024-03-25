@@ -101,7 +101,7 @@ def STUDENT_ASK_QUESTION(request):
 
 
 
-def STUDENT_EXAM(request):
+def STUDENT_PRACTICE_EXAM(request):
     user = request.user
     student = Student.objects.get(admin=user)
     student_class = student.class_id
@@ -112,11 +112,11 @@ def STUDENT_EXAM(request):
         'exam':exams,
         'course':courses,
     }
-    return render(request,'student/exam.html',context)
+    return render(request,'student/practice_exam.html',context)
 
 
 
-def STUDENT_TAKE_EXAM(request,id):
+def STUDENT_TAKE_PRACTICE_EXAM(request,id):
     exam = Practice_Exam.objects.get(id = id)
     total_question = Question.objects.all().filter(exam = exam).count()
     questions=Question.objects.all().filter(exam=exam)
@@ -131,11 +131,11 @@ def STUDENT_TAKE_EXAM(request,id):
         'total_question':total_question,
         'total_marks':total_marks,
     }
-    return render(request,'student/take_exam.html',context)
+    return render(request,'student/take_practice_exam.html',context)
 
 
 
-def STUDENT_START_EXAM(request,id):
+def STUDENT_START_PRACTICE_EXAM(request,id):
     exam=Practice_Exam.objects.get(id=id)
     questions=Question.objects.all().filter(exam=exam)
 
@@ -144,10 +144,10 @@ def STUDENT_START_EXAM(request,id):
         'exam':exam,
     }
 
-    return render(request,'student/start_exam.html',context)
+    return render(request,'student/start_practice_exam.html',context)
 
 
-def STUDENT_CALCULATE_MARKS(request):
+def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id') 
         exam = Practice_Exam.objects.get(id=exam_id)

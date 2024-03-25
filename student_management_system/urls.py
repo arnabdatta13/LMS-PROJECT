@@ -177,14 +177,14 @@ urlpatterns = [
 
     path('student-view-result',student_views.STUDENT_VIEW_RESULT,name='student-view-result'),
 
-    path('student-exam',student_views.STUDENT_EXAM,name='student-exam'),
-    path('student-take-exam/<str:id>',student_views.STUDENT_TAKE_EXAM,name='student-take-exam'),
-    path('student-start-exam/<str:id>',student_views.STUDENT_START_EXAM,name='student-start-exam'),
+    path('student-practice-exam',student_views.STUDENT_PRACTICE_EXAM,name='student-practice-exam'),
+    path('student-take-practice-exam/<str:id>',student_views.STUDENT_TAKE_PRACTICE_EXAM,name='student-take-practice-exam'),
+    path('student-start-practice-exam/<str:id>',student_views.STUDENT_START_PRACTICE_EXAM,name='student-start-practice-exam'),
 
     path('student-mark',student_views.STUDENT_MARK,name='student-mark'),
     path('student-view-mark/<str:id>',student_views.STUDENT_VIEW_MARK,name='student-view-mark'),
 
-    path('student-calculate-marks',student_views.STUDENT_CALCULATE_MARKS,name='student-calculate-marks'),
+    path('student-practice-exam-calculate-marks',student_views.STUDENT_PRACTICE_EXAM_CALCULATE_MARKS,name='student-practice-exam-calculate-marks'),
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
 
