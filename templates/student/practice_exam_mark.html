@@ -5,17 +5,14 @@
     <div class="page-header">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="page-title">Exams</h3>
+                <h3 class="page-title">View Marks</h3>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Exams</li>
+                    <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">View Marks</li>
                 </ul>
             </div>
 
-            <div class="col-auto text-right float-right ml-auto">
-                <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
-                <a href="{% url '' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
-            </div>
+            
         </div>
     </div>
 
@@ -43,41 +40,7 @@
    
     
     <br>
-    <script>
-        // JavaScript code for real-time filtering
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');  // Get the form element
-            const searchQueryInput = document.getElementById('search_query');
-            const classFilterSelect = document.getElementById('class_filter');
-            const rollNumberFilterInput = document.getElementById('roll_number_filter');
-    
-            const applyFilters = () => {
-                // Prevent the default form submission
-                event.preventDefault();
-    
-                // Trigger the form submission programmatically
-                form.submit();
-            };
-    
-            [searchQueryInput, classFilterSelect, rollNumberFilterInput].forEach(element => {
-                element.addEventListener('input', () => {
-                    // Delay the filtering by 500 milliseconds to avoid rapid updates while typing
-                    clearTimeout(element.timeout);
-                    element.timeout = setTimeout(() => {
-                        applyFilters();
-                    }, 500);
-                });
-            });
-    
-            // Handle clearing all filters
-            document.getElementById('clear_filters').addEventListener('click', () => {
-                searchQueryInput.value = '';
-                classFilterSelect.value = '';
-                rollNumberFilterInput.value = '';
-                applyFilters();
-            });
-        });
-    </script>
+
     
 
     <div class="row">

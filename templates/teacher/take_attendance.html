@@ -2,6 +2,21 @@
 
 {% block content %}
 
+
+
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">Take Attendance</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">Take Attendance</li>
+           </ul>
+       </div>
+   </div>
+</div>
+
+
 <div class="row">
     <div class="col-sm-12">
        <div class="card">
@@ -58,7 +73,7 @@
                 
                   <div class="col-sm-11">
                      <label>Class</label>
-                        <select class="form-control" name='class_id' required>
+                        <select class="form-control" name='class_id' required disabled>
                      
                        
                         <option value = '{{get_class.id}}'>{{get_class}}</option>
@@ -68,7 +83,7 @@
                   <br>
                   <div class="col-sm-11">
                      <label>Session Year</label>
-                        <select class="form-control" name='session_year_id'required>
+                        <select class="form-control" name='session_year_id'required disabled>
           
                         <option value = '{{get_session_year.id}}'>{{get_session_year}}</option>
               

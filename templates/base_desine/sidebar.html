@@ -127,6 +127,7 @@
                   <li class="submenu {% active_link 'admin-exam-add' 'active' %} {% active_link 'admin-exam-view' 'active' %} {% active_link 'admin-add-question' 'active' %} {% active_link 'admin-exam-view' 'active' %}">
                      <a href="#"><i class="fas fa-book"></i> <span>Online Exam</span> <span class="menu-arrow"></span></a>
                      <ul>
+                        
                         <li><a href="{% url ''%}">Add Exam </a></li>
                         <li><a href="{% url ''%}">View Exam</a></li>
                         <li><a href="{% url 'admin-add-question'%}">Add Question </a></li>
@@ -134,21 +135,24 @@
                         
                      </ul>
                   </li>
+
+
+                  <li class="submenu {% active_link 'teacher-add-result' 'active' %} {% active_link 'teacher-view-result' 'active' %} ">
+                     <a href="#"><i class="fas fa-poll-h"></i> <span>School Result</span> <span class="menu-arrow"></span></a>
+                     <ul>
+                        <li><a href="{% url 'teacher-add-result'%}">Add Result</a></li>
+                        <li><a href="{% url 'teacher-view-result'%}">View Result</a></li>
+
+                        
+                        
+                     </ul>
+                  </li>
                   
 
                   
-                  <li class="{% active_link 'teacher-add-result' 'active' %}">
-                     <a href="{% url 'teacher-add-result'%}"><i class="fas fa-poll-h"></i> <span>Add Result</span></a>
-                  </li>
 
-                  <li class="{% active_link 'teacher-view-result' 'active' %}">
-                     <a href="{% url 'teacher-view-result'%}"><i class="fas fa-check-circle"></i> <span>View Result</span></a>
-                  </li>
 
-                  <li class="{% active_link 'teacher-view-result' 'active' %}">
-                     <a href="{% url 'teacher-view-result'%}"><i class="fas fa-check-circle"></i> <span>Edit Result</span></a>
-                  </li>
-
+                  
 
                   <li class="{% active_link 'teacher-take-attendance' 'active' %}">
                      <a href="{% url 'teacher-take-attendance'%}"><i class="fa fa-calendar"></i> <span>Take Attendance</span></a>

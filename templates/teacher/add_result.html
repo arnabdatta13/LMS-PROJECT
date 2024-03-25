@@ -7,7 +7,7 @@
                      <div class="col">
                         <h3 class="page-title">Add Result</h3>
                         <ul class="breadcrumb">
-                           <li class="breadcrumb-item"><a href="subjects.html">Dashboard</a></li>
+                           <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
                            <li class="breadcrumb-item active">Add Result</li>
                         </ul>
                      </div>
@@ -73,7 +73,7 @@
 
                                  <div class="col-sm-11 ">
                                     <label>Class</label>
-                                       <select class="form-control" name='class_id' required>
+                                       <select class="form-control" name='class_id'  required disabled>
                                     
                                       
                                        <option value = '{{get_class.id}}'>{{get_class}}</option>
@@ -99,9 +99,13 @@
                                 <div class="form-group">
                                 <label>Student List</label>
                                       <select class="form-control" name="student_id" required>
-                                           {% for i in student %}
-                                           <option value="{{i.admin.id}}">Roll {{i.roll_number}}:  {{i.admin.first_name}} {{i.admin.last_name}}</option>
-                                           {% endfor %}
+                                          {% if student %}
+                                             {% for i in student %}
+                                             <option value="{{i.admin.id}}">Roll {{i.roll_number}}:  {{i.admin.first_name}} {{i.admin.last_name}}</option>
+                                             {% endfor %}
+                                          {% else %}
+                                             <option value="" required>No Students Available</option>
+                                          {% endif %}
                                      </select>
                                  </div>
                                  </div>
