@@ -240,6 +240,7 @@ class Attendance(models.Model):
     def __str__(self):
         return self.class_id.name
 
+
 class Attendance_Report(models.Model):
     student_id = models.ForeignKey(Student,on_delete=models.DO_NOTHING)
     attendance_id = models.ForeignKey(Attendance,on_delete=models.CASCADE)

@@ -272,7 +272,9 @@ def TEACHER_ADD_RESULT(request):
             for i in class1:
                 student_id = i.id
                 student = Student.objects.filter(
-                    class_id=student_id
+                    class_id=student_id,
+                    studentresult__assignment_mark__isnull=True,
+                    studentresult__exam_mark__isnull=True,
                 ).order_by('roll_number')
                 subject = Subject.objects.filter(class1=student_id)
 
@@ -331,8 +333,6 @@ def TEACHER_SAVE_RESULT(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_VIEW_RESULT(request):
-
-  
     class1 = Class.objects.all()
 
     action = request.GET.get('action')
@@ -349,11 +349,10 @@ def TEACHER_VIEW_RESULT(request):
             get_class = Class.objects.get(id =class_id)
             
 
-            course = Class.objects.filter(id= class_id)
-            for i in course:
+            class1 = Class.objects.filter(id= class_id)
+            for i in class1:
                 student_id = i.id
                 student= Student.objects.filter(class_id=student_id)
-
 
     context = {
         'class':class1,
