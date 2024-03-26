@@ -1375,6 +1375,8 @@ def ADMIN_VIEW_ATTENDANCE(request):
 
 
 
+
+
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADMIN_DELETE_ALL_EXPIRE_STUDENT(request):
@@ -1384,15 +1386,25 @@ def ADMIN_DELETE_ALL_EXPIRE_STUDENT(request):
         # Get all session years whose end date is less than the current date
         expired_session_years = Session_Year.objects.filter(session_end__lt=current_date)
 
+        # Variable to keep track of whether any students were deleted
+        students_deleted = False
+
         # Iterate over each expired session year
         for session_year in expired_session_years:
             # Get all students associated with this expired session year
             expired_students = Student.objects.filter(session_year_id=session_year)
-            # Delete each expired student
-            expired_students.delete()
 
-        messages.success(request,'All Expire Student Are Successfully Deleted')
+            # Check if any students are available for deletion
+            if expired_students.exists():
+                # Delete each expired student
+                expired_students.delete()
+                students_deleted = True  # Mark that students were deleted for this session year
+
+        if students_deleted:
+            messages.success(request, 'All Expire Students Have Been Successfully Deleted')
+        else:
+            messages.error(request, 'No Expire Students Available for Deletion')
+
         return redirect('admin-student-view')
-
 
 
