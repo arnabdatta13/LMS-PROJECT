@@ -7,7 +7,7 @@
             <div class="col">
                 <h3 class="page-title">Students Notification</h3>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'teacher-home' %}">Dashboard</a></li>
                     <li class="breadcrumb-item active">Students Notification</li>
                 </ul>
             </div>
@@ -17,32 +17,73 @@
         </div>
     </div>
     {% include "base_desine/massages.html" %}
+    <br>
     <form method="get" action="{% url 'admin-student-send-notification' %}">
-        <div class="form-group">
-            <label for="search_query">Filter by Name:</label>
-            <input type="text" class="form-control" placeholder="Search by name" name="search_query" id="search_query" value="{{ search_query }}">
-        </div>
+        
+    
         <div class="form-group">
             <label for="class_filter">Filter by Class:</label>
             <select class="form-control" id="class_filter" name="class_filter" >
                 <option value="">All Classes</option>
-                {% for class_instance in classes %}
-                <option value="{{ class_instance.id }}" {% if class_instance.id|stringformat:"s" == selected_class %}selected{% endif %}>{{ class_instance.name }}</option>
-                {% endfor %}
+                <option value="Class One" {% if selected_class == 'Class One' %}selected{% endif %}>Class One</option>
+                <option value="Class Two" {% if selected_class == 'Class Two' %}selected{% endif %}>Class Two</option>
+                <option value="Class Three" {% if selected_class == 'Class Three' %}selected{% endif %}>Class Three</option>
+                <option value="Class Four" {% if selected_class == 'Class Four' %}selected{% endif %}>Class Four</option>
+                <option value="Class Five" {% if selected_class == 'Class Five' %}selected{% endif %}>Class Five</option>
             </select>
         </div>
+
         <div class="form-group">
             <label for="roll_number_filter">Filter by Roll Number:</label>
+            <div class="input-group mb-3">
             <input type="text" class="form-control" id="roll_number_filter" placeholder="Enter Roll Number" name="roll_number_filter" value="{{ roll_number_query }}">
+            
+        </div>
         </div>
         <div class="input-group-append">
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </div>
     </form>
+
    
+    
+
+    <script>
+        // JavaScript code for real-time filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');  // Get the form element
+            const searchQueryInput = document.getElementById('search_query');
+            const classFilterSelect = document.getElementById('class_filter');
+            const rollNumberFilterInput = document.getElementById('roll_number_filter');
+    
+            const applyFilters = () => {
+                // Prevent the default form submission
+                event.preventDefault();
+    
+                // Trigger the form submission programmatically
+                form.submit();
+            };
+    
+            [searchQueryInput, classFilterSelect, rollNumberFilterInput].forEach(element => {
+                element.addEventListener('input', () => {
+                    // Delay the filtering by 500 milliseconds to avoid rapid updates while typing
+                    clearTimeout(element.timeout);
+                    element.timeout = setTimeout(() => {
+                        applyFilters();
+                    }, 500);
+                });
+            });
+    
+            // Handle clearing all filters
+            document.getElementById('clear_filters').addEventListener('click', () => {
+                searchQueryInput.value = '';
+                classFilterSelect.value = '';
+                rollNumberFilterInput.value = '';
+                applyFilters();
+            });
+        });
+    </script>
     <br>
-
-
     <div class="row">
         <div class="col-sm-12">
             <div class="card card-table">
@@ -53,8 +94,6 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Name</th>
-                                    <th>Class</th>
-                                    <th>Roll</th>
                                     <th class="text-right">Action</th>
                                 </tr>
                             </thead>
@@ -67,8 +106,6 @@
                                             <a href="student-details.html">{{ i.admin.first_name }} &nbsp; {{ i.admin.last_name }}</a>
                                         </h2>
                                     </td>
-                                    <td>{{ i.class_id.name }}</td>
-                                    <td>{{ i.roll_number }}</td>
                                     <td class="text-right">
                                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#sendnotification-{{ forloop.counter }}">
                                             Send Notification
@@ -85,7 +122,7 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <form method="post" action="{% url 'admin-student-save-notification' %}">
+                                                <form method="post" action="{% url 'teacher-student-save-notification' %}">
                                                     {% csrf_token %}
                                                     <div class="form-group">
                                                         <input type="text" class="form-control" name="message">

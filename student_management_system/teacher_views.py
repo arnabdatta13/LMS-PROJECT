@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Teacher, Teacher_Notification,Teacher_Feedback,Student_Feedback,Session_Year,Course,Student,Attendance,Attendance_Report,Subject,StudentResult,Class,Add_Notice
+from app.models import Teacher, Teacher_Notification,Teacher_Feedback,Student_Feedback,Session_Year,Course,Student,Attendance,Attendance_Report,Subject,StudentResult,Class,Add_Notice,Student_Notification
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -459,3 +459,59 @@ def TEACHER_ADD_NOTICE(request):
         return redirect('teacher-add-notice')
 
     return render(request,'teacher/add_notice.html')
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_SEND_NOTIFICATION(request):
+    student = Student.objects.all()
+
+    notification = Student_Notification.objects.all()
+    
+    
+    selected_class = request.GET.get('class_filter', '')  # Get the selected class from the request
+    roll_number_query = request.GET.get('roll_number_filter', '')  
+    # Filter students by class if a class is selected
+    if selected_class:
+        student = student.filter(user_class=selected_class)
+
+    # Filter students by roll number if a roll number query is provided
+    if roll_number_query:
+        student = student.filter(roll_number=roll_number_query)
+
+    context = {
+        'student':student,
+        'notification':notification,
+        'selected_class': selected_class,
+    }
+    return render(request,'teacher/student_notification.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_SAVE_NOTIFICATION(request):
+    if request.method == "POST":
+
+        student_id = request.POST.get('student_id')
+        message = request.POST.get('message')
+
+        student = Student.objects.get( admin= student_id)
+
+        student_notification = Student_Notification(
+            student_id= student,
+            message=message,
+        )
+        student_notification.save()
+
+        messages.success(request,'Student Notification Are Successfully Sent')
+        return redirect('admin-student-send-notification')

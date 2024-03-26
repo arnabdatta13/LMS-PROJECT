@@ -368,12 +368,20 @@ def COURSE_ADD(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def COURSE_VIEW(request):
+    
     course = Course.objects.all()
+    classes = Class.objects.all()
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
 
+    if class_filter:
+        course = course.filter(class1=class_filter)
 
     context = {
         'course': course,
-
+        'search_query': search_query,
+        'classes': classes,
+        'selected_class': class_filter,
     }
     return render(request,'admin/view_course.html',context)
 
@@ -565,10 +573,19 @@ def SUBJECT_ADD(request):
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def SUBJECT_VIEW(request):
     subject = Subject.objects.all()
-    
+    classes = Class.objects.all()
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+
+    if class_filter:
+        subject = subject.filter(class1=class_filter)
+
    
     context = {
         'subject':subject,
+        'search_query': search_query,
+        'classes': classes,
+        'selected_class': class_filter,
         
     }
     return render(request,'admin/view_subject.html',context)
@@ -788,8 +805,6 @@ def PRACTICE_EXAM_EDIT(request,id):
     exam = Practice_Exam.objects.filter(id = id)
 
     exam_id = Practice_Exam.objects.get(id=id)
-
-
     class_id = exam_id.class_id
 
     course = Course.objects.filter(class1=class_id)
@@ -857,17 +872,27 @@ def PRACTICE_EXAM_DELETE(request,id):
 def PRACTICE_EXAM_VIEW(request):
     exam = Practice_Exam.objects.all()
     course= Course.objects.all()
-    selected_course = request.GET.get('course_filter', '') 
+    classes = Class.objects.all()
+    selected_course = request.GET.get('course_filter', '')
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+
+    if class_filter:
+        exam = exam.filter(class_id=class_filter)
+
     if selected_course:
         exam = exam.filter(course=selected_course)
- 
 
     context= {
         'exam':exam,
+        'classes':classes,
+        'search_query':search_query,
+        'selected_class':class_filter,
         'course':course,
         'selected_course': selected_course,
     }
     return render(request,'admin/view_practice_exam.html',context)
+
 
 
 
@@ -951,9 +976,10 @@ def SAVE_QUESTION(request):
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_QUESTION(request):
     question = Question.objects.all()
-    
+
     context = {
         'question':question,
+       
     }
 
     return render(request,'admin/view_question.html',context)
@@ -1245,24 +1271,32 @@ def STUDENT_SEND_NOTIFICATION(request):
     notification = Student_Notification.objects.all()
     
     
-    selected_class = request.GET.get('class_filter', '')  # Get the selected class from the request
+    classes = Class.objects.all()  # Fetch all classes from the database
+
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
     roll_number_query = request.GET.get('roll_number_filter', '') 
 
-    
-    # Filter students by class if a class is selected
-    if selected_class:
-        student = student.filter(user_class=selected_class)
-
-    # Filter students by roll number if a roll number query is provided
+    if search_query:
+        student = student.filter(
+            Q(admin__first_name__icontains=search_query) | 
+            Q(admin__last_name__icontains=search_query)
+        )
+    if class_filter:
+        student = student.filter(class_id=class_filter)
     if roll_number_query:
         student = student.filter(roll_number=roll_number_query)
+
 
 
     
     context = {
         'student':student,
         'notification':notification,
-        'selected_class': selected_class,
+        'search_query': search_query,
+        'classes': classes,
+        'selected_class': class_filter,  # Pass selected class filter to template
+        'roll_number_query': roll_number_query
     }
     return render(request,'admin/student_notification.html',context)
 

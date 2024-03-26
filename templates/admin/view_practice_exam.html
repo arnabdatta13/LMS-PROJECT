@@ -22,19 +22,25 @@
     {% include "base_desine/massages.html" %}
 
     <form method="get" action="{% url 'admin-practice-exam-view' %}">
-        
-    
+       
         <div class="form-group">
-            <label for="course_filter">Filter by Course:</label>
-            <select class="form-control" id="course_filter" name="course_filter" >
-                <option value="">All Courses</option>
-                {% for i in course%}
-                <option value="{{i.id}}" {% if selected_course == '{{i.id}}' %}selected{% endif %}>{{i.name}}</option>
-                {% endfor%}
+            <label for="class_filter">Filter by Class:</label>
+            <select class="form-control" id="class_filter" name="class_filter" >
+                <option value="">All Classes</option>
+                {% for i in classes %}
+                <option value="{{ i.id }}" {% if i.id|stringformat:"s" == selected_class %}selected{% endif %}>{{ i.name }}</option>
+                {% endfor %}
             </select>
         </div>
-
-        
+        <div class="form-group">
+            <label for="class_filter">Filter by Course:</label>
+            <select class="form-control" id="course_filter" name="course_filter" >
+                <option value="">All Course</option>
+                {% for i in course %}
+                <option value="{{ i.id }}" {% if i.id|stringformat:"s" == selected_course %}selected{% endif %}>{{ i.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <div class="input-group-append">
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </div>

@@ -163,6 +163,11 @@ urlpatterns = [
 
 
 
+    path('teacher-student-send-notification', teacher_views.STUDENT_SEND_NOTIFICATION,name='teacher-student-send-notification'),
+    path('teacher-student-save-notification', teacher_views.STUDENT_SAVE_NOTIFICATION,name='teacher-student-save-notification'),
+
+
+
 
     #this is student panel url
     path('student-home', student_views.HOME,name='student-home'),
