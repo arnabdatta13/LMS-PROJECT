@@ -150,15 +150,35 @@
 <br>
 
 <div class="text-center">
-    <form method='post' action='{% url "admin-delete-all-expire-student" %}' >
-        {% csrf_token%}
-        <button type="submit" class="btn btn-outline-primary mr-2" style="margin-left: 40px;">Delete All Expire Student</button>
-    </form>
+    <a href="{% url "admin-delete-all-expire-student" %}"><button type="submit" class="btn btn-outline-primary mr-2" style="margin-left: 40px;">Delete All Expire Student</button></a>
+    <a data-toggle="modal" data-target="#upgradeClassConfirmation{{ i.id }}"><button type="submit" class="btn btn-outline-primary mr-2" style="margin-left: 40px;">Upgrade Class</button></a>    
 </div>
 
 
 
 <br><br><br>
+
+<div class="modal fade" id="upgradeClassConfirmation{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white d-flex align-items-center">
+                <span class="attention-logo mr-2" style="font-size: 24px;">&#9888;</span> <!-- Red attention logo with increased size -->
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Attention</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4>Are you sure you want to upgrade all student classes? If you click the button upgrade class, all student class will upgrade. Dont click the upgrade class button by any mistake.</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a href="{% url 'admin-upgrade-student-class' %}" class="btn btn-danger">Upgrade Class</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 

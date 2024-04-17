@@ -131,8 +131,9 @@ urlpatterns = [
     
 
     path('admin-delete-all-expire-student', admin_views.ADMIN_DELETE_ALL_EXPIRE_STUDENT,name='admin-delete-all-expire-student'),
+    
+    path('admin-upgrade-student-class', admin_views.UPGRADE_CLASS,name='admin-upgrade-student-class'),
 
- 
     #this is teacher panel url
     path('teacher-home', teacher_views.HOME,name='teacher-home'),
     path('teacher-notification', teacher_views.NOTIFICATION,name='teacher-notification'),

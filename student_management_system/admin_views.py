@@ -195,6 +195,7 @@ def STUDENT_UPDATE(request):
         
         roll_number =request.POST.get('roll')
         class_id =request.POST.get('class_id')
+        
         session_year_id =request.POST.get('session_year_id')
         gender =request.POST.get('gender')
         phone_number =request.POST.get('phone_number')
@@ -228,7 +229,7 @@ def STUDENT_UPDATE(request):
         user.save()
 
         student = Student.objects.get(admin= student_id)
-
+        
         if fathers_name != None and fathers_name != "":
             student.fathers_name=fathers_name
         
@@ -250,7 +251,7 @@ def STUDENT_UPDATE(request):
             student.address=address
         
         class1 = Class.objects.get(id=class_id)
-
+        
         student.class_id=class1
 
         session_year = Session_Year.objects.get(id=session_year_id)
@@ -1380,31 +1381,46 @@ def ADMIN_VIEW_ATTENDANCE(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADMIN_DELETE_ALL_EXPIRE_STUDENT(request):
-    if request.method == "POST":
-        current_date = timezone.now().date()
+    
+    current_date = timezone.now().date()
 
-        # Get all session years whose end date is less than the current date
-        expired_session_years = Session_Year.objects.filter(session_end__lt=current_date)
+    # Get all session years whose end date is less than the current date
+    expired_session_years = Session_Year.objects.filter(session_end__lt=current_date)
 
-        # Variable to keep track of whether any students were deleted
-        students_deleted = False
+    # Variable to keep track of whether any students were deleted
+    students_deleted = False
 
-        # Iterate over each expired session year
-        for session_year in expired_session_years:
-            # Get all students associated with this expired session year
-            expired_students = Student.objects.filter(session_year_id=session_year)
+    # Iterate over each expired session year
+    for session_year in expired_session_years:
+        # Get all students associated with this expired session year
+        expired_students = Student.objects.filter(session_year_id=session_year)
 
-            # Check if any students are available for deletion
-            if expired_students.exists():
-                # Delete each expired student
-                expired_students.delete()
-                students_deleted = True  # Mark that students were deleted for this session year
+        # Check if any students are available for deletion
+        if expired_students.exists():
+            # Delete each expired student
+            expired_students.delete()
+            students_deleted = True  # Mark that students were deleted for this session year
 
-        if students_deleted:
-            messages.success(request, 'All Expire Students Have Been Successfully Deleted')
-        else:
-            messages.error(request, 'No Expire Students Available for Deletion')
+    if students_deleted:
+        messages.success(request, 'All Expire Students Have Been Successfully Deleted')
+    else:
+        messages.error(request, 'No Expire Students Available for Deletion')
 
-        return redirect('admin-student-view')
+    return redirect('admin-student-view')
 
+
+def UPGRADE_CLASS(request):
+    students= Student.objects.all()
+    # Retrieve the Class instance for 'class five'
+    new_class = Class.objects.get(name='class five')
+
+    for student in students:
+        class_name = student.class_id.name
+        if class_name == "class four":
+            student.class_id= new_class
+            student.save()
+    
+    messages.success(request, 'All Student Class Has Been Successfully Updated')
+    return redirect('admin-student-view')
+    
 
