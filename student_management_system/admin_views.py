@@ -1345,7 +1345,7 @@ def ADMIN_VIEW_ATTENDANCE(request):
             class_id = request.POST.get('class_id')
             session_year_id = request.POST.get('session_year_id')
             attendance_date= request.POST.get('attendance_date')
-
+            
             get_class = Class.objects.get(id=class_id)
             get_session_year = Session_Year.objects.get(id=session_year_id)
 

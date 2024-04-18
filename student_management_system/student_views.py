@@ -2,7 +2,8 @@ from django.shortcuts import render,redirect
 from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,Question,Online_Exam_Result,Course
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
-
+from datetime import datetime, timedelta
+from calendar import monthrange
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -81,6 +82,7 @@ def STUDENT_FEEDBACK_SAVE(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_VIEW_ATTENDANCE(request):
+    '''
     student = request.user.student  # Assuming request.user is the logged-in user
 
     # Retrieve the attendance reports for the student
@@ -90,9 +92,39 @@ def STUDENT_VIEW_ATTENDANCE(request):
         'attendance_reports': attendance_reports
     }
 
-    return render(request,'student/view_attendance.html',context)
+    return render(request,'student/test.html',context)
+'''
+    attendance_month = None
+    attendance_records= None
+    days_in_month = None
+    action = request.GET.get('action')
+    student = request.user.student
+
+    if action is not None:
+        if request.method == "POST":
+            attendance_month = request.POST.get('attendance_month')
+            if attendance_month:
+                # Parse the selected month into a datetime object
+                year, month = map(int, attendance_month.split('-'))
+
+            # Get the number of days in the selected month
+                num_days = monthrange(year, month)[1]
+
+                # Generate a list of dates in the selected month
+                days_in_month = [datetime(year, month, day) for day in range(1, num_days + 1)]
+
+                # Assuming you have fetched the necessary data, create the context
+    context = {
+        'attendance_month':attendance_month,
+        'attendance_records': attendance_records,
+        'student':student,
+        'action': action,
+        'days_in_month': days_in_month,
+
+    }
 
 
+    return render(request, 'student/test.html',context)
 
 
 @login_required(login_url='login')
