@@ -1411,16 +1411,34 @@ def ADMIN_DELETE_ALL_EXPIRE_STUDENT(request):
 
 def UPGRADE_CLASS(request):
     students= Student.objects.all()
-    # Retrieve the Class instance for 'class five'
-    new_class = Class.objects.get(name='class five')
+
+    # Retrieve the Class instance for every classes
+    class_five = Class.objects.get(name='class five')
+    class_four = Class.objects.get(name='class five')
+    class_three = Class.objects.get(name='class five')
+    class_two = Class.objects.get(name='class five')
+    class_one = Class.objects.get(name='class five')
 
     for student in students:
         class_name = student.class_id.name
+
+        if class_name == "class one":
+            student.class_id= class_two
+            student.save()
+        
+        if class_name == "class two":
+            student.class_id= class_three
+            student.save()
+        
+        if class_name == "class three":
+            student.class_id= class_four
+            student.save()
+        
         if class_name == "class four":
-            student.class_id= new_class
+            student.class_id= class_five
             student.save()
     
-    messages.success(request, 'All Student Class Has Been Successfully Updated')
+    messages.success(request, 'All Student Class Has Been Successfully Upgraded')
     return redirect('admin-student-view')
     
 
