@@ -72,30 +72,31 @@
                                       </thead>
                                       <tbody>
                                         
-                                                <tr>
-                                                    {% for day in days_in_month %}
-                                                        {% with day|date:"Y-m-d" as date_string %}
-                                                    <td>{{ date_string }}</td>
-                                                    
-                                                    <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
-                                                    <td>{{ student.class_id }}</td>
-                                                    <td>{{ student.roll_number }}</td>
-                                                    <td>
-                                                        {% if attendance_records %}
-                                                            {% for record in attendance_records %}
-                                                                {% if record.attendance_date == date_string %}
-                                                                    Present
-                                                                {% else %}
-                                                                    Absent
-                                                                {% endif %}
-                                                            {% endfor %}
+                                            <tr>
+                                                {% for day in days_in_month %}
+                                                    {% with day|date:"Y-m-d" as date_string %}
+                                                <td>{{ date_string }}</td>
+                                                
+                                                <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+                                                <td>{{ student.class_id }}</td>
+                                                <td>{{ student.roll_number }}</td>
+                                                <td>
+                                                
+                                                    {% if attendance_dates_str  %}
+                                                        {% if date_string in attendance_dates_str  %}
+                                                        Present
                                                         {% else %}
-                                                            Absent
+                                                        Absent
                                                         {% endif %}
-                                                    </td>
-                                                </tr>
-                                           {% endwith %}
-                                                    {% endfor %}
+                                                    {% else %}
+                                                        Absent
+                                                    {% endif %}
+
+                                                </td>
+                                                
+                                            </tr>
+                                            {% endwith %}
+                                                {% endfor %}
                                     </tbody>
                                   </table>
                               </div>

@@ -76,8 +76,8 @@
                         <select class="form-control" name='class_id' required disabled>
                      
                        
-                        <option value = '{{get_class.id}}'>{{get_class}}</option>
-                       
+                        <option>{{get_class}}</option>
+                        <input type="hidden" name="class_id" value="{{ get_class.id }}">
                         </select>
                   </div>
                   <br>
@@ -85,8 +85,9 @@
                      <label>Session Year</label>
                         <select class="form-control" name='session_year_id'required disabled>
           
-                        <option value = '{{get_session_year.id}}'>{{get_session_year}}</option>
-              
+                        <option >{{get_session_year}}</option>
+                        <input type="hidden" name="session_year_id" value="{{ get_session_year.id }}">
+
                         </select>
                   </div>
                  <br>

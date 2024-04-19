@@ -82,49 +82,54 @@ def STUDENT_FEEDBACK_SAVE(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_VIEW_ATTENDANCE(request):
-    '''
-    student = request.user.student  # Assuming request.user is the logged-in user
-
-    # Retrieve the attendance reports for the student
-    attendance_reports = Attendance_Report.objects.filter(student_id=student)
-
-    context = {
-        'attendance_reports': attendance_reports
-    }
-
-    return render(request,'student/test.html',context)
-'''
     attendance_month = None
-    attendance_records= None
+    attendance_records = None
     days_in_month = None
     action = request.GET.get('action')
     student = request.user.student
-
+    #attendance_status= None
+    attendance_dates_str = None
     if action is not None:
         if request.method == "POST":
             attendance_month = request.POST.get('attendance_month')
             if attendance_month:
-                # Parse the selected month into a datetime object
                 year, month = map(int, attendance_month.split('-'))
 
-            # Get the number of days in the selected month
+                # Get the number of days in the selected month
                 num_days = monthrange(year, month)[1]
 
                 # Generate a list of dates in the selected month
                 days_in_month = [datetime(year, month, day) for day in range(1, num_days + 1)]
 
-                # Assuming you have fetched the necessary data, create the context
-    context = {
-        'attendance_month':attendance_month,
-        'attendance_records': attendance_records,
-        'student':student,
-        'action': action,
-        'days_in_month': days_in_month,
+                # Filter attendance records by the selected month
+                attendance_records = Attendance_Report.objects.filter(
+                    student_id=student,
+                    attendance_id__attendance_date__year=year,
+                    attendance_id__attendance_date__month=month
+                )
 
+                # Convert attendance_records queryset to a set of dates
+                attendance_dates = set(record.attendance_id.attendance_date for record in attendance_records)
+
+                # Create a set of dates in string format
+                attendance_dates_str = {date.strftime('%Y-%m-%d') for date in attendance_dates}
+                print(attendance_dates_str)
+
+                # Create a dictionary to store whether the student was present on each day
+                #attendance_status = {date_string.strftime('%Y-%m-%d'): 'Present' if date_string.strftime('%Y-%m-%d') in attendance_dates_str else 'Absent' for date_string in days_in_month}
+                #print(attendance_status)
+    context = {
+        'attendance_month': attendance_month,
+        'attendance_records': attendance_records,
+        'student': student,
+        'action': action,
+        'attendance_dates_str':attendance_dates_str,
+        #'attendance_status':attendance_status,
+        'days_in_month': days_in_month,  # Pass the preprocessed list to the template
     }
 
+    return render(request, 'student/test.html', context)
 
-    return render(request, 'student/test.html',context)
 
 
 @login_required(login_url='login')
