@@ -33,6 +33,7 @@ def clear_notifications(request):
 
 def BASE(request):
     return render(request,'base.html')
+
 def LOGIN(request):
     return render(request,'login.html')
 

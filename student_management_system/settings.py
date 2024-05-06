@@ -130,3 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'app.CustomUser'
+
+
+ZOOM_CLIENT_ID = '6ptiKZuYSjyb2pHzJyHTA'
+ZOOM_CLIENT_SECRET = '4acUTxYAd94H1krPFhtlmVkaKQNVKo4m'
+ZOOM_ACCOUNT_ID = 'lU13tpFVSwO_zEhMMXAO_w'

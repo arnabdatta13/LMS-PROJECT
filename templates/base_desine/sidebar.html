@@ -65,6 +65,14 @@
                      </ul>
                   </li>
 
+                  <li class="submenu {% active_link 'admin-practice-exam-add' 'active' %} {% active_link 'admin-practice-exam-view' 'active' %}">
+                     <a href="#"><i class="fas fa-newspaper"></i> <span>Live Class</span> <span class="menu-arrow"></span></a>
+                     <ul>
+                        <li><a href="{% url 'admin-add-online-live-class'%}">Add Exam </a></li>
+                        <li><a href="{% url 'admin-practice-exam-view'%}">View Exam</a></li>
+                     </ul>
+                  </li>
+
                   <li class="submenu {% active_link 'admin-practice-exam-add' 'active' %} {% active_link 'admin-practice-exam-view' 'active' %} {% active_link 'admin-add-question' 'active' %}">
                      <a href="#"><i class="fas fa-newspaper"></i> <span>Practice Exam</span> <span class="menu-arrow"></span></a>
                      <ul>

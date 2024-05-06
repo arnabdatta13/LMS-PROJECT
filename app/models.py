@@ -274,3 +274,18 @@ class Add_Notice(models.Model):
       updated_at= models.DateTimeField(auto_now=True)
       def __str__(self):
         return self.notice
+
+
+
+class OnlineLiveClass(models.Model):
+    topic = models.CharField(max_length=255)
+    start_time = models.DateTimeField()
+    duration = models.IntegerField()
+    zoom_meeting_id = models.CharField(max_length=255, unique=True)  # Unique ID from Zoom
+    start_url = models.URLField()
+    join_url = models.URLField()
+    password = models.CharField(max_length=255)
+    agenda = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return self.topic

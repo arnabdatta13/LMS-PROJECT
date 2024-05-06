@@ -1,12 +1,16 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Student_Feedback,Attendance_Report,Attendance,Class,Add_Notice,Question,Practice_Exam,StudentResult
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Student_Feedback,Attendance_Report,Attendance,Class,Add_Notice,Question,Practice_Exam,OnlineLiveClass
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import HttpResponse
 from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
+import requests
+import json
+from django.http import JsonResponse
+
 
 
 
@@ -1442,3 +1446,82 @@ def UPGRADE_CLASS(request):
     return redirect('admin-student-view')
     
 
+
+
+
+
+def get_zoom_access_token():
+    url = "https://zoom.us/oauth/token"
+    payload = {
+        'account_id': 'lU13tpFVSwO_zEhMMXAO_w',
+        'client_id': '6ptiKZuYSjyb2pHzJyHTA',
+        'client_secret': '4acUTxYAd94H1krPFhtlmVkaKQNVKo4m',
+        'grant_type': 'account_credentials'
+    }
+    response = requests.post(url, data=payload)
+    access_token = json.loads(response.text).get('access_token')
+    return access_token
+
+
+
+def schedule_zoom_meeting(access_token,topic,start_time,duration):
+    url = "https://api.zoom.us/v2/users/me/meetings"
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    meeting_details = {
+        "topic": topic,
+        "type": 2,
+        "start_time": start_time,
+        "duration": duration,  # Duration in minutes
+        "schedule_for": "arnabdatta83@gmail.com",
+        "timezone": "UTC",
+        "agenda": "Discussion on the project.",
+        "settings": {
+            "join_before_host": False,  # Prevent participants from joining before the host
+            "jbh_time": 0,  # Disable the option to join before host by any minutes
+            "waiting_room": True  # Enable waiting room, optional but recommended for better control
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=meeting_details)
+    return json.loads(response.text)
+
+def ADD_ONLINE_LIVE_CLASS(request):
+    if request.method == "POST":
+
+        access_token = get_zoom_access_token()
+
+        topic = request.POST.get('topic')
+        start_time = request.POST.get('start_time')
+        duration = request.POST.get('duration')
+
+        meeting_data = schedule_zoom_meeting(access_token,topic,start_time,duration)
+        print(meeting_data)
+        OnlineLiveClass.objects.create(
+            topic=meeting_data['topic'],
+            start_time=meeting_data['start_time'],
+            duration=meeting_data['duration'],
+            zoom_meeting_id=meeting_data['id'],
+            #host_email=meeting_data['host_email'],
+            start_url=meeting_data['start_url'],
+            join_url=meeting_data['join_url'],
+            password=meeting_data['password'],
+            agenda=meeting_data['agenda'] if 'agenda' in meeting_data else ''
+        )
+        
+        messages.success(request, 'Online Live Class has been Ccreated')
+        return redirect("admin-view-online-live-class")
+    
+    return render(request,"admin/add_online_live_class.html")
+
+
+def VIEW_ONLINE_LIVE_CLASS(request):
+    all_online_live_class= OnlineLiveClass.objects.all().order_by('-start_time')
+
+    context = {
+        "class":all_online_live_class,
+    }
+
+    return render(request,"admin/view_online_live_class.html",context)
