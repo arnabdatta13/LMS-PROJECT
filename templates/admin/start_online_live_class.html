@@ -1,0 +1,92 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div id="zmmtg-root"></div>
+
+<!-- Load all necessary dependencies -->
+<script src="https://source.zoom.us/2.0.1/lib/vendor/react.min.js"></script>
+<script src="https://source.zoom.us/2.0.1/lib/vendor/react-dom.min.js"></script>
+<script src="https://source.zoom.us/2.0.1/lib/vendor/redux.min.js"></script>
+<script src="https://source.zoom.us/2.0.1/lib/vendor/redux-thunk.min.js"></script>
+<script src="https://source.zoom.us/2.0.1/lib/vendor/lodash.min.js"></script>
+
+<script src="https://source.zoom.us/zoom-meeting-2.0.1.min.js"></script>
+<script src="https://source.zoom.us/2.0.1/lib/vendor/react.min.js"></script>
+
+<script type="text/javascript">
+  ZoomMtg.setZoomJSLib('https://source.zoom.us/3.6.0/lib', '/av'); 
+  function setupZoomMeeting(meetingConfig) {
+    console.log("Preloading resources...");
+    ZoomMtg.preLoadWasm({
+        success: function() {
+            console.log("WASM preloaded");
+        },
+        error: function(err) {
+            console.log("Error preloading WASM", err);
+        }
+    });
+  
+    ZoomMtg.prepareWebSDK({
+        success: function() {
+            console.log("Web SDK prepared");
+        },
+        error: function(err) {
+            console.log("Error preparing Web SDK", err);
+        }
+    });
+  
+    console.log("Attempting to initialize Zoom SDK...");
+    ZoomMtg.init({
+        leaveUrl: meetingConfig.leaveUrl,
+        success: function () {
+            console.log("Zoom SDK is ready");
+            joinZoomMeeting(meetingConfig);
+        },
+        error: function (error) {
+            console.error("Failed to initialize Zoom SDK", error);
+        }
+    });
+  }
+    
+  function joinZoomMeeting(meetingConfig) {
+    console.log("Joining meeting with configuration:", meetingConfig);
+    ZoomMtg.join({
+      meetingNumber: meetingConfig.meetingNumber,
+      userName: meetingConfig.userName,
+      signature: meetingConfig.signature,
+      sdkKey: meetingConfig.sdkKey,
+      userEmail: meetingConfig.userEmail,
+      passWord: meetingConfig.passWord,
+      success: function (res) {
+        console.log("Successfully joined the meeting:", res);
+      },
+      error: function (error) {
+        console.error("Error joining the meeting:", error);
+      }
+    });
+  }
+  
+  // Example usage:
+  var meetingConfig = {
+    sdkKey: "{{ api_key }}",
+    meetingNumber: "{{meeting_id}}",
+    userName: "{{username}}",
+    passWord: "{{password}}",
+    leaveUrl: "http://your-site.com/meeting-end",
+    role: 1,
+    userEmail: "your.email@example.com",
+    signature: "{{signature}}",
+  };
+  
+  if (!meetingConfig.sdkKey || !meetingConfig.meetingNumber || !meetingConfig.signature) {
+    console.error("Required Zoom configuration is undefined!");
+    // Optionally, halt further execution or handle this case appropriately
+} else {
+    setupZoomMeeting(meetingConfig);
+}
+  
+</script>
+
+{% endblock %}
+

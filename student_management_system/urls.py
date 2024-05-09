@@ -138,6 +138,7 @@ urlpatterns = [
     
     path('admin-add-online-live-class', admin_views.ADD_ONLINE_LIVE_CLASS, name='admin-add-online-live-class'),
     path('admin-view-online-live-class', admin_views.VIEW_ONLINE_LIVE_CLASS, name='admin-view-online-live-class'),
+    path('admin-start-online-live-class/<int:id>', admin_views.START_ONLINE_LIVE_CLASS, name='admin-start-online-live-class'),
 
     #this is teacher panel url
     path('teacher-home', teacher_views.HOME,name='teacher-home'),

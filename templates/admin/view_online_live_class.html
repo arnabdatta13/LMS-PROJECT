@@ -67,8 +67,10 @@
                                     <td>{{ i.start_time|date:"Y-m-d H:i"}}</td>
                                     <td>{{ i.duration }}</td>
                                     <td>
-                                        <a href="{{i.start_url}}" class="btn btn-sm bg-success-light mr-2">
-                                        <i class="fas fa-pen"></i>
+                                        <a href="{% url 'admin-start-online-live-class' i.id %}">
+                                            <button type="button" class="btn btn-success">
+                                                Start Class
+                                            </button>
                                         </a>
                                     </td>
                                 </tr>

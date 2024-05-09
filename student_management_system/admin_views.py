@@ -10,7 +10,10 @@ from django.contrib.auth.decorators import user_passes_test
 import requests
 import json
 from django.http import JsonResponse
-
+import base64
+import hmac
+import hashlib
+import time
 
 
 
@@ -1450,6 +1453,11 @@ def UPGRADE_CLASS(request):
 
 
 
+
+
+
+#online class implement
+
 def get_zoom_access_token():
     url = "https://zoom.us/oauth/token"
     payload = {
@@ -1476,17 +1484,19 @@ def schedule_zoom_meeting(access_token,topic,start_time,duration):
         "start_time": start_time,
         "duration": duration,  # Duration in minutes
         "schedule_for": "arnabdatta83@gmail.com",
-        "timezone": "UTC",
+        "timezone": "Asia/Dhaka",
         "agenda": "Discussion on the project.",
         "settings": {
             "join_before_host": False,  # Prevent participants from joining before the host
             "jbh_time": 0,  # Disable the option to join before host by any minutes
-            "waiting_room": True  # Enable waiting room, optional but recommended for better control
+            "waiting_room": False,  # Enable waiting room, optional but recommended for better control
+            "auto_admit_participants": True
         }
     }
 
     response = requests.post(url, headers=headers, json=meeting_details)
     return json.loads(response.text)
+
 
 def ADD_ONLINE_LIVE_CLASS(request):
     if request.method == "POST":
@@ -1525,3 +1535,36 @@ def VIEW_ONLINE_LIVE_CLASS(request):
     }
 
     return render(request,"admin/view_online_live_class.html",context)
+
+def START_ONLINE_LIVE_CLASS(request, id):
+    online_class = OnlineLiveClass.objects.get(id=id)
+
+    # Generate the signature and other necessary data
+    client_id = "6ptiKZuYSjyb2pHzJyHTA"
+    client_secret = "4acUTxYAd94H1krPFhtlmVkaKQNVKo4m"
+    signature = generate_signature(client_id, client_secret, online_class.zoom_meeting_id, 1)
+
+    context = {
+        'class_id': id,
+        'username': "Arnab",
+        "password": online_class.password,
+        "meeting_id": online_class.zoom_meeting_id,
+        'signature': signature,
+        'api_key': client_id,
+    }
+
+    # Debug print to check context values
+    print(context)
+
+    return render(request, "admin/start_online_live_class.html", context)
+
+
+
+def generate_signature(api_key, api_secret, meeting_number, role):
+    timestamp = int(round(time.time() * 1000)) - 30000
+    msg = f"{api_key}{meeting_number}{timestamp}{role}"
+    message = base64.b64encode(bytes(msg, 'utf-8'))
+    secret = bytes(api_secret, 'utf-8')
+    hash = hmac.new(secret, message, hashlib.sha256)
+    hash = base64.b64encode(hash.digest())
+    return f"{api_key}.{meeting_number}.{timestamp}.{role}.{hash.decode('utf-8')}"
