@@ -67,32 +67,13 @@
                                     <td>{{ i.start_time|date:"Y-m-d H:i"}}</td>
                                     <td>{{ i.duration }}</td>
                                     <td>
-                                        <a href="{{ i.start_url}}">
+                                        <a href="{{ i.join_url}}">
                                             <button type="button" class="btn btn-success">
-                                                Start Class
+                                                Join Class
                                             </button>
                                         </a>
                                     </td>
                                 </tr>
-                                <div class="modal fade" id="deleteConfirmationModal{{ i.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Are you sure you want to delete this course?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                <a href="{% url 'admin-course-delete' i.id %}" class="btn btn-danger">Delete</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 {% endfor %}
                             </tbody>
                         </table>

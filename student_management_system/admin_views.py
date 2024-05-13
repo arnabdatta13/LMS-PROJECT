@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Student_Feedback,Attendance_Report,Attendance,Class,Add_Notice,Question,Practice_Exam,OnlineLiveClass
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Student_Feedback,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -963,7 +963,7 @@ def SAVE_QUESTION(request):
         # Assuming exam_id exists in Exam model, validate other fields as per your requirements
         
         # Create and save the question object
-        question = Question.objects.create(
+        question = PracticeExamQuestion.objects.create(
             exam_id=exam_id,
             marks=marks,
             question=question_text,
@@ -983,7 +983,7 @@ def SAVE_QUESTION(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_QUESTION(request):
-    question = Question.objects.all()
+    question = PracticeExamQuestion.objects.all()
 
     context = {
         'question':question,
@@ -1000,7 +1000,7 @@ def VIEW_QUESTION(request):
 def EDIT_QUESTION(request,id):
 
     exam = Practice_Exam.objects.all()
-    question = Question.objects.filter(id = id)
+    question = PracticeExamQuestion.objects.filter(id = id)
 
 
     context = {
@@ -1016,12 +1016,44 @@ def EDIT_QUESTION(request,id):
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def DELETE_QUESTION(request,id):
 
-    question = Question.objects.get(id = id)
+    question = PracticeExamQuestion.objects.get(id = id)
     question.delete()
 
     messages.success(request,'Question are successfully deleted.')
 
     return redirect('admin-view-question')
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def LIVE_EXAM_VIEW(request):
+    current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
+    #print(current_time)
+    exam = Live_Exam.objects.all()
+    course= Course.objects.all()
+    classes = Class.objects.all()
+    selected_course = request.GET.get('course_filter', '')
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+
+    if class_filter:
+        exam = exam.filter(class_id=class_filter)
+
+    if selected_course:
+        exam = exam.filter(course=selected_course)
+
+    context= {
+        'exam':exam,
+        'classes':classes,
+        'search_query':search_query,
+        'selected_class':class_filter,
+        'course':course,
+        'selected_course': selected_course,
+        'current_time': current_time, 
+    }
+    return render(request,'admin/view_live_exam.html',context)
+
 
 
 
@@ -1149,8 +1181,6 @@ def STUDENT_ACTIVITY_VIEW(request):
         'student_activity':student_activity,
     }
 
-
-
     return render(request,'admin/view_student_activity.html',context)
 
 
@@ -1171,18 +1201,18 @@ def STUDENT_ACTIVITY_EDIT(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def STUDENT_ACTIVITY_UPDATE(request):
-        if request.method == "POST":
-            date = request.POST.get('date')
-            description = request.POST.get('description')
-            student_activity_id = request.POST.get('student_activity_id')
+    if request.method == "POST":
+        date = request.POST.get('date')
+        description = request.POST.get('description')
+        student_activity_id = request.POST.get('student_activity_id')
 
-            student_activity = Student_activity.objects.get(id = student_activity_id)
+        student_activity = Student_activity.objects.get(id = student_activity_id)
 
-            student_activity.date = date
-            student_activity.description = description
-            student_activity.save()
-            messages.success(request,'Student Activity Are Successfully Updated')
-            return redirect('admin_home')
+        student_activity.date = date
+        student_activity.description = description
+        student_activity.save()
+        messages.success(request,'Student Activity Are Successfully Updated')
+        return redirect('admin_home')
 
 
 @login_required(login_url='login')
@@ -1421,10 +1451,15 @@ def UPGRADE_CLASS(request):
 
     # Retrieve the Class instance for every classes
     class_five = Class.objects.get(name='class five')
-    class_four = Class.objects.get(name='class five')
-    class_three = Class.objects.get(name='class five')
-    class_two = Class.objects.get(name='class five')
-    class_one = Class.objects.get(name='class five')
+    class_four = Class.objects.get(name='class four')
+    class_three = Class.objects.get(name='class three')
+    class_two = Class.objects.get(name='class two')
+    class_one = Class.objects.get(name='class one')
+    print(class_five)
+    print(class_four)
+    print(class_three)
+    print(class_two)
+    print(class_one)
 
     for student in students:
         class_name = student.class_id.name
@@ -1535,6 +1570,7 @@ def VIEW_ONLINE_LIVE_CLASS(request):
     }
 
     return render(request,"admin/view_online_live_class.html",context)
+
 
 def START_ONLINE_LIVE_CLASS(request, id):
     online_class = OnlineLiveClass.objects.get(id=id)

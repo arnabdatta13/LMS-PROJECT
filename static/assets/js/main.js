@@ -103,10 +103,16 @@ accordion.forEach(acco =>{
   };
 });
 
-document.querySelector('.load-more .btn').onclick = () =>{
-  document.querySelectorAll('.courses .box-container .hide').forEach(show =>{
-    show.style.display = 'block';
-  });
-  document.querySelector('.load-more .btn').style.display = 'none';
-};
+document.addEventListener('DOMContentLoaded', function() {
+  const loadMoreBtn = document.querySelector('.load-more .btn');
+  console.log('Load More Button:', loadMoreBtn);
+  
+  loadMoreBtn.onclick = () => {
+      document.querySelectorAll('.courses .box-container .hide').forEach(show => {
+          show.style.display = 'block';
+      });
+      loadMoreBtn.style.display = 'none';
+  };
+});
+
 

@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils import timezone
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
@@ -139,7 +140,7 @@ class Practice_Exam(models.Model):
         return self.exam_name
 
 
-class Question(models.Model):
+class PracticeExamQuestion(models.Model):
     exam =models.ForeignKey(Practice_Exam,on_delete=models.CASCADE,default=0)
     marks=models.PositiveIntegerField()
     question=models.CharField(max_length=600)
@@ -155,7 +156,7 @@ class Question(models.Model):
 
 
 
-class Online_Exam_Result(models.Model):
+class Practice_Exam_Result(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)
     exam = models.ForeignKey(Practice_Exam,on_delete=models.CASCADE)
     marks = models.PositiveIntegerField()
@@ -289,3 +290,42 @@ class OnlineLiveClass(models.Model):
     
     def __str__(self):
         return self.topic
+    
+
+
+class Live_Exam(models.Model):
+    exam_name = models.CharField(max_length=50)
+    total_questions = models.PositiveIntegerField()
+    total_marks = models.PositiveIntegerField()
+    class_id= models.ForeignKey(Class, on_delete=models.CASCADE,default=0)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='taken_exams', blank=True, null=True)
+    is_taken = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at= models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.exam_name
+
+
+class LiveExamQuestion(models.Model):
+    exam =models.ForeignKey(Live_Exam,on_delete=models.CASCADE,default=0)
+    marks=models.PositiveIntegerField()
+    question=models.CharField(max_length=600)
+    option1=models.CharField(max_length=200)
+    option2=models.CharField(max_length=200)
+    option3=models.CharField(max_length=200)
+    option4=models.CharField(max_length=200)
+    cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
+    answer=models.CharField(max_length=200,choices=cat)
+
+    def __str__(self):
+        return self.exam.exam_name
+
+class Live_Exam_Result(models.Model):
+    student = models.ForeignKey(Student,on_delete=models.CASCADE)
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
+    marks = models.PositiveIntegerField()
+    date = models.DateTimeField(auto_now=True)

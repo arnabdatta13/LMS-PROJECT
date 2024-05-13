@@ -65,8 +65,8 @@
                      </ul>
                   </li>
 
-                  <li class="submenu {% active_link 'admin-practice-exam-add' 'active' %} {% active_link 'admin-practice-exam-view' 'active' %}">
-                     <a href="#"><i class="fas fa-newspaper"></i> <span>Live Class</span> <span class="menu-arrow"></span></a>
+                  <li class="submenu {% active_link 'admin-add-online-live-class' 'active' %} {% active_link 'admin-view-online-live-class' 'active' %}">
+                     <a href="#"><i class="fas fa-laptop-medical mr-2"></i> <span>Live Class</span> <span class="menu-arrow"></span></a>
                      <ul>
                         <li><a href="{% url 'admin-add-online-live-class'%}">Add Live Class</a></li>
                         <li><a href="{% url 'admin-view-online-live-class'%}">View Live Class</a></li>
@@ -251,6 +251,10 @@
 
                   <li class="{% active_link 'teacher-notification' 'active' %}">
                      <a href="{% url 'student-notification'%}"><i class="fas fa-bell"></i> <span>Notification</span></a>
+                  </li>
+
+                  <li class="{% active_link 'student-view-online-live-class' 'active' %}">
+                     <a href="{% url 'student-view-online-live-class'%}"><i class="fas fa-laptop-medical mr-2"></i> <span>Join Live Class</span></a>
                   </li>
 
 

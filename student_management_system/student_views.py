@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,Question,Online_Exam_Result,Course
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from calendar import monthrange
+from django.utils import timezone
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -183,8 +185,8 @@ def STUDENT_PRACTICE_EXAM(request):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_TAKE_PRACTICE_EXAM(request,id):
     exam = Practice_Exam.objects.get(id = id)
-    total_question = Question.objects.all().filter(exam = exam).count()
-    questions=Question.objects.all().filter(exam=exam)
+    total_question = PracticeExamQuestion.objects.all().filter(exam = exam).count()
+    questions=PracticeExamQuestion.objects.all().filter(exam=exam)
     total_marks=0
     for q in questions:
         total_marks=total_marks + q.marks
@@ -201,7 +203,7 @@ def STUDENT_TAKE_PRACTICE_EXAM(request,id):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_START_PRACTICE_EXAM(request,id):
     exam=Practice_Exam.objects.get(id=id)
-    questions=Question.objects.all().filter(exam=exam)
+    questions=PracticeExamQuestion.objects.all().filter(exam=exam)
 
     context = {
         'questions':questions,
@@ -218,7 +220,7 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id') 
         exam = Practice_Exam.objects.get(id=exam_id)
-        questions = Question.objects.filter(exam=exam)
+        questions = PracticeExamQuestion.objects.filter(exam=exam)
         student = request.user.student
 
         total_obtained_marks = 0
@@ -231,10 +233,10 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
                 total_obtained_marks += questions[i].marks
                 correct_answers += 1
 
-        exam_result = Online_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
+        exam_result = Practice_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
 
         print(total_obtained_marks)
-        return redirect('student-mark')
+        return redirect('student-practice-exam-mark')
         
 
 
@@ -262,9 +264,137 @@ def STUDENT_PRACTICE_EXAM_MARK(request):
 def STUDENT_VIEW_PRACTICE_EXAM_MARK(request,id):
     exam=Practice_Exam.objects.get(id=id)
     student =Student.objects.get(admin=request.user.id)
-    results=Online_Exam_Result.objects.all().filter(exam=exam).filter(student=student)
+    results=Practice_Exam_Result.objects.all().filter(exam=exam).filter(student=student)
 
     context = {
         'result':results,
     }
     return render(request,'student/view_practice_exam_mark.html',context)
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_LIVE_EXAM(request):
+    user = request.user
+    student = Student.objects.get(admin=user)
+    student_class = student.class_id
+    current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
+    exam = Live_Exam.objects.filter(end_time__gt=current_time,class_id=student_class)
+    course= Course.objects.all()
+    selected_course = request.GET.get('course_filter', '')
+    search_query = request.GET.get('search_query', '')  
+
+
+    if selected_course:
+        exam = exam.filter(course=selected_course)
+
+    context= {
+        'exam':exam,
+        'search_query':search_query,
+        'course':course,
+        'selected_course': selected_course,
+        'current_time': current_time, 
+    }
+    return render(request,'student/live_exam.html',context)
+
+
+def STUDENT_TAKE_LIVE_EXAM(request,id):
+    exam = Live_Exam.objects.get(id = id)
+    total_question = LiveExamQuestion.objects.all().filter(exam = exam).count()
+    questions=LiveExamQuestion.objects.all().filter(exam=exam)
+    total_marks=0
+    for q in questions:
+        total_marks=total_marks + q.marks
+
+    context = {
+        'exam':exam,
+        'total_question':total_question,
+        'total_marks':total_marks,
+    }
+    return render(request,'student/take_live_exam.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_START_LIVE_EXAM(request,id):
+    exam=Live_Exam.objects.get(id=id)
+    questions=LiveExamQuestion.objects.all().filter(exam=exam)
+
+    context = {
+        'questions':questions,
+        'exam':exam,
+    }
+
+    return render(request,'student/start_live_exam.html',context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id') 
+        exam = Live_Exam.objects.get(id=exam_id)
+        questions = LiveExamQuestion.objects.filter(exam=exam)
+        student = request.user.student
+
+        total_obtained_marks = 0
+        correct_answers = 0
+
+        for i in range(len(questions)):
+            selected_answer = request.POST.get(str(i+1))  # Assuming the radio button names are the question IDs
+            correct_answer = questions[i].answer
+            if selected_answer == correct_answer:
+                total_obtained_marks += questions[i].marks
+                correct_answers += 1
+
+        exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
+
+        print(total_obtained_marks)
+        return redirect('student-live-exam-mark')
+      
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_LIVE_EXAM_MARK(request):
+    user = request.user
+    student = Student.objects.get(admin=user)
+    student_class = student.class_id
+    courses = Course.objects.filter(class1=student_class)
+    exams = Live_Exam.objects.filter(class_id=student_class)
+
+    context = {
+        'exam':exams,
+        'course':courses,
+    }
+    return render(request,'student/live_exam_mark.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_VIEW_LIVE_EXAM_MARK(request,id):
+    exam=Live_Exam.objects.get(id=id)
+    student =Student.objects.get(admin=request.user.id)
+    results=Live_Exam_Result.objects.all().filter(exam=exam).filter(student=student)
+
+    context = {
+        'result':results,
+    }
+    return render(request,'student/view_live_exam_mark.html',context)
+
+
+
+
+
+def VIEW_ONLINE_LIVE_CLASS(request):
+    all_online_live_class= OnlineLiveClass.objects.all().order_by('-start_time')
+
+    context = {
+        "class":all_online_live_class,
+    }
+
+    return render(request,"student/view_online_live_class.html",context)

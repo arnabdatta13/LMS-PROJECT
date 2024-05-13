@@ -29,10 +29,14 @@ urlpatterns = [
     
     path('base/', views.BASE,name='base'),
     path('join_now', views.JOIN_NOW,name='join_now'),
+
     #login path
     path('login', views.LOGIN,name='login'),
+    path('faceID-login', views.FACE_ID_LOGIN,name='faceID-login'),
+    path('face-id-dologin', views.FACE_ID_DOLOGIN,name='face-id-dologin'),
     path('dologin', views.dologin,name='dologin'), 
     path('dologout', views.dologout,name='logout'),
+
     #profile update 
     path('profile', views.PROFILE,name='profile'),
     path('profile/update', views.PROFILE_UPDATE,name='profile_update'),
@@ -84,18 +88,21 @@ urlpatterns = [
 
 
     path('admin-practice-exam-add', admin_views.PRACTICE_EXAM_ADD,name='admin-practice-exam-add'),
+    path('admin-practice-exam-view', admin_views.PRACTICE_EXAM_VIEW,name='admin-practice-exam-view'),
     path('admin-practice-exam-save', admin_views.PRACTICE_EXAM_SAVE,name='admin-practice-exam-save'),
     path('admin-practice-exam-delete/<str:id>', admin_views.PRACTICE_EXAM_DELETE,name='admin-practice-exam-delete'),
     path('admin-practice-exam-edit/<str:id>', admin_views.PRACTICE_EXAM_EDIT,name='admin-practice-exam-edit'),
     path('admin-practice-exam-update', admin_views.PRACTICE_EXAM_UPDATE,name='admin-practice-exam-update'),
 
 
-    path('admin-practice-exam-view', admin_views.PRACTICE_EXAM_VIEW,name='admin-practice-exam-view'),
     path('admin-add-question', admin_views.ADD_QUESTION,name='admin-add-question'),
     path('admin-save-question', admin_views.SAVE_QUESTION,name='admin-save-question'),
     path('admin-view-question', admin_views.VIEW_QUESTION,name='admin-view-question'),
     path('admin-edit-question/<str:id>', admin_views.EDIT_QUESTION,name='admin-edit-question'),
     path('admin-delete-question/<str:id>', admin_views.DELETE_QUESTION,name='admin-delete-question'),
+
+
+    path('admin-live-exam-view', admin_views.LIVE_EXAM_VIEW,name='admin-live-exam-view'),
 
 
 
@@ -116,12 +123,10 @@ urlpatterns = [
     path('admin-teacher-send-notification', admin_views.TEACHER_SEND_NOTIFICATION,name='admin-teacher-send-notification'),
     path('admin-teacher-save-notification', admin_views.TEACHER_SAVE_NOTIFICATION,name='admin-teacher-save-notification'),
 
+
     path('admin-teacher-feedback', admin_views.TEACHER_Feedback,name='admin-teacher-feedback'),
     path('admin-teacher-save', admin_views.TEACHER_Feedback_SAVE,name='admin-teacher-feedback-save'),
-
-
     
-
 
     path('admin-student-send-notification', admin_views.STUDENT_SEND_NOTIFICATION,name='admin-student-send-notification'),
     path('admin-student-save-notification', admin_views.STUDENT_SAVE_NOTIFICATION,name='admin-student-save-notification'),
@@ -193,11 +198,21 @@ urlpatterns = [
     path('student-take-practice-exam/<str:id>',student_views.STUDENT_TAKE_PRACTICE_EXAM,name='student-take-practice-exam'),
     path('student-start-practice-exam/<str:id>',student_views.STUDENT_START_PRACTICE_EXAM,name='student-start-practice-exam'),
     path('student-practice-exam-calculate-marks',student_views.STUDENT_PRACTICE_EXAM_CALCULATE_MARKS,name='student-practice-exam-calculate-marks'),
-
     path('student-practice-exam-mark',student_views.STUDENT_PRACTICE_EXAM_MARK,name='student-practice-exam-mark'),
     path('student-view-practice-exam-mark/<str:id>',student_views.STUDENT_VIEW_PRACTICE_EXAM_MARK,name='student-view-practice-exam-mark'),
 
-    
+
+    path('student-live-exam',student_views.STUDENT_LIVE_EXAM,name='student-live-exam'),
+    path('student-take-live-exam/<str:id>',student_views.STUDENT_TAKE_LIVE_EXAM,name='student-take-live-exam'),
+    path('student-start-live-exam/<str:id>',student_views.STUDENT_START_LIVE_EXAM,name='student-start-live-exam'),
+    path('student-live-exam-calculate-marks',student_views.STUDENT_LIVE_EXAM_CALCULATE_MARKS,name='student-live-exam-calculate-marks'),
+    path('student-live-exam-mark',student_views.STUDENT_LIVE_EXAM_MARK,name='student-live-exam-mark'),
+    path('student-view-live-exam-mark/<str:id>',student_views.STUDENT_VIEW_LIVE_EXAM_MARK,name='student-view-live-exam-mark'),
+
+
+
+    path('student-view-online-live-class', student_views.VIEW_ONLINE_LIVE_CLASS, name='student-view-online-live-class'),
+
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
 
