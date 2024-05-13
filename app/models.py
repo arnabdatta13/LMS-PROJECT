@@ -292,7 +292,6 @@ class OnlineLiveClass(models.Model):
         return self.topic
     
 
-
 class Live_Exam(models.Model):
     exam_name = models.CharField(max_length=50)
     total_questions = models.PositiveIntegerField()

@@ -282,7 +282,7 @@ def STUDENT_LIVE_EXAM(request):
     student = Student.objects.get(admin=user)
     student_class = student.class_id
     current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
-    exam = Live_Exam.objects.filter(end_time__gt=current_time,class_id=student_class)
+    exam = Live_Exam.objects.filter(end_time__gt=current_time,class_id=student_class,is_taken=False)
     course= Course.objects.all()
     selected_course = request.GET.get('course_filter', '')
     search_query = request.GET.get('search_query', '')  
@@ -352,7 +352,9 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
                 correct_answers += 1
 
         exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
-
+        exam.is_taken=True
+        exam.user=student.admin
+        exam.save()
         print(total_obtained_marks)
         return redirect('student-live-exam-mark')
       
