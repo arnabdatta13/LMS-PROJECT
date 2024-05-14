@@ -301,12 +301,21 @@ class Live_Exam(models.Model):
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
+    duration = models.DurationField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at= models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.exam_name
+
+
+class Live_Exam_Report(models.Model):
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='taken_exams', blank=True, null=True)
     is_taken = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     updated_at= models.DateTimeField(auto_now=True)
     def __str__(self):
-        return self.exam_name
+        return self.exam.exam_name
 
 
 class LiveExamQuestion(models.Model):
@@ -322,6 +331,7 @@ class LiveExamQuestion(models.Model):
 
     def __str__(self):
         return self.exam.exam_name
+
 
 class Live_Exam_Result(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)

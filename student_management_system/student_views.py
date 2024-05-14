@@ -1,10 +1,12 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from calendar import monthrange
 from django.utils import timezone
+from django.db.models import Subquery
+
 
 
 @login_required(login_url='login')
@@ -282,7 +284,12 @@ def STUDENT_LIVE_EXAM(request):
     student = Student.objects.get(admin=user)
     student_class = student.class_id
     current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
-    exam = Live_Exam.objects.filter(end_time__gt=current_time,class_id=student_class,is_taken=False)
+    taken_exams = Live_Exam_Report.objects.filter(user=user, is_taken=True).values('exam')
+    exams = Live_Exam.objects.filter(
+        end_time__gt=current_time,
+        class_id=student_class,
+    ).exclude(pk__in=Subquery(taken_exams))
+
     course= Course.objects.all()
     selected_course = request.GET.get('course_filter', '')
     search_query = request.GET.get('search_query', '')  
@@ -292,7 +299,7 @@ def STUDENT_LIVE_EXAM(request):
         exam = exam.filter(course=selected_course)
 
     context= {
-        'exam':exam,
+        'exam':exams,
         'search_query':search_query,
         'course':course,
         'selected_course': selected_course,
@@ -324,12 +331,14 @@ def STUDENT_START_LIVE_EXAM(request,id):
     exam=Live_Exam.objects.get(id=id)
     questions=LiveExamQuestion.objects.all().filter(exam=exam)
 
+
     context = {
         'questions':questions,
         'exam':exam,
     }
 
     return render(request,'student/start_live_exam.html',context)
+
 
 
 @login_required(login_url='login')
@@ -352,10 +361,10 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
                 correct_answers += 1
 
         exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
-        exam.is_taken=True
+        #exam.is_taken=True
         exam.user=student.admin
         exam.save()
-        print(total_obtained_marks)
+        #print(total_obtained_marks)
         return redirect('student-live-exam-mark')
       
 
