@@ -102,78 +102,40 @@
 
 <script>
   // Retrieve the initial timer duration from the model
-  var initialTimerDuration = parseInt("{{ exam.duration.total_seconds }}"); // Convert duration to seconds
-  var timerDuration = initialTimerDuration ? initialTimerDuration : 60 * 30; // 30 minutes
+  var remainingTime = parseInt("{{ remaining_time }}"); // Convert remaining time to seconds
 
-  function saveAns() {
-    var ele = document.getElementsByTagName('input');
-    for (i = 0; i < ele.length; i++) {
-      if (ele[i].type === "radio") {
-        if (ele[i].checked) {
-          setCookie(ele[i].name, ele[i].value, 3)
-        }
-      }
-    }
-  }
-
-  function setCookie(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    var expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-  }
-
-  // Function to update the timer
   function updateTimer() {
-    var hours = Math.floor(timerDuration / 3600);
-    var minutes = Math.floor((timerDuration % 3600) / 60);
-    var seconds = timerDuration % 60;
+    var hours = Math.floor(remainingTime / 3600);
+    var minutes = Math.floor((remainingTime % 3600) / 60);
+    var seconds = remainingTime % 60;
     
     // Pad with leading zeros if necessary
     hours = String(hours).padStart(2, '0');
     minutes = String(minutes).padStart(2, '0');
     seconds = String(seconds).padStart(2, '0');
 
-    // Display the timer
+    // Display the remaining time
     document.getElementById('timer').innerHTML = hours + ":" + minutes + ":" + seconds;
 
-    // Update the timer duration
-    timerDuration--;
+    // Update the remaining time
+    remainingTime--;
 
-    // Check if the timer has reached zero
-    if (timerDuration < 0) {
+    // Check if the remaining time has reached zero
+    if (remainingTime < 0) {
       // Submit the form after a delay (e.g., 1 second)
       setTimeout(function() {
         document.querySelector('form').submit(); // This submits the form
       }, 1000);
-      timerDuration = initialTimerDuration;
-      // Start the timer again
-      updateTimer();
     } else {
-      // Store the current timer duration in local storage
-      localStorage.setItem('initialTimerDuration', timerDuration);
-
       // Schedule the next update after 1 second
       setTimeout(updateTimer, 1000);
     }
   }
 
-  // Start the timer only if there's no stored timer duration
+  // Start the timer
   window.onload = function() {
-    var storedTimerDuration = localStorage.getItem('initialTimerDuration');
-    if (storedTimerDuration === null) {
-      updateTimer();
-    } else {
-      // If there's a stored timer duration, update the timer with it
-      timerDuration = parseInt(storedTimerDuration);
-      updateTimer();
-    }
+    updateTimer();
   };
-
-  // Clear the stored timer duration from local storage when the form is submitted
-  document.querySelector('form').addEventListener('submit', function() {
-    localStorage.removeItem('initialTimerDuration');
-  });
 </script>
 
 

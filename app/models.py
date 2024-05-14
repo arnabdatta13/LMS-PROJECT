@@ -318,6 +318,15 @@ class Live_Exam_Report(models.Model):
         return self.exam.exam_name
 
 
+class LiveExamTimer(models.Model):
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    def __str__(self):
+        return self.exam.exam_name
+
+
 class LiveExamQuestion(models.Model):
     exam =models.ForeignKey(Live_Exam,on_delete=models.CASCADE,default=0)
     marks=models.PositiveIntegerField()

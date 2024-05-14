@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -330,11 +330,28 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
 def STUDENT_START_LIVE_EXAM(request,id):
     exam=Live_Exam.objects.get(id=id)
     questions=LiveExamQuestion.objects.all().filter(exam=exam)
+    start_time = timezone.localtime(timezone.now())
+    user = request.user
+    duration_seconds = exam.duration.total_seconds()
+    end_time = start_time + timedelta(seconds=duration_seconds)
+    timer = LiveExamTimer.objects.filter(exam=exam,user=user)
+    timer = list(timer)
 
+    if len(timer) == 0:
+        user_exam_timer = LiveExamTimer.objects.create(exam=exam,user=user,start_time=start_time,end_time=end_time)
+        remaining_time = (end_time - start_time).total_seconds()
 
+    else:
+        timer = LiveExamTimer.objects.get(exam=exam,user=user)
+        end_time = timer.end_time
+        print(end_time)
+        remaining_time = (end_time - timezone.now()).total_seconds()
+        
+    print(remaining_time)
     context = {
         'questions':questions,
         'exam':exam,
+        'remaining_time': remaining_time,
     }
 
     return render(request,'student/start_live_exam.html',context)
