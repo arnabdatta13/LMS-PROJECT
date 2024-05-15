@@ -344,14 +344,13 @@ def STUDENT_START_LIVE_EXAM(request,id):
     else:
         timer = LiveExamTimer.objects.get(exam=exam,user=user)
         end_time = timer.end_time
-        print(end_time)
         remaining_time = (end_time - timezone.now()).total_seconds()
         
-    print(remaining_time)
     context = {
         'questions':questions,
         'exam':exam,
         'remaining_time': remaining_time,
+        'no_questions': questions.count() == 0,
     }
 
     return render(request,'student/start_live_exam.html',context)
@@ -376,12 +375,10 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
             if selected_answer == correct_answer:
                 total_obtained_marks += questions[i].marks
                 correct_answers += 1
-
+        exam_timer = LiveExamTimer.objects.get(exam=exam,user = request.user)
+        exam_timer.delete()
         exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
-        #exam.is_taken=True
-        exam.user=student.admin
-        exam.save()
-        #print(total_obtained_marks)
+        live_exam_report = Live_Exam_Report.objects.create(exam = exam,user = request.user,is_taken = True)
         return redirect('student-live-exam-mark')
       
 

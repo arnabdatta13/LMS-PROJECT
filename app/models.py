@@ -134,10 +134,20 @@ class Practice_Exam(models.Model):
     class_id= models.ForeignKey(Class, on_delete=models.CASCADE,default=0)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
+    duration = models.DurationField(default=0)
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     updated_at= models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.exam_name
+
+
+class PracticeExamTimer(models.Model):
+    exam = models.ForeignKey(Practice_Exam,on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    def __str__(self):
+        return self.exam.exam_name
 
 
 class PracticeExamQuestion(models.Model):
@@ -228,9 +238,6 @@ class Student_Feedback(models.Model):
     
 
 
-
-
-   
 class Attendance(models.Model):
     class_id = models.ForeignKey(Class,on_delete=models.DO_NOTHING,default=1)
     attendance_date = models.DateField()

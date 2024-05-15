@@ -14,6 +14,7 @@ import base64
 import hmac
 import hashlib
 import time
+from datetime import timedelta
 
 
 
@@ -788,10 +789,16 @@ def PRACTICE_EXAM_SAVE(request):
         
         course_id= request.POST.get('course_id')
         subject_id= request.POST.get('subject_id')
+        duration = int(request.POST.get('duration'))
+
 
         class1= Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
         subject = Subject.objects.get(id=subject_id)
+
+
+        duration = timedelta(minutes=duration)
+
 
         exam = Practice_Exam(
             exam_name= exam_name,
@@ -800,6 +807,7 @@ def PRACTICE_EXAM_SAVE(request):
             class_id=class1,
             course = course,
             subject= subject,
+            duration=duration,
         )
         exam.save()
         messages.success(request,'Exam Are Successfully Added')
