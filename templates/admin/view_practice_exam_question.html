@@ -5,52 +5,30 @@
     <div class="page-header">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="page-title">Live Exams</h3>
+                <h3 class="page-title">View Questions</h3>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Live Exams</li>
+                    <li class="breadcrumb-item active">View Questions</li>
                 </ul>
             </div>
 
             <div class="col-auto text-right float-right ml-auto">
                 <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
-                <a href="{% url 'admin-practice-exam-add' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                <a href="{% url 'admin-add-practice-exam-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
             </div>
         </div>
     </div>
 
     {% include "base_desine/massages.html" %}
 
-    <form method="get" action="{% url 'admin-live-exam-view' %}">
-       
-        <div class="form-group">
-            <label for="class_filter">Filter by Class:</label>
-            <select class="form-control" id="class_filter" name="class_filter" >
-                <option value="">All Classes</option>
-                {% for i in classes %}
-                <option value="{{ i.id }}" {% if i.id|stringformat:"s" == selected_class %}selected{% endif %}>{{ i.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="class_filter">Filter by Course:</label>
-            <select class="form-control" id="course_filter" name="course_filter" >
-                <option value="">All Course</option>
-                {% for i in course %}
-                <option value="{{ i.id }}" {% if i.id|stringformat:"s" == selected_course %}selected{% endif %}>{{ i.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="input-group-append">
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-        </div>
-    </form>
 
-   
-    
-    <br>
-
-    
+    <div class="col-sm-11">
+        <div class="form-group">
+           <label>Exam Name</label>
+           <input type="text" class="form-control " name='mark'required value='{{exam.exam_name}}' disabled>
+        </div>
+      </div>
+      <br>
 
     <div class="row">
         <div class="col-sm-12">
@@ -61,48 +39,35 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Exam Name</th>
-                                    <th>Total Marks</th>
-                                    <th>Total Question</th>
-                                    <th>Course</th>
-                                    <th>Subject</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Created At</th>
-                                    <th>Updated At</th>
-                                    <th>Status</th>
-
+                                    <th>Question</th>
+                                    <th>Marks</th>
+                                    <th>Option 1</th>
+                                    <th>Option 2</th>
+                                    <th>Option 3</th>
+                                    <th>Option 4</th>
+                                    <th>Answer</th>
                                     
                                     <th class="text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for i in exam %}
+                                {% for i in question %}
                                 <tr>
                                     <td>{{ i.id }}</td>
-                                    <td>{{ i.exam_name }}</td>
-                                    <td>{{ i.total_questions }}</td>
-                                    <td>{{ i.total_marks }}</td>
-                                    <td>{{ i.course }}</td>
-                                    <td>{{ i.subject }}</td>
-                                    <td>{{ i.start_time }}</td>
-                                    <td>{{ i.end_time }}</td>
-                                    <td>{{ i.created_at }}</td>
-                                    <td>{{ i.updated_at }}</td>
-                                    <td>
-                                        {% if i.end_time > current_time %}
-                                            Present
-                                        {% else %}
-                                            Expired
-                                        {% endif %}
-                                    </td>
+                                    <td>{{ i.question }}</td>
+                                    <td>{{ i.marks }}</td>
+                                    <td>{{ i.option1 }}</td>
+                                    <td>{{ i.option2 }}</td>
+                                    <td>{{ i.option3 }}</td>
+                                    <td>{{ i.option4 }}</td>
+                                    <td>{{ i.answer}}</td>
                                     
                                     <td class="text-right">
                                         <div class="actions">
-                                            <a href="{% url 'admin-practice-exam-edit' i.id%}" class="btn btn-sm bg-success-light mr-2">
+                                            <a href="{% url 'admin-edit-practice-exam-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
                                                 <i class="fas fa-pen"></i>
                                             </a>
-                                            <a href="{% url 'admin-practice-exam-delete' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
+                                            <a href="{% url 'admin-delete-practice-exam-question' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -118,11 +83,11 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                Are you sure you want to delete this exam?
+                                                Are you sure you want to delete this Question?
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                <a href="{% url 'admin-practice-exam-delete' i.id%}" class="btn btn-danger">Delete</a>
+                                                <a href="{% url 'admin-delete-practice-exam-question' i.id%}" class="btn btn-danger">Delete</a>
                                             </div>
                                         </div>
                                     </div>

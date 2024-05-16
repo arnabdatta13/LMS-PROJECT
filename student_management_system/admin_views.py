@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Student_Feedback,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamQuestion
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -14,8 +14,7 @@ import base64
 import hmac
 import hashlib
 import time
-from datetime import timedelta
-
+from datetime import timedelta,datetime
 
 
 
@@ -791,15 +790,13 @@ def PRACTICE_EXAM_SAVE(request):
         subject_id= request.POST.get('subject_id')
         duration = int(request.POST.get('duration'))
 
-
+        print(class_id)
         class1= Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
         subject = Subject.objects.get(id=subject_id)
 
 
         duration = timedelta(minutes=duration)
-
-
         exam = Practice_Exam(
             exam_name= exam_name,
             total_questions=total_questions,
@@ -852,6 +849,11 @@ def PRACTICE_EXAM_UPDATE(request):
         course_id= request.POST.get('course_id')
         subject_id= request.POST.get('subject_id')
 
+        duration_str = request.POST.get('duration') 
+
+        hours, minutes, seconds = map(int, duration_str.strip().split(':'))
+        duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        
         exam = Practice_Exam.objects.get(id = exam_id)
         class1= Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
@@ -863,9 +865,10 @@ def PRACTICE_EXAM_UPDATE(request):
         exam.class_id=class1
         exam.course=course
         exam.subject=subject
+        exam.duration=duration
         exam.save()
         messages.success(request,'Practice Exam Are Successfully Updated')
-        return redirect('admin-peactice-exam-view')
+        return redirect('admin-practice-exam-view')
 
 
 
@@ -915,7 +918,7 @@ def PRACTICE_EXAM_VIEW(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def ADD_QUESTION(request):
+def ADD_PRACTICE_EXAM_QUESTION(request):
     class1 = Class.objects.all()
 
     action = request.GET.get('action')
@@ -949,7 +952,7 @@ def ADD_QUESTION(request):
         'exam':exam,
 
     }
-    return render(request,'admin/add_question.html',context)
+    return render(request,'admin/add_practice_exam_question.html',context)
 
 
 
@@ -957,55 +960,79 @@ def ADD_QUESTION(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def SAVE_QUESTION(request):
+def SAVE_PRACTICE_EXAM_QUESTION(request):
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
-        marks = request.POST.get('mark')
-        question_text = request.POST.get('question')
-        option1 = request.POST.get('option1')
-        option2 = request.POST.get('option2')
-        option3 = request.POST.get('option3')
-        option4 = request.POST.get('option4')
-        answer = request.POST.get('answer')
-
-        # Assuming exam_id exists in Exam model, validate other fields as per your requirements
+        question_counter = 1
         
-        # Create and save the question object
-        question = PracticeExamQuestion.objects.create(
-            exam_id=exam_id,
-            marks=marks,
-            question=question_text,
-            option1=option1,
-            option2=option2,
-            option3=option3,
-            option4=option4,
-            answer=answer
-        )
-        # Optionally, you can redirect the user to a success page or perform any other action
+        while True:
+            question_key = f'question{question_counter}' if question_counter > 1 else 'question'
+            mark_key = f'mark{question_counter}' if question_counter > 1 else 'mark'
+            option1_key = f'option1{question_counter}' if question_counter > 1 else 'option1'
+            option2_key = f'option2{question_counter}' if question_counter > 1 else 'option2'
+            option3_key = f'option3{question_counter}' if question_counter > 1 else 'option3'
+            option4_key = f'option4{question_counter}' if question_counter > 1 else 'option4'
+            answer_key = f'answer{question_counter}' if question_counter > 1 else 'answer'
+            
+            question_text = request.POST.get(question_key)
+            marks = request.POST.get(mark_key)
+            option1 = request.POST.get(option1_key)
+            option2 = request.POST.get(option2_key)
+            option3 = request.POST.get(option3_key)
+            option4 = request.POST.get(option4_key)
+            answer = request.POST.get(answer_key)
 
+            if not question_text:
+                break
+
+            # Assuming exam_id exists in Exam model, validate other fields as per your requirements
+            # Create and save the question object
+            PracticeExamQuestion.objects.create(
+                exam_id=exam_id,
+                marks=marks,
+                question=question_text,
+                option1=option1,
+                option2=option2,
+                option3=option3,
+                option4=option4,
+                answer=answer
+            )
+            
+            question_counter += 1
         messages.success(request,'Question are added successfully')
-        return redirect('admin-add-question')
+        return redirect('admin-add-practice-exam-question')
     
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def VIEW_QUESTION(request):
-    question = PracticeExamQuestion.objects.all()
+def VIEW_PRACTICE_EXAM_QUESTION_FILTER(request):
+    exam = Practice_Exam.objects.all()
 
     context = {
-        'question':question,
+        'question':exam,
        
     }
 
-    return render(request,'admin/view_question.html',context)
+    return render(request,'admin/view_practice_exam_question_filter.html',context)
 
+
+def VIEW_PRACTICE_EXAM_QUESTION(request,id):
+    exam = Practice_Exam.objects.get(id = id)
+
+    question = PracticeExamQuestion.objects.filter(exam=exam)
+
+    context = {
+        'exam':exam,
+        'question':question,
+    }
+    return render(request,'admin/view_practice_exam_question.html',context)
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def EDIT_QUESTION(request,id):
+def EDIT_PRACTICE_EXAM_QUESTION(request,id):
 
     exam = Practice_Exam.objects.all()
     question = PracticeExamQuestion.objects.filter(id = id)
@@ -1015,21 +1042,103 @@ def EDIT_QUESTION(request,id):
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/edit_question.html',context)
+    return render(request,'admin/edit_practice_exam_question.html',context)
 
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def DELETE_QUESTION(request,id):
+def DELETE_PRACTICE_EXAM_QUESTION(request,id):
 
     question = PracticeExamQuestion.objects.get(id = id)
     question.delete()
 
     messages.success(request,'Question are successfully deleted.')
 
-    return redirect('admin-view-question')
+    return redirect('admin-view-practice-exam-question')
+
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def LIVE_EXAM_ADD(request):
+    class1 = Class.objects.all()
+    action = request.GET.get('action')
+
+    get_class = None
+  
+    subject = None
+    course = None
+
+    if action is not None:
+        if request.method=="POST":
+            class_id = request.POST.get('class_id')
+
+            get_class = Class.objects.get(id=class_id)
+
+            class1 = Class.objects.filter(id= class_id)
+            subject = Subject.objects.filter(class1=get_class)
+
+            course = Course.objects.filter(class1=get_class)
+
+    context = {
+        
+        'class':class1,
+        'action':action,
+        'get_class':get_class,
+      
+        'subject': subject,
+        
+        'course':course,
+
+    }
+    return render(request,'admin/add_live_exam.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def LIVE_EXAM_SAVE(request):
+    if request.method == "POST":
+
+        class_id= request.POST.get('class_id')
+        exam_name= request.POST.get('exam_name')
+        total_questions= request.POST.get('total_question')
+        total_marks= request.POST.get('total_number')
+        
+        course_id= request.POST.get('course_id')
+        subject_id= request.POST.get('subject_id')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        duration = int(request.POST.get('duration'))
+
+        class1= Class.objects.get(id=class_id)
+        course = Course.objects.get(id=course_id)
+        subject = Subject.objects.get(id=subject_id)
+
+        start_time = timezone.make_aware(datetime.strptime(start_time, '%Y-%m-%dT%H:%M'))
+        end_time = timezone.make_aware(datetime.strptime(end_time, '%Y-%m-%dT%H:%M'))
+        duration = timedelta(minutes=duration)
+        exam = Live_Exam(
+            exam_name= exam_name,
+            total_questions=total_questions,
+            total_marks=total_marks,
+            class_id=class1,
+            course = course,
+            subject= subject,
+            start_time=start_time,
+            end_time=end_time,
+            duration=duration,
+        )
+        exam.save()
+        messages.success(request,'Exam Are Successfully Added')
+        return redirect('admin-live-exam-add')
+
 
 
 
@@ -1061,6 +1170,63 @@ def LIVE_EXAM_VIEW(request):
         'current_time': current_time, 
     }
     return render(request,'admin/view_live_exam.html',context)
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def ADD_LIVE_EXAM_QUESTION(request):
+    class1 = Class.objects.all()
+
+    action = request.GET.get('action')
+
+    get_class = None
+ 
+    subject = None
+    course = None
+    exam = None
+
+    if action is not None:
+        if request.method=="POST":
+            class_id = request.POST.get('class_id')
+
+            get_class = Class.objects.get(id=class_id)
+
+            class1 = Class.objects.filter(id= class_id)
+            exam = Live_Exam.objects.filter(class_id=class_id)
+            
+
+
+    context = {
+        
+        'class':class1,
+        'action':action,
+        'get_class':get_class,
+        
+        'subject': subject,
+        
+        'course':course,
+        'exam':exam,
+
+    }
+    return render(request,'admin/add_live_exam_question.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_LIVE_EXAM_QUESTION(request):
+    question = LiveExamQuestion.objects.all()
+
+    context = {
+        'question':question,
+       
+    }
+
+    return render(request,'admin/view_live_exam_question.html',context)
 
 
 

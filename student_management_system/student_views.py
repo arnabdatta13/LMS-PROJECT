@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -207,9 +207,28 @@ def STUDENT_START_PRACTICE_EXAM(request,id):
     exam=Practice_Exam.objects.get(id=id)
     questions=PracticeExamQuestion.objects.all().filter(exam=exam)
 
+    start_time = timezone.localtime(timezone.now())
+    user = request.user
+    duration_seconds = exam.duration.total_seconds()
+    end_time = start_time + timedelta(seconds=duration_seconds)
+    timer =PracticeExamTimer.objects.filter(exam=exam,user=user)
+    timer = list(timer)
+
+    if len(timer) == 0:
+        user_exam_timer = PracticeExamTimer.objects.create(exam=exam,user=user,start_time=start_time,end_time=end_time)
+        remaining_time = (end_time - start_time).total_seconds()
+
+    else:
+        timer =PracticeExamTimer.objects.get(exam=exam,user=user)
+        end_time = timer.end_time
+        remaining_time = (end_time - timezone.now()).total_seconds()
+    
+
     context = {
         'questions':questions,
         'exam':exam,
+        'remaining_time': remaining_time,
+        'no_questions': questions.count() == 0,
     }
 
     return render(request,'student/start_practice_exam.html',context)
@@ -234,7 +253,8 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
             if selected_answer == correct_answer:
                 total_obtained_marks += questions[i].marks
                 correct_answers += 1
-
+        exam_timer = PracticeExamTimer.objects.get(exam=exam,user = request.user)
+        exam_timer.delete()
         exam_result = Practice_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
 
         print(total_obtained_marks)

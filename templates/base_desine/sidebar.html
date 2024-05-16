@@ -78,8 +78,19 @@
                      <ul>
                         <li><a href="{% url 'admin-practice-exam-add'%}">Add Exam </a></li>
                         <li><a href="{% url 'admin-practice-exam-view'%}">View Exam</a></li>
-                        <li><a href="{% url 'admin-add-question'%}">Add Question </a></li>
-                        <li><a href="{% url 'admin-view-question'%}">View Question</a></li>
+                        <li><a href="{% url 'admin-add-practice-exam-question'%}">Add Question </a></li>
+                        <li><a href="{% url 'admin-view-practice-exam-question'%}">View Question</a></li>
+                        
+                     </ul>
+                  </li>
+
+                  <li class="submenu {% active_link 'admin-practice-exam-add' 'active' %} {% active_link 'admin-practice-exam-view' 'active' %} {% active_link 'admin-add-question' 'active' %}">
+                     <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span>Live Exam</span> <span class="menu-arrow"></span></a>
+                     <ul>
+                        <li><a href="{% url 'admin-live-exam-add'%}">Add Exam </a></li>
+                        <li><a href="{% url 'admin-live-exam-view'%}">View Exam</a></li>
+                        <li><a href="{% url 'admin-add-live-exam-question'%}">Add Question </a></li>
+                        <li><a href="{% url 'admin-view-live-exam-question'%}">View Question</a></li>
                         
                      </ul>
                   </li>
@@ -224,12 +235,21 @@
                      <a href="{% url 'student-view-result'%}"><i class="fas fa-poll-h"></i> <span>View Result</span></a>
                   </li>
 
-                  <li class="submenu {% active_link 'student-exam' 'active' %} {% active_link 'student-mark' 'active' %}">
+                  <li class="submenu {% active_link 'student-practice-exam' 'active' %} {% active_link 'student-practice-exam-mark' 'active' %}">
                      <a href="#"><i class="fas fa-newspaper"></i> <span>Practice Exam</span> <span class="menu-arrow"></span></a>
                      <ul>
                       
                         <li><a href="{% url 'student-practice-exam'%}">Take Exam</a></li>
                         <li><a href="{% url 'student-practice-exam-mark'%}">View Mark</a></li>
+                        
+                     </ul>
+                  </li>
+                  <li class="submenu {% active_link 'student-live-exam' 'active' %} {% active_link 'student-live-exam-mark' 'active' %}">
+                     <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span>Live Exam</span> <span class="menu-arrow"></span></a>
+                     <ul>
+                      
+                        <li><a href="{% url 'student-live-exam'%}">Take Exam</a></li>
+                        <li><a href="{% url 'student-live-exam-mark'%}">View Mark</a></li>
                         
                      </ul>
                   </li>

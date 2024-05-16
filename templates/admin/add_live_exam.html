@@ -5,10 +5,10 @@
                <div class="page-header">
                   <div class="row align-items-center">
                      <div class="col">
-                        <h3 class="page-title">Add Practice Exam</h3>
+                        <h3 class="page-title">Add Live Exam</h3>
                         <ul class="breadcrumb">
                            <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
-                           <li class="breadcrumb-item active">Add Practice Exam</li>
+                           <li class="breadcrumb-item active">Add Live Exam</li>
                         </ul>
                      </div>
                      <div class="col-auto text-right float-right ml-auto">
@@ -19,7 +19,7 @@
                </div>
          {% include "base_desine/massages.html" %}
       {% if action is None %}
-      <form method="post" action="?action=add-practice-exam">
+      <form method="post" action="?action=add-live-exam">
           {% csrf_token %}
                <div class="row">
                   <div class="col-sm-12">
@@ -62,7 +62,7 @@
                   
       </form>
       {% else %}
-      <form method="post" action="{% url 'admin-practice-exam-save' %}">
+      <form method="post" action="{% url 'admin-live-exam-save' %}">
           {% csrf_token %}
                <div class="row">
                   <div class="col-sm-12">
@@ -133,8 +133,21 @@
                                     </select>
                               </div>
                               <br>
-                                  
+                            
+                              <div class="col-sm-11">
+                                <div class="form-group">
+                                   <label>Start Time</label>
+                                   <input type="datetime-local" class="form-control" name='start_time' required >
+                                </div>
+                             </div>
 
+                             <div class="col-sm-11">
+                                <div class="form-group">
+                                   <label>End Time</label>
+                                   <input type="datetime-local" class="form-control" name='end_time' required >
+                                </div>
+                             </div>
+                            
                               <div class="col-sm-11">
                                  <div class="form-group">
                                     <label>Duration In Minutes</label>

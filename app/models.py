@@ -134,7 +134,7 @@ class Practice_Exam(models.Model):
     class_id= models.ForeignKey(Class, on_delete=models.CASCADE,default=0)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
-    duration = models.DurationField(default=0)
+    duration = models.DurationField()
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     updated_at= models.DateTimeField(auto_now=True)
     def __str__(self):

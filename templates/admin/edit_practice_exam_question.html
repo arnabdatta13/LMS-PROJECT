@@ -16,7 +16,7 @@
 
          <div class="col-auto text-right float-right ml-auto">
 
-            <a href="{% url 'admin-view-question' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+            <a href="{% url 'admin-view-practice-exam-question' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
          </div>
       </div>
 </div>
@@ -27,7 +27,7 @@
    <div class="col-sm-12">
       <div class="card">
          <div class="card-body">
-            <form method='post' action='{% url "admin-exam-update" %}' >
+            <form method='post' action='{% url "admin-practice-exam-update" %}' >
                {% csrf_token%}
                   <div class="col-12">
                      <h5 class="form-title"><span>Edit Question</span></h5>

@@ -95,15 +95,20 @@ urlpatterns = [
     path('admin-practice-exam-update', admin_views.PRACTICE_EXAM_UPDATE,name='admin-practice-exam-update'),
 
 
-    path('admin-add-question', admin_views.ADD_QUESTION,name='admin-add-question'),
-    path('admin-save-question', admin_views.SAVE_QUESTION,name='admin-save-question'),
-    path('admin-view-question', admin_views.VIEW_QUESTION,name='admin-view-question'),
-    path('admin-edit-question/<str:id>', admin_views.EDIT_QUESTION,name='admin-edit-question'),
-    path('admin-delete-question/<str:id>', admin_views.DELETE_QUESTION,name='admin-delete-question'),
+    path('admin-add-practice-exam-question', admin_views.ADD_PRACTICE_EXAM_QUESTION,name='admin-add-practice-exam-question'),
+    path('admin-save-practice-exam-question', admin_views.SAVE_PRACTICE_EXAM_QUESTION,name='admin-save-practice-exam-question'),
+    path('admin-view-practice-exam-question', admin_views.VIEW_PRACTICE_EXAM_QUESTION_FILTER,name='admin-view-practice-exam-question'),
+    path('admin-view-practice-exam-question/<str:id>', admin_views.VIEW_PRACTICE_EXAM_QUESTION,name='admin-view-practice-exam-question'),
+    path('admin-edit-practice-exam-question/<str:id>', admin_views.EDIT_PRACTICE_EXAM_QUESTION,name='admin-edit-practice-exam-question'),
+    path('admin-delete-peactice-exam-question/<str:id>', admin_views.DELETE_PRACTICE_EXAM_QUESTION,name='admin-delete-practice-exam-question'),
 
 
+    path('admin-live-exam-add', admin_views.LIVE_EXAM_ADD,name='admin-live-exam-add'),
+    path('admin-live-exam-save', admin_views.LIVE_EXAM_SAVE,name='admin-live-exam-save'),
     path('admin-live-exam-view', admin_views.LIVE_EXAM_VIEW,name='admin-live-exam-view'),
-
+    
+    path('admin-add-live-exam-question', admin_views.ADD_LIVE_EXAM_QUESTION,name='admin-add-live-exam-question'),
+    path('admin-view-live-exam-question', admin_views.VIEW_LIVE_EXAM_QUESTION,name='admin-view-live-exam-question'),
 
 
     path('admin-star-student-add', admin_views.STAR_STUDENT_ADD,name='admin-star-student-add'),
