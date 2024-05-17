@@ -99,10 +99,10 @@
                                     
                                     <td class="text-right">
                                         <div class="actions">
-                                            <a href="{% url 'admin-practice-exam-edit' i.id%}" class="btn btn-sm bg-success-light mr-2">
+                                            <a href="{% url 'admin-live-exam-edit' i.id%}" class="btn btn-sm bg-success-light mr-2">
                                                 <i class="fas fa-pen"></i>
                                             </a>
-                                            <a href="{% url 'admin-practice-exam-delete' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
+                                            <a href="{% url 'admin-live-exam-delete' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -122,7 +122,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                <a href="{% url 'admin-practice-exam-delete' i.id%}" class="btn btn-danger">Delete</a>
+                                                <a href="{% url 'admin-live-exam-delete' i.id%}" class="btn btn-danger">Delete</a>
                                             </div>
                                         </div>
                                     </div>

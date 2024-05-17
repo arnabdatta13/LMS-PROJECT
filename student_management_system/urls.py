@@ -100,15 +100,23 @@ urlpatterns = [
     path('admin-view-practice-exam-question', admin_views.VIEW_PRACTICE_EXAM_QUESTION_FILTER,name='admin-view-practice-exam-question'),
     path('admin-view-practice-exam-question/<str:id>', admin_views.VIEW_PRACTICE_EXAM_QUESTION,name='admin-view-practice-exam-question'),
     path('admin-edit-practice-exam-question/<str:id>', admin_views.EDIT_PRACTICE_EXAM_QUESTION,name='admin-edit-practice-exam-question'),
+    path('admin-update-practice-exam-question', admin_views.UPDATE_PRACTICE_EXAM_QUESTION,name='admin-update-practice-exam-question'),
     path('admin-delete-peactice-exam-question/<str:id>', admin_views.DELETE_PRACTICE_EXAM_QUESTION,name='admin-delete-practice-exam-question'),
 
 
     path('admin-live-exam-add', admin_views.LIVE_EXAM_ADD,name='admin-live-exam-add'),
     path('admin-live-exam-save', admin_views.LIVE_EXAM_SAVE,name='admin-live-exam-save'),
     path('admin-live-exam-view', admin_views.LIVE_EXAM_VIEW,name='admin-live-exam-view'),
-    
+    path('admin-live-exam-edit/<str:id>', admin_views.LIVE_EXAM_EDIT,name='admin-live-exam-edit'),
+    path('admin-live-exam-update', admin_views.LIVE_EXAM_UPDATE,name='admin-live-exam-update'),
+    path('admin-live-exam-delete/<str:id>', admin_views.LIVE_EXAM_DELETE,name='admin-live-exam-delete'),
+
+
     path('admin-add-live-exam-question', admin_views.ADD_LIVE_EXAM_QUESTION,name='admin-add-live-exam-question'),
-    path('admin-view-live-exam-question', admin_views.VIEW_LIVE_EXAM_QUESTION,name='admin-view-live-exam-question'),
+    path('admin-save-live-exam-question', admin_views.SAVE_LIVE_EXAM_QUESTION,name='admin-save-live-exam-question'),
+    path('admin-view-live-exam-question', admin_views.VIEW_LIVE_EXAM_QUESTION_FILTER,name='admin-view-live-exam-question'),
+    path('admin-view-live-exam-question/<str:id>', admin_views.VIEW_LIVE_EXAM_QUESTION,name='admin-view-live-exam-question'),
+    path('admin-delete-live-exam-question/<str:id>', admin_views.DELETE_LIVE_EXAM_QUESTION,name='admin-delete-live-exam-question'),
 
 
     path('admin-star-student-add', admin_views.STAR_STUDENT_ADD,name='admin-star-student-add'),

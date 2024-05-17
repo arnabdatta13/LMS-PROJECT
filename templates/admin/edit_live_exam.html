@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+
+<div class="page-header">
+      <div class="row align-items-center">
+         <div class="col">
+            <h3 class="page-title">LIVE Exam</h3>
+            <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Live Exam</li>
+            </ul>
+         </div>
+
+         <div class="col-auto text-right float-right ml-auto">
+
+            <a href="{% url 'admin-live-exam-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+         </div>
+      </div>
+</div>
+
+
+
+<div class="row">
+   <div class="col-sm-12">
+      <div class="card">
+         <div class="card-body">
+            <form method='post' action='{% url "admin-live-exam-update" %}' >
+               {% csrf_token%}
+                  <div class="col-12">
+                     <h5 class="form-title"><span>Edit Live Exam</span></h5>
+                  </div>
+                  {% include "base_desine/massages.html" %}
+
+                 <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Exam Name</label>
+                        <input type="text" class="form-control" name='exam_name' required value="{% for i in exam %} {{i.exam_name}} {% endfor%}">
+                        <input type="text" class="form-control" name='exam_id' value='{% for i in exam %} {{i.id}} {%endfor%}' hidden>
+                     </div>
+                 </div>
+                 <div class="col-sm-11">
+                  <div class="form-group">
+                     <label>Total Question</label>
+                     <input type="text" class="form-control" name='total_question' required value="{% for i in exam %} {{i.total_questions}} {% endfor%}">
+                  </div>
+              </div>
+              <div class="col-sm-11">
+               <div class="form-group">
+                  <label>Total Number</label>
+                  <input type="text" class="form-control" name='total_number'required value="{% for i in exam %} {{i.total_marks}} {% endfor%}">
+               </div>
+               </div>
+               <div class="col-sm-11">
+                  <label>Class</label>
+                     <select class="form-control" name='class_id'required>
+                     <option value="" disabled selected >Select Class</option>
+                   
+                     <option value="{{class.id}}">{{class.name}}</option>
+                  
+                     </select>
+               </div>
+                 <br>
+               <div class="col-sm-11">
+                  <label>Course</label>
+                     <select class="form-control" name='course_id'required>
+                     <option value="" disabled selected >Select Course</option>
+                     {% for i in course%}
+                     <option value = '{{i.id}}'>{{i.name}}</option>
+                     {% endfor%}
+                     </select>
+               </div>
+                 <br>
+                 <div class="col-sm-11">
+                    <label>Subject</label>
+                       <select class="form-control" name='subject_id'required>
+                       <option value="" disabled selected>Select Subject</option>
+                       {% for i in subject %}
+                       <option value = '{{i.id}}'>{{i.name}}</option>
+                       {% endfor%}
+                       </select>
+                 </div>
+                 <br>
+                 <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Start Time (MM:DD:YY,HH:MM)</label>
+                       <input type="text" class="form-control" name='start_time'required value="{% for i in exam %} {{i.start_time}} {% endfor%}">
+                    </div>
+                </div>
+
+                <div class="col-sm-11">
+                    <div class="form-group">
+                        <label>End Time (MM:DD:YY,HH:MM)</label>
+                        <input type="text" class="form-control" name='end_time'required value="{% for i in exam %} {{i.end_time}} {% endfor%}">
+                    </div>
+                </div>
+                  
+                 <div class="col-sm-11">
+                  <div class="form-group">
+                     <label>Duration (HH:MM:SS)</label>
+                     <input type="text" class="form-control" name='duration'required value="{% for i in exam %} {{i.duration}} {% endfor%}">
+                  </div>
+                  </div>
+                 
+                 
+                  <div class="col-12">
+                     <button type="submit" class="btn btn-primary">Edit Exam</button>
+                  </div>
+               
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

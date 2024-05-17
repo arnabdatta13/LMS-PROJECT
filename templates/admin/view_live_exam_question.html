@@ -14,7 +14,7 @@
 
             <div class="col-auto text-right float-right ml-auto">
                 <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
-                <a href="{% url 'admin-add-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                <a href="{% url 'admin-add-practice-exam-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
             </div>
         </div>
     </div>
@@ -22,7 +22,13 @@
     {% include "base_desine/massages.html" %}
 
 
-    
+    <div class="col-sm-11">
+        <div class="form-group">
+           <label>Exam Name</label>
+           <input type="text" class="form-control " name='mark'required value='{{exam.exam_name}}' disabled>
+        </div>
+      </div>
+      <br>
 
     <div class="row">
         <div class="col-sm-12">
@@ -33,7 +39,6 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Exam Name</th>
                                     <th>Question</th>
                                     <th>Marks</th>
                                     <th>Option 1</th>
@@ -49,7 +54,6 @@
                                 {% for i in question %}
                                 <tr>
                                     <td>{{ i.id }}</td>
-                                    <td>{{ i.exam.exam_name }}</td>
                                     <td>{{ i.question }}</td>
                                     <td>{{ i.marks }}</td>
                                     <td>{{ i.option1 }}</td>
@@ -60,10 +64,10 @@
                                     
                                     <td class="text-right">
                                         <div class="actions">
-                                            <a href="{% url 'admin-edit-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
+                                            <a href="{% url 'admin-edit-practice-exam-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
                                                 <i class="fas fa-pen"></i>
                                             </a>
-                                            <a href="{% url 'admin-delete-question' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
+                                            <a href="{% url 'admin-delete-live-exam-question' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -83,7 +87,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                <a href="{% url 'admin-delete-question' i.id%}" class="btn btn-danger">Delete</a>
+                                                <a href="{% url 'admin-delete-live-exam-question' i.id%}" class="btn btn-danger">Delete</a>
                                             </div>
                                         </div>
                                     </div>
