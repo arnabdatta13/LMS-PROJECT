@@ -13,11 +13,26 @@ from django.db.models import Subquery
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def HOME(request):
     notice = Add_Notice.objects.all()
+    user = request.user
+    student = Student.objects.get(admin=user)
+    student_class = student.class_id
+    live_class= OnlineLiveClass.objects.all().count()
+    current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
+    live_exam = Live_Exam.objects.filter(
+            end_time__gt=current_time,
+            class_id=student_class,
+        ).count()
+    practice_exam = Practice_Exam.objects.filter(class_id=student_class).count()
 
     context={
         'notice':notice,
+        'student':student,
+        'live_class':live_class,
+        'live_exam':live_exam,
+        'practice_exam':practice_exam,
     }
     return render(request,'student/home.html',context)
+
 
 
 

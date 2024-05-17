@@ -1028,10 +1028,8 @@ def VIEW_PRACTICE_EXAM_QUESTION(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def EDIT_PRACTICE_EXAM_QUESTION(request,id):
-
     exam = Practice_Exam.objects.all()
     question = PracticeExamQuestion.objects.filter(id = id)
-
 
     context = {
         'exam':exam,
@@ -1403,6 +1401,55 @@ def VIEW_LIVE_EXAM_QUESTION(request,id):
         'question':question,
     }
     return render(request,'admin/view_live_exam_question.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def EDIT_LIVE_EXAM_QUESTION(request,id):
+    exam = Live_Exam.objects.all()
+    question = LiveExamQuestion.objects.filter(id = id)
+
+    context = {
+        'exam':exam,
+        'question':question,
+    }
+    return render(request,'admin/edit_live_exam_question.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def UPDATE_LIVE_EXAM_QUESTION(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        question_text = request.POST.get('question')
+        question_id = request.POST.get('question_id')
+        marks = request.POST.get('mark')
+        option1 = request.POST.get('option1')
+        option2 = request.POST.get('option2')
+        option3 = request.POST.get('option3')
+        option4 = request.POST.get('option4')
+        answer = request.POST.get('answer')
+
+        exam= Live_Exam.objects.get(id = exam_id)
+        question = LiveExamQuestion.objects.get(id = question_id)
+
+        question.exam=exam
+        question.marks=marks
+        question.question=question_text
+        question.option1=option1
+        question.option2=option2
+        question.option3=option3
+        question.option4=option4
+        question.answer=answer
+
+        question.save()
+
+        messages.success(request,'Queation Are Successfully Updated')
+        return redirect('admin-view-live-exam-question')
+
 
 
 

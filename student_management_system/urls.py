@@ -116,6 +116,8 @@ urlpatterns = [
     path('admin-save-live-exam-question', admin_views.SAVE_LIVE_EXAM_QUESTION,name='admin-save-live-exam-question'),
     path('admin-view-live-exam-question', admin_views.VIEW_LIVE_EXAM_QUESTION_FILTER,name='admin-view-live-exam-question'),
     path('admin-view-live-exam-question/<str:id>', admin_views.VIEW_LIVE_EXAM_QUESTION,name='admin-view-live-exam-question'),
+    path('admin-edit-live-exam-question/<str:id>', admin_views.EDIT_LIVE_EXAM_QUESTION,name='admin-edit-live-exam-question'),
+    path('admin-update-live-exam-question', admin_views.UPDATE_LIVE_EXAM_QUESTION,name='admin-update-live-exam-question'),
     path('admin-delete-live-exam-question/<str:id>', admin_views.DELETE_LIVE_EXAM_QUESTION,name='admin-delete-live-exam-question'),
 
 
