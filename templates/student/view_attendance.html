@@ -1,65 +1,113 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="content container-fluid">
-   <div class="page-header">
-       <div class="row align-items-center">
-           <div class="col">
-               <h3 class="page-title">View Attendance</h3>
-               <ul class="breadcrumb">
-                   <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
-                   <li class="breadcrumb-item active">View Attendance</li>
-               </ul>
-           </div>
-
-           <div class="col-auto text-right float-right ml-auto">
-               <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
-               
-           </div>
-       </div>
-   </div>
-
-   {% include "base_desine/massages.html" %}
-
-
-
-   <div class="row">
-       <div class="col-sm-12">
-           <div class="card card-table">
-               <div class="card-body">
-                   <div class="table-responsive">
-                       <table id="table_id" class=" table table-hover table-center mb-0 ">
-                           <thead>
-                               <tr>
-                                   <th>Date</th>
-                                   <th>Name</th>
-                                   <th>Class</th>
-                                   <th>Roll</th>
-                                   
-                                   
-                               </tr>
-                           </thead>
-                           <tbody>
-                               {% for report in attendance_reports %}
-                               <tr>
-                                <td>{{ report.attendance_id.attendance_date }}</td>
-                                <td>{{ report.student_id.admin.first_name }} {{ report.student_id.admin.last_name }}</td>
-                                <td>{{ report.student_id.user_class }}</td>
-                            
-                                   <td>{{ report.student_id.roll_number }}</td>
-                                   
-                                   
-                               </tr>
-                             
-                               {% endfor %}
-                           </tbody>
-                       </table>
-                   </div>
-               </div>
-           </div>
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">View Attendance</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">View Attendance</li>
+           </ul>
        </div>
    </div>
 </div>
 
-{% endblock  %}
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+            {% if action is None %}
+             <form method='post' action='?action=show_student_attendance' enctype="multipart/form-data">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>View Attendance</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+                  <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Attendance Date (Month)</label>
+                       <input type="month" class="form-control" name='attendance_month' required>
+                    </div>
+                   </div>
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Show Student Attendance</button>
+                   </div>
+                
+             </form>
+            {% else %}
+             <form method='post' action='{% url "teacher-save-attendance" %}' enctype="multipart/form-data">
+               {% csrf_token %}
+                  <div class="col-12">
+                     <h5 class="form-title"><span>View Attendance</span></h5>
+                  </div>
+                  {% include "base_desine/massages.html" %}
+
+                  
+                 
+                 <div class="col-sm-11">
+                  <div class="form-group">
+                     <label>Attendance Date (Month)</label>
+                     <input type="month" class="form-control" name='attendance_month' value="{{ attendance_month }}" required disabled>
+                  </div>
+                 </div>
+
+               <br><br>
+               
+               <div class="row">
+                  <div class="col-sm-12">
+                      <div class="card card-table">
+                          <div class="card-body">
+                              <div class="table-responsive">
+                                  <table id="table_id" class="table table-hover table-center mb-0">
+                                      <thead>
+                                          <tr>
+                                              <th>Date</th>
+                                              <th>Name</th>
+                                              <th>Class</th>
+                                              <th>Roll</th>
+                                              <th>Status</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                        
+                                            <tr>
+                                                {% for day in days_in_month %}
+                                                    {% with day|date:"Y-m-d" as date_string %}
+                                                <td>{{ date_string }}</td>
+                                                
+                                                <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+                                                <td>{{ student.class_id }}</td>
+                                                <td>{{ student.roll_number }}</td>
+                                                <td>
+                                                
+                                                    {% if attendance_dates_str  %}
+                                                        {% if date_string in attendance_dates_str  %}
+                                                        Present
+                                                        {% else %}
+                                                        Absent
+                                                        {% endif %}
+                                                    {% else %}
+                                                        Absent
+                                                    {% endif %}
+
+                                                </td>
+                                                
+                                            </tr>
+                                            {% endwith %}
+                                                {% endfor %}
+                                    </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </form>
+            {% endif %}
+          </div>
+       </div>
+    </div>
+ </div>
+{% endblock %}

@@ -20,7 +20,7 @@
                         <i class="fas fa-laptop-medical"></i>
                     </div>
                     <div class="db-info">
-                        <h3>{{live_class}}</h3>
+                        <h3>{{total_live_classes}}</h3>
                         <h6>Live Class</h6>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
                     <div class="db-info">
-                        <h3>{{live_exam}}</h3>
+                        <h3>{{total_live_exams}}</h3>
                         <h6>Live Exam</h6>
                     </div>
                 </div>
@@ -80,54 +80,87 @@
     <div class="upcoming-section" onclick="toggleClasses(this)">
         <div class="upcoming-class">
             <h4>
-                Upcoming Classes (1 live, 1 upcoming)
+                Upcoming Classes ({{ live_class_count }} live, {{ upcoming_class_count }} upcoming)
                 <i class="fas fa-chevron-down dropdown-icon"></i>
             </h4>
         </div>
 
         <div class="class-items">
+            {% for i in live_classes %}
             <div class="class-item">
-                <p class="topic">পদার্থবিজ্ঞান: অধ্যায় ০১,০২,০৩</p>
+                <div class="class-status live">
+                    <span class="status-live">Live</span>
+                </div>
+                <p class="topic">{{i.topic}}</p>
                 <br>
-                <p>Date & Time: <br><strong>23 Mar, 2024 10:00 AM to 12:30 PM</strong></p>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
                 <h4>Course:</h4>
                 <p>NDC & SJC Admission Course [Offline]</p>
                 <p>College Admission Program 2024</p>
                 <br>
-                <button>Join Now</button>
+                <a href="{{i.join_url}}"><button>Join Now</button><a>
             </div>
+            {% endfor %}
+
+            {% for i in upcoming_classes %}
             <div class="class-item">
-                <p class="topic">পদার্থবিজ্ঞান: অধ্যায় ০১,০২,০৩</p>
+                <div class="class-status upcoming">
+                    <span class="status-upcoming">Upcoming</span>
+                </div>
+                <p class="topic">{{i.topic}}</p>
                 <br>
-                <p>Date & Time: <br><strong>23 Mar, 2024 10:00 AM to 12:30 PM</strong></p>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
                 <h4>Course:</h4>
                 <p>NDC & SJC Admission Course [Offline]</p>
                 <p>College Admission Program 2024</p>
                 <br>
-                <button>Join Now</button>
+                <a href="{{i.join_url}}"><button>Join Now</button><a>
             </div>
+            {% endfor %}
         </div>
     </div>
 
     <div class="upcoming-live-section" onclick="toggleClasses(this)">
         <div class="upcoming-exam">
             <h4>
-                Upcoming Live Exam (1 live, 1 upcoming)
+                Upcoming Live Exam ({{live_exam_count}} live, {{upcoming_exam_count}} upcoming)
                 <i class="fas fa-chevron-down dropdown-icon"></i>
             </h4>
         </div>
 
         <div class="class-items">
+            {% for i in live_exams %}
             <div class="class-item">
-                <p class="topic">রসায়ন: অধ্যায় ০৪,০৫</p>
+                <div class="class-status live">
+                    <span class="status-live">Live</span>
+                </div>
+                <p class="topic">{{i.topic}}</p>
                 <br>
-                <p>Date & Time: <br><strong>25 Mar, 2024 02:00 PM to 04:00 PM</strong></p>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
                 <h4>Course:</h4>
                 <p>NDC & SJC Admission Course [Offline]</p>
                 <p>College Admission Program 2024</p>
                 <br>
-                <button>Join Now</button>
+                <a href="{{i.join_url}}"><button>Join Now</button><a>
             </div>
+            {% endfor %}
+
+            {% for i in upcoming_exams %}
+            <div class="class-item">
+                <div class="class-status upcoming">
+                    <span class="status-upcoming">Upcoming</span>
+                </div>
+                <p class="topic">{{i.exam_name}}</p>
+                <br>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
+                <h4>Course:</h4>
+                <br>
+                <p>Class: {{i.class_id.name}}</p>
+                <p>{{i.course.name}}</p>
+                <br>
+                <a href="{{i.join_url}}"><button>Join Now</button><a>
+            </div>
+            {% endfor %}
         </div>
     </div>
     <div class="upcoming-practice-section">
@@ -281,19 +314,20 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
     }
     
     .class-items {
-        padding: 15px 0 0;
-        margin: 0;
-        list-style: none;
+        padding: 25px 0 0;
         display: none;
+        flex-wrap: wrap;
+        gap: 10px;
+        transition: all 0.3s ease;
     }
     
     .class-items.show {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        
     }
     
     .class-items .class-item {
+        position: relative;
         background: linear-gradient(135deg, #f6f6f6, #ffffff);
         border-radius: 10px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -301,13 +335,32 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
         margin-bottom: 15px;
         padding: 20px;
         transition: transform 0.3s;
-        width: calc(50% - 20px);
-        max-width: calc(50% - 20px);
+        width: 100%;
+        max-width: 330px;
         box-sizing: border-box;
         margin-right: 10px;
         margin-left: 10px;
     }
     
+    .class-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .class-status.live {
+        background-color: red;
+    }
+
+    .class-status.upcoming {
+        background-color: green;
+    }
+
     .class-item p {
         margin: 0;
         font-size: 16px;

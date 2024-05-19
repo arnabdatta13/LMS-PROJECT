@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from calendar import monthrange
 from django.utils import timezone
 from django.db.models import Subquery
+from django.db.models import F,ExpressionWrapper, DurationField
 
-
-
+'''
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def HOME(request):
@@ -16,24 +16,125 @@ def HOME(request):
     user = request.user
     student = Student.objects.get(admin=user)
     student_class = student.class_id
-    live_class= OnlineLiveClass.objects.all().count()
-    current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
+
+    current_time = timezone.localtime(timezone.now()) 
+    live_class= OnlineLiveClass.objects.all()
+
+    valid_online_live_class = [
+        online_class for online_class in live_class
+        if online_class.start_time + timedelta(minutes=online_class.duration) > current_time
+    ]
+
+    valid_online_live_class.sort(key=lambda x: x.start_time, reverse=True)
+
+    valid_class_count = len(valid_online_live_class)
+
+
+     # Get the current time in the local timezone
     live_exam = Live_Exam.objects.filter(
             end_time__gt=current_time,
             class_id=student_class,
         ).count()
     practice_exam = Practice_Exam.objects.filter(class_id=student_class).count()
 
+
+
+    live_classes = []
+    upcoming_classes = []
+
+    for online_class in live_class:
+        class_end_time = online_class.start_time + timedelta(minutes=online_class.duration)
+        if online_class.start_time <= current_time < class_end_time:
+            live_classes.append(online_class)
+        elif current_time < online_class.start_time:
+            upcoming_classes.append(online_class)
+    upcoming_classes.sort(key=lambda x: x.start_time)
+
     context={
         'notice':notice,
         'student':student,
-        'live_class':live_class,
+        'live_class':valid_class_count,
         'live_exam':live_exam,
         'practice_exam':practice_exam,
+        'valid_upcoming_online_live_class':valid_online_live_class,
+        'live_class_count': len(live_classes),
+        'upcoming_class_count': len(upcoming_classes),
+
+
     }
     return render(request,'student/home.html',context)
 
+'''
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def HOME(request):
+    notice = Add_Notice.objects.all()
+    user = request.user
+    student = Student.objects.get(admin=user)
+    student_class = student.class_id
 
+    current_time = timezone.localtime(timezone.now())
+    live_class = OnlineLiveClass.objects.all()
+    live_exam = Live_Exam.objects.filter(end_time__gt=current_time, class_id=student_class)
+    practice_exam = Practice_Exam.objects.filter(class_id=student_class)
+
+    live_classes = []
+    upcoming_classes = []
+    live_exams = []
+    upcoming_exams = []
+
+    for online_class in live_class:
+        class_end_time = online_class.start_time + timedelta(minutes=online_class.duration)
+        if online_class.start_time <= current_time < class_end_time:
+            online_class.is_live = True
+            live_classes.append(online_class)
+        elif current_time < online_class.start_time:
+            online_class.is_live = False
+            upcoming_classes.append(online_class)
+
+    for exam in live_exam:
+        if exam.start_time <= current_time < exam.end_time:
+            live_exams.append(exam)
+        elif current_time < exam.start_time:
+            upcoming_exams.append(exam)
+
+    upcoming_classes.sort(key=lambda x: x.start_time)
+    upcoming_exams.sort(key=lambda x: x.start_time)
+
+
+    #total live class and total live exam count
+    total_live_exams = Live_Exam.objects.filter(
+            end_time__gt=current_time,
+            class_id=student_class,
+        ).count()
+    
+    valid_online_live_class = [
+        online_class for online_class in live_class
+        if online_class.start_time + timedelta(minutes=online_class.duration) > current_time
+    ]
+
+    valid_online_live_class.sort(key=lambda x: x.start_time, reverse=True)
+
+    total_live_class_count = len(valid_online_live_class)
+
+    
+    context = {
+        'notice': notice,
+        'student': student,
+        'live_class_count': len(live_classes),
+        'upcoming_class_count': len(upcoming_classes),
+        'live_classes': live_classes,
+        'upcoming_classes': upcoming_classes,
+        'live_exam_count': len(live_exams),
+        'upcoming_exam_count': len(upcoming_exams),
+        'live_exams': live_exams,
+        'upcoming_exams': upcoming_exams,
+        'practice_exam': practice_exam.count(),
+        'total_live_exams':total_live_exams,
+        'total_live_classes':total_live_class_count,
+    }
+
+    return render(request, 'student/home.html', context)
 
 
 @login_required(login_url='login')
@@ -147,7 +248,7 @@ def STUDENT_VIEW_ATTENDANCE(request):
         'days_in_month': days_in_month,  # Pass the preprocessed list to the template
     }
 
-    return render(request, 'student/test.html', context)
+    return render(request, 'student/view_attendance.html', context)
 
 
 
@@ -448,13 +549,20 @@ def STUDENT_VIEW_LIVE_EXAM_MARK(request,id):
 
 
 
-
-
 def VIEW_ONLINE_LIVE_CLASS(request):
-    all_online_live_class= OnlineLiveClass.objects.all().order_by('-start_time')
-
+    current_time = timezone.now()
+    all_online_live_class = OnlineLiveClass.objects.all()
+    
+    # Filter out the classes that have already ended
+    valid_online_live_class = [
+        online_class for online_class in all_online_live_class
+        if online_class.start_time + timedelta(minutes=online_class.duration) > current_time
+    ]
+    
+    valid_online_live_class.sort(key=lambda x: x.start_time, reverse=True)
+    
     context = {
-        "class":all_online_live_class,
+        "class": valid_online_live_class,
     }
 
-    return render(request,"student/view_online_live_class.html",context)
+    return render(request, "student/view_online_live_class.html", context)
