@@ -516,6 +516,8 @@ def STUDENT_VIEW_LIVE_EXAM_MARK(request,id):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def VIEW_ONLINE_LIVE_CLASS(request):
     current_time = timezone.now()
     all_online_live_class = OnlineLiveClass.objects.all()
@@ -535,6 +537,7 @@ def VIEW_ONLINE_LIVE_CLASS(request):
     return render(request, "student/view_online_live_class.html", context)
 
 
+
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def JOIN_ONLINE_LIVE_CLASS(request, id):
@@ -547,6 +550,8 @@ def JOIN_ONLINE_LIVE_CLASS(request, id):
         return redirect('student-view-online-live-class')
 
     return redirect(online_class.join_url)
+
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
