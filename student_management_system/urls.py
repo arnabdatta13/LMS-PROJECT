@@ -219,6 +219,7 @@ urlpatterns = [
 
     path('student-live-exam',student_views.STUDENT_LIVE_EXAM,name='student-live-exam'),
     path('student-take-live-exam/<str:id>',student_views.STUDENT_TAKE_LIVE_EXAM,name='student-take-live-exam'),
+    path('student-take-live-exam-home/<str:id>',student_views.STUDENT_TAKE_LIVE_EXAM_HOME,name='student-take-live-exam-home'),
     path('student-start-live-exam/<str:id>',student_views.STUDENT_START_LIVE_EXAM,name='student-start-live-exam'),
     path('student-live-exam-calculate-marks',student_views.STUDENT_LIVE_EXAM_CALCULATE_MARKS,name='student-live-exam-calculate-marks'),
     path('student-live-exam-mark',student_views.STUDENT_LIVE_EXAM_MARK,name='student-live-exam-mark'),
@@ -227,6 +228,8 @@ urlpatterns = [
 
 
     path('student-view-online-live-class', student_views.VIEW_ONLINE_LIVE_CLASS, name='student-view-online-live-class'),
+    path('student-join-online-live-class/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS, name='student-join-online-live-class'),
+    path('student-join-online-live-class-home/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS_HOME, name='student-join-online-live-class-home'),
 
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),

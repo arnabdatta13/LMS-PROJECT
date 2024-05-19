@@ -67,7 +67,7 @@
                                     <td>{{ i.start_time|date:"Y-m-d H:i"}}</td>
                                     <td>{{ i.duration }}</td>
                                     <td>
-                                        <a href="{{ i.join_url}}">
+                                        <a href="{% url "student-join-online-live-class" i.id%}">
                                             <button type="button" class="btn btn-success">
                                                 Join Class
                                             </button>

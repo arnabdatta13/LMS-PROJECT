@@ -7,64 +7,8 @@ from calendar import monthrange
 from django.utils import timezone
 from django.db.models import Subquery
 from django.db.models import F,ExpressionWrapper, DurationField
+from django.contrib import messages
 
-'''
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 3, login_url='login')
-def HOME(request):
-    notice = Add_Notice.objects.all()
-    user = request.user
-    student = Student.objects.get(admin=user)
-    student_class = student.class_id
-
-    current_time = timezone.localtime(timezone.now()) 
-    live_class= OnlineLiveClass.objects.all()
-
-    valid_online_live_class = [
-        online_class for online_class in live_class
-        if online_class.start_time + timedelta(minutes=online_class.duration) > current_time
-    ]
-
-    valid_online_live_class.sort(key=lambda x: x.start_time, reverse=True)
-
-    valid_class_count = len(valid_online_live_class)
-
-
-     # Get the current time in the local timezone
-    live_exam = Live_Exam.objects.filter(
-            end_time__gt=current_time,
-            class_id=student_class,
-        ).count()
-    practice_exam = Practice_Exam.objects.filter(class_id=student_class).count()
-
-
-
-    live_classes = []
-    upcoming_classes = []
-
-    for online_class in live_class:
-        class_end_time = online_class.start_time + timedelta(minutes=online_class.duration)
-        if online_class.start_time <= current_time < class_end_time:
-            live_classes.append(online_class)
-        elif current_time < online_class.start_time:
-            upcoming_classes.append(online_class)
-    upcoming_classes.sort(key=lambda x: x.start_time)
-
-    context={
-        'notice':notice,
-        'student':student,
-        'live_class':valid_class_count,
-        'live_exam':live_exam,
-        'practice_exam':practice_exam,
-        'valid_upcoming_online_live_class':valid_online_live_class,
-        'live_class_count': len(live_classes),
-        'upcoming_class_count': len(upcoming_classes),
-
-
-    }
-    return render(request,'student/home.html',context)
-
-'''
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def HOME(request):
@@ -446,6 +390,12 @@ def STUDENT_LIVE_EXAM(request):
 
 def STUDENT_TAKE_LIVE_EXAM(request,id):
     exam = Live_Exam.objects.get(id = id)
+    current_time = timezone.localtime(timezone.now()) 
+
+    if current_time < exam.start_time or current_time > exam.end_time:
+        messages.error(request, "You cannot take the exam outside the scheduled time.")
+        return redirect('student-live-exam')
+    
     total_question = LiveExamQuestion.objects.all().filter(exam = exam).count()
     questions=LiveExamQuestion.objects.all().filter(exam=exam)
     total_marks=0
@@ -463,9 +413,25 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_TAKE_LIVE_EXAM_HOME(request,id):
+    exam=Live_Exam.objects.get(id=id)
+    current_time = timezone.localtime(timezone.now()) 
+
+    if current_time < exam.start_time or current_time > exam.end_time:
+        messages.error(request, "You cannot take the exam outside the scheduled time.")
+        return redirect('student-home')
+    
+
+    return redirect('student-take-live-exam/{{exam.id}}')
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_START_LIVE_EXAM(request,id):
     exam=Live_Exam.objects.get(id=id)
-    questions=LiveExamQuestion.objects.all().filter(exam=exam)
+    questions= LiveExamQuestion.objects.get(id = exam)
     start_time = timezone.localtime(timezone.now())
     user = request.user
     duration_seconds = exam.duration.total_seconds()
@@ -490,6 +456,7 @@ def STUDENT_START_LIVE_EXAM(request,id):
     }
 
     return render(request,'student/start_live_exam.html',context)
+
 
 
 
@@ -566,3 +533,30 @@ def VIEW_ONLINE_LIVE_CLASS(request):
     }
 
     return render(request, "student/view_online_live_class.html", context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def JOIN_ONLINE_LIVE_CLASS(request, id):
+
+    online_class = OnlineLiveClass.objects.get(id=id)
+    current_time = timezone.localtime(timezone.now())
+
+    if current_time <= online_class.start_time:
+        messages.error(request, "Live Class not start.")
+        return redirect('student-view-online-live-class')
+
+    return redirect(online_class.join_url)
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def JOIN_ONLINE_LIVE_CLASS_HOME(request, id):
+
+    online_class = OnlineLiveClass.objects.get(id=id)
+    current_time = timezone.localtime(timezone.now())
+
+    if current_time <= online_class.start_time:
+        messages.error(request, "Live Class not start.")
+        return redirect('student-home')
+
+    return redirect(online_class.join_url)

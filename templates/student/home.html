@@ -11,6 +11,7 @@
         </div>
     </div>
 </div>
+{% include "base_desine/massages.html" %}
 <div class="row">
     <div class="col-xl-3 col-sm-6 col-12 d-flex">
         <div class="card bg-one w-100">
@@ -98,7 +99,7 @@
                 <p>NDC & SJC Admission Course [Offline]</p>
                 <p>College Admission Program 2024</p>
                 <br>
-                <a href="{{i.join_url}}"><button>Join Now</button><a>
+                <a href="{% url "student-join-online-live-class-home" i.id %}"><button>Join Now</button><a>
             </div>
             {% endfor %}
 
@@ -114,7 +115,7 @@
                 <p>NDC & SJC Admission Course [Offline]</p>
                 <p>College Admission Program 2024</p>
                 <br>
-                <a href="{{i.join_url}}"><button>Join Now</button><a>
+                <a href="{% url "student-join-online-live-class-home" i.id%}"><button>Join Now</button><a>
             </div>
             {% endfor %}
         </div>
@@ -136,12 +137,15 @@
                 </div>
                 <p class="topic">{{i.topic}}</p>
                 <br>
+                <p class="topic">{{i.exam_name}}</p>
+                <br>
                 <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
                 <h4>Course:</h4>
-                <p>NDC & SJC Admission Course [Offline]</p>
-                <p>College Admission Program 2024</p>
                 <br>
-                <a href="{{i.join_url}}"><button>Join Now</button><a>
+                <p>Class: {{i.class_id.name}}</p>
+                <p>{{i.course.name}}</p>
+                <br>
+                <a href="{% url "student-take-live-exam" i.id %}"><button>Take Exam</button><a>
             </div>
             {% endfor %}
 
@@ -158,7 +162,7 @@
                 <p>Class: {{i.class_id.name}}</p>
                 <p>{{i.course.name}}</p>
                 <br>
-                <a href="{{i.join_url}}"><button>Join Now</button><a>
+                <a href="{% url "student-take-live-exam-home" i.id%}"><button>Take Exam</button><a>
             </div>
             {% endfor %}
         </div>

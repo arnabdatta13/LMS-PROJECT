@@ -1142,6 +1142,8 @@ def LIVE_EXAM_SAVE(request):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
         duration = int(request.POST.get('duration'))
+        print(start_time)
+        print(end_time)
 
         class1= Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
@@ -1149,6 +1151,9 @@ def LIVE_EXAM_SAVE(request):
 
         start_time = timezone.make_aware(datetime.strptime(start_time, '%Y-%m-%dT%H:%M'))
         end_time = timezone.make_aware(datetime.strptime(end_time, '%Y-%m-%dT%H:%M'))
+        print(start_time)
+        print(end_time)
+
         duration = timedelta(minutes=duration)
         exam = Live_Exam(
             exam_name= exam_name,
@@ -1952,7 +1957,8 @@ def ADD_ONLINE_LIVE_CLASS(request):
         topic = request.POST.get('topic')
         start_time = request.POST.get('start_time')
         duration = request.POST.get('duration')
-
+        start_time = timezone.make_aware(datetime.strptime(start_time, '%Y-%m-%dT%H:%M'))
+        start_time = start_time.strftime('%Y-%m-%dT%H:%M:%S')
         meeting_data = schedule_zoom_meeting(access_token,topic,start_time,duration)
         print(meeting_data)
         OnlineLiveClass.objects.create(
