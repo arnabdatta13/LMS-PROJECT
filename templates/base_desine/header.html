@@ -6,7 +6,13 @@
             <a href="index.html" class="logo">
             <img src="{% static 'assets/img/logo.png' %}" alt="Logo">
             </a>
-            <a href="index.html" class="logo logo-small">
+            {% if user.user_type == 1 %}
+                  <a href="{% url 'admin_home' %}" class="logo logo-small">
+            {% elif user.user_type == 2 %}
+                  <a href="{% url 'teacher-home' %}" class="logo logo-small">
+            {% else %}
+                  <a href="{% url 'student-home' %}" class="logo logo-small">
+            {% endif %}
             <img src="{% static 'assets/img/logo-small.png' %}" alt="Logo" width="30" height="30">
             </a>
          </div>

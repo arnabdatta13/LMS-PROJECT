@@ -74,8 +74,6 @@ class Course(models.Model):
     
 
 class Session_Year(models.Model):
-    
-
     session_start= models.CharField(max_length=100)
     session_end= models.CharField(max_length=100)
 
@@ -120,7 +118,6 @@ class Teacher(models.Model):
 class Subject(models.Model):
     name = models.CharField(max_length=100)
     class1 = models.ForeignKey(Class,on_delete=models.CASCADE,default=1)
-    teacher = models.ForeignKey(Teacher,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     updated_at= models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -289,6 +286,7 @@ class OnlineLiveClass(models.Model):
     topic = models.CharField(max_length=255)
     start_time = models.DateTimeField()
     duration = models.IntegerField()
+    class1 = models.ForeignKey(Class,on_delete=models.CASCADE,default=0)
     zoom_meeting_id = models.CharField(max_length=255, unique=True)  # Unique ID from Zoom
     start_url = models.URLField()
     join_url = models.URLField()

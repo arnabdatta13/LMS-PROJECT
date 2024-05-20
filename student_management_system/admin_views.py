@@ -551,20 +551,17 @@ def TEACHER_DELETE(request,admin):
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def SUBJECT_ADD(request):
     class1 = Class.objects.all()
-    teacher = Teacher.objects.all()
+
 
     if request.method == "POST":
         subject_name= request.POST.get('subject_name')
         class_id= request.POST.get('class_id')
-        teacher_id= request.POST.get('teacher_id')
 
         class1 = Class.objects.get(id=class_id)
-        teacher = Teacher.objects.get(id = teacher_id)
 
         subject = Subject(
             name= subject_name,
             class1 = class1,
-            teacher= teacher,
         )
         subject.save()
         messages.success(request,'Subjects Are Successfully Added')
@@ -572,7 +569,6 @@ def SUBJECT_ADD(request):
     
     context = {
         'class':class1,
-        'teacher':teacher,
     }
     return render(request,'admin/add_subject.html',context)
 
@@ -604,13 +600,11 @@ def SUBJECT_VIEW(request):
 def SUBJECT_EDIT(request,id):
     subject = Subject.objects.get(id= id)
     class1 = Class.objects.all()
-    teacher = Teacher.objects.all()
 
 
     context = {
         'subject':subject,
         'class':class1,
-        "teacher":teacher,
     }
     return render(request,'admin/edit_subject.html',context)
 
@@ -623,26 +617,20 @@ def SUBJECT_UPDATE(request):
         subject_id = request.POST.get('subject_id')
         subject_name = request.POST.get('subject_name')
         class_id = request.POST.get('class_id')
-        teacher_id = request.POST.get('teacher_id')
 
         # Check if 'Select Course' was chosen
         if class_id == 'Select Class':
             messages.error(request, 'Please select a valid class.')
             return redirect('admin-subject-edit', id=subject_id)  # Redirect back to the edit page
-        if teacher_id == 'Select Teacher':
-            messages.error(request, 'Please select a valid Teacher.')
-            return redirect('admin-subject-edit', id=subject_id)  # Redirect back to the edit page
-
+        
         try:
             # Attempt to fetch the Course and Teacher objects
             class1 = Class.objects.get(id=class_id)
-            teacher = Teacher.objects.get(id=teacher_id)
 
             # Update the Subject object
             subject = Subject.objects.get(id=subject_id)
             subject.name = subject_name
             subject.class1 = class1
-            subject.teacher = teacher
             subject.save()
 
             messages.success(request, 'Subject was successfully updated.')
@@ -1922,6 +1910,20 @@ def get_zoom_access_token():
     return access_token
 
 
+def get_zak_token(access_token):
+    zak_url = "https://api.zoom.us/v2/users/me/token?type=zak"
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = requests.get(zak_url, headers=headers)
+    response_data = response.json()
+    
+    # Check if response contains the token
+    if 'token' in response_data:
+        return response_data['token']
+    else:
+        # If token is not present, raise an error or return None
+        raise ValueError("ZAK token not found in response")
+
+
 
 def schedule_zoom_meeting(access_token,topic,start_time,duration):
     url = "https://api.zoom.us/v2/users/me/meetings"
@@ -1950,6 +1952,7 @@ def schedule_zoom_meeting(access_token,topic,start_time,duration):
 
 
 def ADD_ONLINE_LIVE_CLASS(request):
+    class1 = Class.objects.all()
     if request.method == "POST":
 
         access_token = get_zoom_access_token()
@@ -1957,14 +1960,17 @@ def ADD_ONLINE_LIVE_CLASS(request):
         topic = request.POST.get('topic')
         start_time = request.POST.get('start_time')
         duration = request.POST.get('duration')
+        class_id = request.POST.get('class_id')
         start_time = timezone.make_aware(datetime.strptime(start_time, '%Y-%m-%dT%H:%M'))
         start_time = start_time.strftime('%Y-%m-%dT%H:%M:%S')
+        class1 = Class.objects.get(id = class_id)
         meeting_data = schedule_zoom_meeting(access_token,topic,start_time,duration)
         print(meeting_data)
         OnlineLiveClass.objects.create(
             topic=meeting_data['topic'],
             start_time=meeting_data['start_time'],
             duration=meeting_data['duration'],
+            class1=class1,
             zoom_meeting_id=meeting_data['id'],
             #host_email=meeting_data['host_email'],
             start_url=meeting_data['start_url'],
@@ -1975,8 +1981,10 @@ def ADD_ONLINE_LIVE_CLASS(request):
         
         messages.success(request, 'Online Live Class has been Ccreated')
         return redirect("admin-view-online-live-class")
-    
-    return render(request,"admin/add_online_live_class.html")
+    context = {
+        'class':class1,
+    }
+    return render(request,"admin/add_online_live_class.html",context)
 
 
 def VIEW_ONLINE_LIVE_CLASS(request):
@@ -1993,9 +2001,15 @@ def START_ONLINE_LIVE_CLASS(request, id):
     online_class = OnlineLiveClass.objects.get(id=id)
 
     # Generate the signature and other necessary data
-    client_id = "6ptiKZuYSjyb2pHzJyHTA"
-    client_secret = "4acUTxYAd94H1krPFhtlmVkaKQNVKo4m"
-    signature = generate_signature(client_id, client_secret, online_class.zoom_meeting_id, 1)
+    sdk_key = "QSLLcCXOTLmVDToDsr4itA"  # Replace with your SDK Key
+    sdk_secret = "1fWY3gcWHJ7L4LRCqkQEMb5EmbXdhqWc"  # Replace with your SDK Secret
+    # Step 1: Get OAuth access token
+    access_token = get_zoom_access_token()
+    print(access_token)
+    # Step 2: Get ZAK token
+    zak_token = get_zak_token(access_token)
+
+    signature = generate_signature(sdk_key, sdk_secret, online_class.zoom_meeting_id, 1)
 
     context = {
         'class_id': id,
@@ -2003,7 +2017,8 @@ def START_ONLINE_LIVE_CLASS(request, id):
         "password": online_class.password,
         "meeting_id": online_class.zoom_meeting_id,
         'signature': signature,
-        'api_key': client_id,
+        'sdk_key': sdk_key,
+        'zak_token': zak_token,
     }
 
     # Debug print to check context values

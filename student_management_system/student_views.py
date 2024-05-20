@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -18,8 +18,11 @@ def HOME(request):
     student_class = student.class_id
 
     current_time = timezone.localtime(timezone.now())
-    live_class = OnlineLiveClass.objects.all()
-    live_exam = Live_Exam.objects.filter(end_time__gt=current_time, class_id=student_class)
+    class_id = Class.objects.get(id = request.user.id)
+    live_class = OnlineLiveClass.objects.filter(class1 = class_id)
+    taken_exams = Live_Exam_Report.objects.filter(user=user, is_taken=True).values('exam')
+    live_exam = Live_Exam.objects.filter(end_time__gt=current_time, class_id=student_class).exclude(pk__in=Subquery(taken_exams))
+
     practice_exam = Practice_Exam.objects.filter(class_id=student_class)
 
     live_classes = []
@@ -61,6 +64,10 @@ def HOME(request):
 
     total_live_class_count = len(valid_online_live_class)
 
+
+    #attendance data
+    attendance_reports = Attendance_Report.objects.filter(student_id=student)
+    attendance_dates = [record.attendance_id.attendance_date.strftime("%Y-%m-%d") for record in attendance_reports]
     
     context = {
         'notice': notice,
@@ -76,6 +83,7 @@ def HOME(request):
         'practice_exam': practice_exam.count(),
         'total_live_exams':total_live_exams,
         'total_live_classes':total_live_class_count,
+        'attendance_dates': attendance_dates,
     }
 
     return render(request, 'student/home.html', context)
@@ -396,6 +404,11 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
         messages.error(request, "You cannot take the exam outside the scheduled time.")
         return redirect('student-live-exam')
     
+    if Live_Exam_Report.objects.filter(exam = exam,user = request.user,is_taken = True).exists() :
+        messages.error(request, "You already has taken the exam.")
+        return redirect('student-live-exam')
+
+
     total_question = LiveExamQuestion.objects.all().filter(exam = exam).count()
     questions=LiveExamQuestion.objects.all().filter(exam=exam)
     total_marks=0
@@ -431,7 +444,12 @@ def STUDENT_TAKE_LIVE_EXAM_HOME(request,id):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_START_LIVE_EXAM(request,id):
     exam=Live_Exam.objects.get(id=id)
-    questions= LiveExamQuestion.objects.get(id = exam)
+
+    if Live_Exam_Report.objects.filter(exam = exam,user = request.user,is_taken = True).exists() :
+        messages.error(request, "You already has taken the exam.")
+        return redirect('student-live-exam')
+    
+    questions= LiveExamQuestion.objects.filter(exam = exam)
     start_time = timezone.localtime(timezone.now())
     user = request.user
     duration_seconds = exam.duration.total_seconds()
@@ -520,7 +538,8 @@ def STUDENT_VIEW_LIVE_EXAM_MARK(request,id):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def VIEW_ONLINE_LIVE_CLASS(request):
     current_time = timezone.now()
-    all_online_live_class = OnlineLiveClass.objects.all()
+    class_id = Class.objects.get(id = request.user.id)
+    all_online_live_class = OnlineLiveClass.objects.filter(class1 = class_id)
     
     # Filter out the classes that have already ended
     valid_online_live_class = [

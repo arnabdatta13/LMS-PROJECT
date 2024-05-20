@@ -51,16 +51,6 @@
                        </select>
                  </div>
                  <br>
-                 <div class="col-sm-11">
-                    <label>Teacher</label>
-                       <select class="form-control" name='teacher_id'required>
-                       <option value="" disabled selected>Select Teacher</option>
-                       {% for i in teacher%}
-                       <option value = '{{i.id}}'>{{i.admin.first_name}}&nbsp;{{i.admin.last_name}}</option>
-                       {% endfor%}
-                       </select>
-                 </div>
-                 <br>
                  
                   
                   
