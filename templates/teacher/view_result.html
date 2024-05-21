@@ -1,117 +1,114 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="row">
     <div class="col-sm-12">
-       <div class="card">
-          <div class="card-body">
-            {% if action is None%}
-             <form method='post' action='?action=get_student' enctype="multipart/form-data">
-                {% csrf_token%}
-                   <div class="col-12">
-                      <h5 class="form-title"><span>View Result</span></h5>
-                   </div>
-                   {% include "base_desine/massages.html" %}
- 
-                  
-                 
-                  <div class="col-sm-11">
-                     <label>Class</label>
-                        <select class="form-control" name='class_id'required>
-                        <option value="" disabled selected>Select Class</option>
-                        {% for i in class%}
-                        <option value = '{{i.id}}'>{{i.name}}</option>
-                        {% endfor%}
+        <div class="card">
+            <div class="card-body">
+                {% if action is None %}
+                <form method="post" action="?action=get_exams" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <h5 class="form-title"><span>View Result</span></h5>
+                    </div>
+                    {% include "base_desine/massages.html" %}
+                    <div class="col-sm-11">
+                        <label>Class</label>
+                        <select class="form-control" name="class_id" required>
+                            <option value="" disabled selected>Select Class</option>
+                            {% for i in classes %}
+                            <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
                         </select>
-                  </div>
-                  <br>
-                  
-                  
-                   
-                   
-                  
-                  
-                   <div class="col-12">
-                      <button type="submit" class="btn btn-primary">Fetch Student</button>
-                   </div>
-                
-             </form>
-             {% else %}
-             <form method='post' action='{% url "teacher-save-attendance" %}' enctype="multipart/form-data">
-               {% csrf_token%}
-                  <div class="col-12">
-                     <h5 class="form-title"><span>View Result</span></h5>
-                  </div>
-                  {% include "base_desine/massages.html" %}
-
-                 
-                
-                  <div class="col-sm-11">
-                     <label>Class</label>
-                        <select class="form-control" name='class_id' required disabled>
-                     
-                       
-                        <option value = '{{get_class.id}}'>{{get_class}}</option>
-                       
+                    </div>
+                    <br>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Next</button>
+                    </div>
+                </form>
+                {% elif action == 'get_exams' %}
+                <form method="post" action="?action=get_students" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <h5 class="form-title"><span>Select Exam</span></h5>
+                    </div>
+                    {% include "base_desine/massages.html" %}
+                    <div class="col-sm-11">
+                        <input type="hidden" name="class_id" value="{{ selected_class.id }}">
+                        <label>Exam</label>
+                        <select class="form-control" name="exam_id" required>
+                            <option value="" disabled selected>Select Exam</option>
+                            {% for exam in exams %}
+                            <option value="{{ exam.id }}">{{ exam.exam_name }}</option>
+                            {% endfor %}
                         </select>
-                  </div>
-                  
-                 
-                 
-               <br><br>
-               <div class="row">
-                  <div class="col-sm-12">
-                      <div class="card card-table">
-                          <div class="card-body">
-                              <div class="table-responsive">
-                                  <table id="table_id" class=" table table-hover table-center mb-0 ">
-                                      <thead>
-                                          <tr>
-                                              <th>ID</th>
-                                              <th>Name</th>
-                                              <th>Class</th>
-                                              <th>Roll</th>
-                                              
-                                              <th class="text-right">Action</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody>
-                                          {% for i in student %}
-                                          <tr>
-                                              <td>{{ i.id }}</td>
-                                              <td>{{i.admin.first_name}}&nbsp{{i.admin.last_name}}</td>
-                                              <td>{{ i.class_id }}</td>
-                                              <td>{{ i.roll_number }}</td>
-                                              
-                                              <td  class="text-right">
-                                                <a href="{% url 'teacher-show-result' i.id %}" ><button type="button" class="btn btn-success" >
-                                                    View Result
-                                                </button></a>
-                                              </td>
-                                          </tr>
-   
-                                          {% endfor %}
-                                      </tbody>
-                                  </table>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              
-               
-            </form>
-         
-
-            
-           
-           
-             {% endif %}
-          </div>
-       </div>
+                    </div>
+                    <br>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Fetch Students</button>
+                    </div>
+                </form>
+                {% elif action == 'get_students' %}
+                <form method="post" action="{% url 'teacher-save-attendance' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <h5 class="form-title"><span>View Result</span></h5>
+                    </div>
+                    {% include "base_desine/massages.html" %}
+                    <div class="col-sm-11">
+                        <label>Class</label>
+                        <select class="form-control" name="class_id" required disabled>
+                            <option value="{{ selected_class.id }}">{{ selected_class.name }}</option>
+                        </select>
+                    </div>
+                    <br>
+                    <div class="col-sm-11">
+                        <label>Exam</label>
+                        <select class="form-control" name="exam_id" required disabled>
+                            <option value="{{ selected_exam.id }}">{{ selected_exam.exam_name }}</option>
+                        </select>
+                    </div>
+                    <br><br>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="table_id" class="table table-hover table-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Class</th>
+                                                    <th>Roll</th>
+                                                    <th class="text-right">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for i in students %}
+                                                <tr>
+                                                    <td>{{ i.id }}</td>
+                                                    <td>{{ i.admin.first_name }} {{ i.admin.last_name }}</td>
+                                                    <td>{{ i.class_id }}</td>
+                                                    <td>{{ i.roll_number }}</td>
+                                                    <td class="text-right">
+                                                        <a href="{% url 'teacher-show-result' i.id selected_exam.id %}">
+                                                            <button type="button" class="btn btn-success">View Result</button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
     </div>
- </div>
- 
-
+</div>
 {% endblock %}

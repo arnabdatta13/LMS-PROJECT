@@ -59,10 +59,10 @@
                                     
                                     <td >
                                         <div class="actions">
-                                        {% if i.assignment_mark <= 33 %}
-                                          <span class="badge badge-danger">Fail</span>
+                                        {% if result.is_fail %}
+                                            <span class="badge badge-danger">Fail</span>
                                         {% else %}
-                                          <span class="badge badge-success">Pass</span>
+                                            <span class="badge badge-success">Pass</span>
                                         {% endif %}
                                         </div>
                                     </td>

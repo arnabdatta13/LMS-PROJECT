@@ -1,117 +1,89 @@
 <!DOCTYPE html>
-<head>
 <html lang="en" dir="ltr">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<style>
-  .jumbotron{
-    margin-bottom: 0px;
-  }
-  footer {
-      padding: 0px 0px 0px 0px;
-      background-color: #212529;
-      margin: 0px;
-    }
-
-    .fa {
-      padding: 20px;
-      font-size: 23px;
-      width: 60px;
-      text-align: center;
-      text-decoration: none;
-      margin: 5px 2px;
-      border-radius: 50%;
-    }
-
-    .fa:hover {
-      opacity: 0.5;
-      text-decoration: none;
-    }
-
-
-
-    p {
-      text-align: center;
-
-    }
-    .bs-example {
-      margin: 0px;
-
-    }
-    .bg-dark {
-    background-color: #212529!important;
-}
-    .navbar-brand {
-      font-size: 20px;
-      font-family: sans-serif;
-
-    }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .jumbotron {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        footer {
+            background-color: #212529;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .fa {
+            padding: 20px;
+            font-size: 23px;
+            width: 60px;
+            text-align: center;
+            text-decoration: none;
+            margin: 5px 2px;
+            border-radius: 50%;
+        }
+        .fa:hover {
+            opacity: 0.5;
+            text-decoration: none;
+        }
+        .navbar-brand {
+            font-size: 20px;
+            font-family: sans-serif;
+        }
+    </style>
 </head>
 <body>
     <div class="bs-example">
-        <nav class="navbar navbar-expand-md  navbar-dark fixed-top" style="background-color: #000000;">
-        <a style="color: #ffffff;text-decoration: none; " href="/"><font face = "Comic sans MS" size =" 5">Online Quiz</font><br /></a>  
-          <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-    
-          <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-            <div class="navbar-nav">
-              <a style="
-              padding-left: 30px;"  href="/student/studentclick" class="nav-item nav-link">Home</a>
-              <a href="{% url "join_now" %}" class="nav-item nav-link active">Join_Now</a>
-    
-              <a href="{% url "login" %}" class="nav-item nav-link">Login</a>
-              
-   
-    
-    
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #000;">
+            <a style="color: #fff; text-decoration: none;" href="/"><font face="Comic sans MS" size="5">Online Quiz</font></a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                <div class="navbar-nav">
+                    <a style="padding-left: 30px;" href="{% url '' %}" class="nav-item nav-link">Home</a>
+                    <a href="{% url 'join_now' %}" class="nav-item nav-link active">Join Now</a>
+                   
+                    <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+                </div>
             </div>
-    
-            
-    
-    
-    
-    
-          </div>
         </nav>
-      </div>
-<br>
-<section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
-  <div class="container text-center">
-    <h1 class="display-1 text-info">Let's Quiz</h1>
-    <p class="display-4 d-none d-sm-block">Test your skills and become a master.</p>
-    <p class="lead">We organize quizzes on various topics.</p>
-
-    
-
-    <p class="lead">Sign up if you haven't already and get access to millions of quizzes on the topic of your interest.</p>
-    <p><strong> Start Your Journey Here:</strong></p>
-    <a href="{% url "login" %}" class="btn btn-lg btn-info" style="padding-right: 35px;"><i class="fa fa-user-plus" aria-hidden="true"></i> Login</a>
-<br><br><br>
-  </div>  
-</section>
-<footer>
-
-  <br>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12 col-sm-12">
-        <div style="color:#ffffff;" class="wow fadeInUp footer-copyright">
-          <p>Made in India <br>
-            Copyright &copy; Online Quiz 2020 </p><br>
-        </div>
-      </div>
     </div>
-  </div>
-</footer>
-
+    <br><br><br>
+    <section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
+        <div class="container text-center">
+            <h1 class="display-4 text-info">Let's Quiz</h1>
+            <p class="display-5 d-none d-sm-block">Test your skills and become a master.</p>
+            <p class="lead">We organize quizzes on various topics.</p>
+            <p class="lead">Sign up if you haven't already and get access to millions of quizzes on the topic of your interest.</p>
+            <p><strong>Start Your Journey Here:</strong></p>
+            <a href="{% url 'login' %}" class="btn btn-lg btn-info"><i class="fa fa-user-plus" aria-hidden="true"></i> Login</a>
+        </div>
+    </section>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="wow fadeInUp footer-copyright">
+                        <p>Made in India<br>Copyright &copy; Online Quiz 2020</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
-
 </html>
-

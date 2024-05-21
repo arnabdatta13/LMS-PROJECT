@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Teacher, Teacher_Notification,Teacher_Feedback,Student_Feedback,Session_Year,Course,Student,Attendance,Attendance_Report,Subject,StudentResult,Class,Add_Notice,Student_Notification
+from app.models import Teacher, Teacher_Notification,Teacher_Feedback,Student_Feedback,Session_Year,Course,Student,Attendance,Attendance_Report,Subject,SchoolExamStudentResult,Class,Add_Notice,Student_Notification,School_Official_Exam
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -252,14 +252,14 @@ def TEACHER_ADD_RESULT(request):
 
     class1 = Class.objects.all()
 
-    result = StudentResult.objects.all()
+    result = SchoolExamStudentResult.objects.all()
 
     action = request.GET.get('action')
 
     get_class = None
     student=None
     subject = None
-
+    exam = None
     if action is not None:
         if request.method=="POST":
             class_id = request.POST.get('class_id')
@@ -268,7 +268,7 @@ def TEACHER_ADD_RESULT(request):
 
             class1 = Class.objects.filter(id= class_id)
             subject = Subject.objects.filter(class1=get_class)
-
+            exam = School_Official_Exam.objects.filter(class_id=get_class)
             for i in class1:
                 student_id = i.id
                 student = Student.objects.filter(
@@ -280,7 +280,7 @@ def TEACHER_ADD_RESULT(request):
 
 
     context = {
-        
+        'exam':exam,
         'class':class1,
         'action':action,
         'get_class':get_class,
@@ -301,24 +301,27 @@ def TEACHER_SAVE_RESULT(request):
       
         subject_id = request.POST.get('subject_id')
         student_id= request.POST.get('student_id')
+        exam_id = request.POST.get('exam_id')
         assignment_mark=request.POST.get('assignment_mark')
         exam_mark= request.POST.get('Exam_mark')
 
         get_student= Student.objects.get(admin=student_id)
         get_subject= Subject.objects.get(id=subject_id)
+        get_exam = School_Official_Exam.objects.get(id=exam_id)
 
-        check_exits= StudentResult.objects.filter(subject_id=get_subject,student_id=get_student).exists()
+        check_exits= SchoolExamStudentResult.objects.filter(subject_id=get_subject,student_id=get_student,exam_id=get_exam).exists()
         if check_exits:
-            result = StudentResult.objects.get(subject_id=get_subject,student_id=get_student)
+            result = SchoolExamStudentResult.objects.get(subject_id=get_subject,student_id=get_student,exam_id=get_exam)
             result.assignment_mark= assignment_mark
             result.exam_mark=exam_mark
             result.save()
             messages.success(request,'Result Are Successfully Updated')
             return redirect('teacher-add-result')
         else:
-            result =StudentResult(
+            result =SchoolExamStudentResult(
                 student_id=get_student,
                 subject_id=get_subject,
+                exam_id=get_exam,
                 exam_mark=exam_mark,
                 assignment_mark=assignment_mark
             )
@@ -333,70 +336,58 @@ def TEACHER_SAVE_RESULT(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_VIEW_RESULT(request):
-    class1 = Class.objects.all()
+    classes = Class.objects.all()
+    exams = None
 
     action = request.GET.get('action')
+    selected_class = None
+    selected_exam = None
+    students = None
 
-
-    get_class = None
-    
-    student=None
-    if action is not None:
+    if action == 'get_exams':
         if request.method == "POST":
-            
             class_id = request.POST.get('class_id')
-            
-            get_class = Class.objects.get(id =class_id)
-            
-
-            class1 = Class.objects.filter(id= class_id)
-            for i in class1:
-                student_id = i.id
-                student= Student.objects.filter(class_id=student_id)
+            selected_class = Class.objects.get(id=class_id)
+            exams = School_Official_Exam.objects.filter(class_id=class_id)
+    elif action == 'get_students':
+        if request.method == "POST":
+            class_id = request.POST.get('class_id')
+            exam_id = request.POST.get('exam_id')
+            selected_class = Class.objects.get(id=class_id)
+            selected_exam = School_Official_Exam.objects.get(id=exam_id)
+            students = Student.objects.filter(class_id=class_id)
 
     context = {
-        'class':class1,
-     
-        'get_class':get_class,
-       
-        'action':action,
-        'student':student,
+        'classes': classes,
+        'exams': exams,
+        'selected_class': selected_class,
+        'selected_exam': selected_exam,
+        'students': students,
+        'action': action,
     }
-    return render(request,'teacher/view_result.html',context)
-
-
-
+    return render(request, 'teacher/view_result.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
-def TEACHER_SHOW_RESULT(request,id):
-
-    mark = None
-    
+def TEACHER_SHOW_RESULT(request, id, exam_id):
     student = Student.objects.get(id=id)
+    exam = School_Official_Exam.objects.get(id=exam_id)
     
-    result = StudentResult.objects.filter(student_id=student)
+    results = SchoolExamStudentResult.objects.filter(student_id=student, exam_id=exam)
+    for result in results:
+        result.is_fail = result.assignment_mark <= (result.exam_mark * 0.33)
 
-    for i in result:
-        assignment_mark = i.assignment_mark
-        
-
-        mark = assignment_mark
-
-    context= {
-        
-        'result':result,
-        'mark':mark,
+    context = {
+        'result': results,
     }
-    return render(request,'teacher/show_result.html',context)
-
+    return render(request, 'teacher/show_result.html', context)
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_EDIT_RESULT(request,id):
-    result = StudentResult.objects.get(id=id)
+    result = SchoolExamStudentResult.objects.get(id=id)
 
     context = {
         'result':result,
@@ -414,7 +405,7 @@ def TEACHER_UPDATE_RESULT(request):
         assignment_mark = request.POST.get('assignment_mark')
 
         # Retrieve the student result object
-        result = get_object_or_404(StudentResult, id=result_id)
+        result = get_object_or_404(SchoolExamStudentResult, id=result_id)
 
         # Update the result fields
         result.exam_mark = exam_mark
@@ -435,7 +426,7 @@ def TEACHER_UPDATE_RESULT(request):
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_DELETE_RESULT(request,id):
     
-    result = StudentResult.objects.get(id=id)
+    result = SchoolExamStudentResult.objects.get(id=id)
     result.delete()
     messages.success(request, 'Student Result has been successfully deleted.')
 

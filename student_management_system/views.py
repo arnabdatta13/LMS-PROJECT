@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate,logout,login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from app.models import CustomUser
-from app.models import Teacher,Add_Notice
+from app.models import Teacher,Add_Notice,Message
 from django.http import JsonResponse
 import face_recognition as fr
 import base64
@@ -17,6 +17,24 @@ def HOME(request):
     return render(request,'home.html')
 
 def CONTRACT(request):
+    if request.method == "POST":
+        name= request.POST.get('name')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        print(name)
+        print(phone)
+        print(email)
+        print(message)
+        save_massage = Message.objects.create(
+            name = name,
+            phone=phone,
+            email=email,
+            message=message
+        )
+        messages.success(request,'Massage Sent Successfully')
+        return redirect('contract')
+    
     return render(request,'contract.html')
 
 
@@ -240,3 +258,5 @@ def FACE_ID_DOLOGIN(request):
                 
     error_msg = "Face Not Found. Please Take The Photo Again."
     return JsonResponse({'error': error_msg}, status=400)
+
+

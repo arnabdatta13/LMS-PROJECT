@@ -183,7 +183,7 @@ urlpatterns = [
     path('teacher-add-result', teacher_views.TEACHER_ADD_RESULT,name='teacher-add-result'),
     path('teacher-save-result', teacher_views.TEACHER_SAVE_RESULT,name='teacher-save-result'),
     path('teacher-view-result', teacher_views.TEACHER_VIEW_RESULT,name='teacher-view-result'),
-    path('teacher-show-result/<str:id>', teacher_views.TEACHER_SHOW_RESULT,name='teacher-show-result'),
+    path('teacher-show-result/<str:id>/<int:exam_id>', teacher_views.TEACHER_SHOW_RESULT,name='teacher-show-result'),
     path('teacher-edit-result/<str:id>', teacher_views.TEACHER_EDIT_RESULT,name='teacher-edit-result'),
     path('admin-update-result', teacher_views.TEACHER_UPDATE_RESULT,name='teacher-update-result'),
     path('teacher-delete-result/<str:id>', teacher_views.TEACHER_DELETE_RESULT,name='teacher-delete-result'),
@@ -207,7 +207,7 @@ urlpatterns = [
 
     path('student-view-attendance',student_views.STUDENT_VIEW_ATTENDANCE,name='student-view-attendance'),
 
-    path('student-view-result',student_views.STUDENT_VIEW_RESULT,name='student-view-result'),
+    path('student-view-school-exam-result',student_views.STUDENT_VIEW_SCHOOL_EXAM_RESULT,name='student-view-school-exam-result'),
 
     path('student-practice-exam',student_views.STUDENT_PRACTICE_EXAM,name='student-practice-exam'),
     path('student-take-practice-exam/<str:id>',student_views.STUDENT_TAKE_PRACTICE_EXAM,name='student-take-practice-exam'),

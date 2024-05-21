@@ -76,7 +76,17 @@
                                        </select>
                                  </div>
                                  <br>
-
+                                 <div class="col-12 col-sm-6 mt-3">
+                                    <div class="form-group">
+                                    <label>Exam</label>
+                                          <select class="form-control" name="exam_id" required>
+                                             <option value="" disabled selected>-- Select Exam--</option>
+                                             {% for i in exam %}
+                                                <option value="{{i.id}}">{{i.exam_name}}</option>
+                                             {% endfor %}
+                                       </select>
+                                    </div>
+                                 </div>
                                  <div class="col-12 col-sm-6 mt-3">
                                     <div class="form-group">
                                     <label>Subject</label>

@@ -257,7 +257,16 @@ class Attendance_Report(models.Model):
 
 
 
-class StudentResult(models.Model):
+class School_Official_Exam(models.Model):
+    exam_name = models.CharField(max_length=50)
+    class_id= models.ForeignKey(Class, on_delete=models.CASCADE,default=0)
+
+    def __str__(self):
+        return self.exam_name
+    
+
+class SchoolExamStudentResult(models.Model):
+    exam_id = models.ForeignKey(School_Official_Exam,on_delete=models.CASCADE,default=0)
     student_id = models.ForeignKey(Student,on_delete=models.CASCADE)
     subject_id = models.ForeignKey(Subject,on_delete=models.CASCADE)
     assignment_mark = models.IntegerField()
@@ -352,3 +361,16 @@ class Live_Exam_Result(models.Model):
     exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
     marks = models.PositiveIntegerField()
     date = models.DateTimeField(auto_now=True)
+
+
+class Message(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    message = models.TextField()
+
+    def __str__(self):
+        return self.name
+    
+
+

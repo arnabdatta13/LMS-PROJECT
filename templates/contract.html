@@ -49,12 +49,13 @@
             <img src="{% static 'assets/images/contact-img.png' %}" alt="">
         </div>
 
-        <form action="">
+        <form method="post" action="{% url 'contract' %}">
+            {% csrf_token%}
             <h3>send us a message</h3>
-            <input type="text" placeholder="name" class="box">
-            <input type="email" placeholder="email" class="box">
-            <input type="number" placeholder="phone" class="box">
-            <textarea name="" class="box" placeholder="message" id="" cols="30" rows="10"></textarea>
+            <input type="text" placeholder="name" class="box" name = "name">
+            <input type="email" placeholder="email" class="box" name="email">
+            <input type="number" placeholder="phone" class="box" name="phone">
+            <textarea class="box" placeholder="message" id="" cols="30" rows="10" name="message"></textarea>
             <input type="submit" value="send message" class="btn">
         </form>
 

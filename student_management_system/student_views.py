@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,StudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -206,24 +206,25 @@ def STUDENT_VIEW_ATTENDANCE(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
-def STUDENT_VIEW_RESULT(request):
-    mark = None
+def STUDENT_VIEW_SCHOOL_EXAM_RESULT(request):
     student = Student.objects.get(admin=request.user.id)
-    
-    result = StudentResult.objects.filter(student_id=student)
+    exams = School_Official_Exam.objects.filter(class_id=student.class_id)
+    results = None
+    selected_exam = None
 
-    for i in result:
-        assignment_mark = i.assignment_mark
-        
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        selected_exam = School_Official_Exam.objects.get(id=exam_id)
+        results = SchoolExamStudentResult.objects.filter(student_id=student, exam_id=selected_exam)
+        for result in results:
+            result.is_fail = result.assignment_mark <= (result.exam_mark * 0.33)
 
-        mark = assignment_mark
-
-    context= {
-        
-        'result':result,
-        'mark':mark,
+    context = {
+        'exams': exams,
+        'results': results,
+        'selected_exam': selected_exam,
     }
-    return render(request,'student/view_result.html',context)
+    return render(request, 'student/view_school_exam_result.html', context)
 
 
 

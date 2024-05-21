@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">View Result</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">View Result</li>
+                </ul>
+            </div>
+
+            <div class="col-auto text-right float-right ml-auto">
+                <a href="#" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
+            </div>
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if not selected_exam %}
+                    <form method="post" action="{% url 'student-view-school-exam-result' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="col-sm-11">
+                            <label>Exam</label>
+                            <select class="form-control" name="exam_id" required>
+                                <option value="" disabled selected>Select Exam</option>
+                                {% for exam in exams %}
+                                <option value="{{ exam.id }}">{{ exam.exam_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">View Result</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    
+                        <div class="col-sm-11">
+                            <label>Selected Exam</label>
+                            <input type="text" class="form-control" value="{{ selected_exam.exam_name }}" disabled>
+                            <input type="hidden" name="exam_id" value="{{ selected_exam.id }}">
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if results %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class="table table-hover table-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Roll</th>
+                                    <th>Subject</th>
+                                    <th>Full Mark</th>
+                                    <th>Obtain Mark</th>
+                                    <th class="text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                <tr>
+                                    <td>{{ result.id }}</td>
+                                    <td>{{ result.student_id.admin.first_name }} {{ result.student_id.admin.last_name }}</td>
+                                    <td>{{ result.student_id.user_class }}</td>
+                                    <td>{{ result.student_id.roll_number }}</td>
+                                    <td>{{ result.subject_id.name }}</td>
+                                    <td>{{ result.exam_mark }}</td>
+                                    <td>{{ result.assignment_mark }}</td>
+                                    <td class="text-right">
+                                        <div class="actions">
+                                            {% if result.is_fail %}
+                                                <span class="badge badge-danger">Fail</span>
+                                            {% else %}
+                                                <span class="badge badge-success">Pass</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
