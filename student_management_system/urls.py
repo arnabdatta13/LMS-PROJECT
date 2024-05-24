@@ -215,6 +215,7 @@ urlpatterns = [
     path('student-practice-exam-calculate-marks',student_views.STUDENT_PRACTICE_EXAM_CALCULATE_MARKS,name='student-practice-exam-calculate-marks'),
     path('student-practice-exam-mark',student_views.STUDENT_PRACTICE_EXAM_MARK,name='student-practice-exam-mark'),
     path('student-view-practice-exam-mark/<str:id>',student_views.STUDENT_VIEW_PRACTICE_EXAM_MARK,name='student-view-practice-exam-mark'),
+    path('student-merit-position/<int:id>', student_views.STUDENT_MERIT_POSITION, name='student-merit-position'),
 
 
     path('student-live-exam',student_views.STUDENT_LIVE_EXAM,name='student-live-exam'),
@@ -230,6 +231,10 @@ urlpatterns = [
     path('student-view-online-live-class', student_views.VIEW_ONLINE_LIVE_CLASS, name='student-view-online-live-class'),
     path('student-join-online-live-class/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS, name='student-join-online-live-class'),
     path('student-join-online-live-class-home/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS_HOME, name='student-join-online-live-class-home'),
+
+
+    path('student-performance',student_views.STUDENT_PERFORMANCE_COURSE,name='student-performance'),
+    path('student-performance/<int:id>',student_views.STUDENT_PERFORMANCE,name='student-performance'),
 
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),

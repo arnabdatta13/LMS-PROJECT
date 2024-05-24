@@ -16,8 +16,6 @@
 
     {% include "base_desine/massages.html" %}
 
-
-
     <div class="row">
         <div class="col-sm-12">
             <div class="card card-table">
@@ -31,8 +29,6 @@
                                     <th>Total Marks</th>
                                     <th>Attempt</th>
                                     <th>date</th>
-                                    
-                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,18 +37,23 @@
                                     <td>{{ i.id }}</td>
                                     <td>{{ i.exam }}</td>
                                     <td>{{ i.marks }}</td>
-                                    <td>Attemp {{ forloop.counter }}</td>
+                                    <td>Attempt {{ forloop.counter }}</td>
                                     <td>{{ i.date }}</td>
-                                    
-                                    
                                 </tr>
-                                
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 text-center">
+            <form method="get" action="{% url 'student-merit-position' exam.id %}">
+                <button type="submit" class="btn btn-primary">Merit Position</button>
+            </form>
         </div>
     </div>
 </div>

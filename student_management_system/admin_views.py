@@ -1234,22 +1234,19 @@ def LIVE_EXAM_UPDATE(request):
 
         hours, minutes, seconds = map(int, duration_str.strip().split(':'))
         duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        
 
         start_time_str = start_time_str.replace('a.m.', 'AM').replace('p.m.', 'PM')
         end_time_str = end_time_str.replace('a.m.', 'AM').replace('p.m.', 'PM')
 
-        
         # Convert start_time and end_time to the correct format
         start_time = datetime.strptime(start_time_str, '%B %d, %Y, %I:%M %p').strftime('%Y-%m-%d %H:%M:%S')
-        end_time = datetime.strptime(end_time_str, '%B %d, %Y, %I %p').strftime('%Y-%m-%d %H:%M:%S')
+        end_time = datetime.strptime(end_time_str, '%B %d, %Y, %I:%M %p').strftime('%Y-%m-%d %H:%M:%S')
 
         # Update the exam object with the correct datetime format
-        exam = Live_Exam.objects.get(id = exam_id)
+        exam = Live_Exam.objects.get(id=exam_id)
         class1= Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
         subject = Subject.objects.get(id=subject_id)
-
 
         exam.exam_name = exam_name
         exam.total_questions = total_questions
@@ -1262,10 +1259,8 @@ def LIVE_EXAM_UPDATE(request):
         exam.duration = duration
         exam.save()
 
-    
-        messages.success(request,'Live Exam Are Successfully Updated')
+        messages.success(request, 'Live Exam Successfully Updated')
         return redirect('admin-live-exam-view')
-
 
 
 

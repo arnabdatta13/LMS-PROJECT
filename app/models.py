@@ -374,3 +374,8 @@ class Message(models.Model):
     
 
 
+
+class AllExam(models.Model):
+    live_exam_result = models.ForeignKey(Live_Exam_Result,on_delete=models.CASCADE, null=True, blank=True)
+    practice_exam_result =models.ForeignKey(Practice_Exam_Result,on_delete=models.CASCADE, null=True, blank=True)
+

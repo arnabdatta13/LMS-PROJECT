@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,AllExam
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db.models import Subquery
 from django.db.models import F,ExpressionWrapper, DurationField
 from django.contrib import messages
+from itertools import chain
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -18,8 +19,7 @@ def HOME(request):
     student_class = student.class_id
 
     current_time = timezone.localtime(timezone.now())
-    class_id = Class.objects.get(id = request.user.id)
-    live_class = OnlineLiveClass.objects.filter(class1 = class_id)
+    live_class = OnlineLiveClass.objects.filter(class1 = student_class)
     taken_exams = Live_Exam_Report.objects.filter(user=user, is_taken=True).values('exam')
     live_exam = Live_Exam.objects.filter(end_time__gt=current_time, class_id=student_class).exclude(pk__in=Subquery(taken_exams))
 
@@ -326,7 +326,7 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
         exam_timer.delete()
         exam_result = Practice_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
 
-        print(total_obtained_marks)
+
         return redirect('student-practice-exam-mark')
         
 
@@ -359,10 +359,43 @@ def STUDENT_VIEW_PRACTICE_EXAM_MARK(request,id):
 
     context = {
         'result':results,
+        'exam':exam,
     }
     return render(request,'student/view_practice_exam_mark.html',context)
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_MERIT_POSITION(request, id):
+    exam = Practice_Exam.objects.get(id=id)
+    students = Student.objects.all()
+    
+    # Create a dictionary to store results for each student
+    student_results = {}
+    for student in students:
+        result = Practice_Exam_Result.objects.filter(exam=exam, student=student).first()
+        student_results[student] = result
+    
+    # Sort the students by their marks
+    sorted_students = sorted(student_results.keys(), key=lambda x: student_results[x].marks, reverse=True)
+    
+    # Retrieve the merit position for the logged-in student
+    student = Student.objects.get(admin=request.user.id)
+    merit_position = sorted_students.index(student) + 1 if student in sorted_students else None
+    
+    login_user_mark= student_results[student].marks
+    
+    context = {
+        'exam': exam,
+        'merit_position': merit_position,
+        'student_results': student_results,
+        'sorted_students': sorted_students,
+        'student': student,
+        'login_user_mark':login_user_mark,
+    }
+    
+    return render(request, 'student/merit_position.html', context)
 
 
 
@@ -501,6 +534,7 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
         exam_timer.delete()
         exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
         live_exam_report = Live_Exam_Report.objects.create(exam = exam,user = request.user,is_taken = True)
+
         return redirect('student-live-exam-mark')
       
 
@@ -585,3 +619,45 @@ def JOIN_ONLINE_LIVE_CLASS_HOME(request, id):
         return redirect('student-home')
 
     return redirect(online_class.join_url)
+
+
+def STUDENT_PERFORMANCE_COURSE(request):
+    user = request.user
+    student = Student.objects.get(admin=user)
+    student_class = student.class_id
+    course = Course.objects.filter(class1=student_class)
+
+    context = {
+        'course':course,
+    }
+    return render(request,'student/performance_course.html',context)
+
+
+def STUDENT_PERFORMANCE(request, id):
+    course = Course.objects.get(id=id)
+    student = request.user.student
+    
+    practice_exam_results = Practice_Exam_Result.objects.filter(exam__course=course, student=student)
+    live_exam_results = Live_Exam_Result.objects.filter(exam__course=course, student=student)
+    
+    # Combine and sort the querysets by date
+    all_results = sorted(
+        chain(practice_exam_results, live_exam_results),
+        key=lambda result: result.date,
+        reverse=True  # To show the most recent results first
+    )
+
+    # Add model_name to each result
+    results_with_model_names = []
+    for result in all_results:
+        model_name = result.exam._meta.model_name
+        results_with_model_names.append({
+            'result': result,
+            'model_name': model_name
+        })
+
+    context = {
+        'course': course,
+        'all_results': results_with_model_names,
+    }
+    return render(request, 'student/performance.html', context)

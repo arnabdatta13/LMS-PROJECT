@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+
+    <h1 style="text-align: center;">Student's Performance Report</h1>
+    <hr>
+    <div class="student-info">
+        <p>Student's Name: {{ request.user.first_name }} {{ request.user.last_name }}</p>
+        <p>Reg. & Roll No.: {{ request.user.student.registration_number }} ({{ request.user.student.roll_number }})</p>
+        <p>Institute: {{ request.user.student.institute_name }}</p>
+        <p>Branch: {{ request.user.student.branch_name }}</p>
+    </div>
+    <hr>
+    <div class="filters">
+        <select>
+            <option>All Course</option>
+        </select>
+        <select>
+            <option>All Subject</option>
+        </select>
+
+        <button class="view-button">View</button>
+    </div>
+    <hr>
+    <h4>{{ course.name }}</h4>
+    <br>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial</th>
+                    <th>Date</th>
+                    <th>Exam Name</th>
+                    <th>Platform</th>
+                    <th>Marks</th>
+                    <th>Total Marks</th>
+                    <th>Highest Marks</th>
+                    <th>Branch Merit</th>
+                    <th>Central Merit</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in all_results %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.result.date|date:"d, M Y" }}</td>
+                    <td>{{ item.result.exam.exam_name }}</td>
+                    <td>{{ item.model_name }}</td>
+                    <td>{{ item.result.marks }}</td>
+                    <td>{{ item.result.marks }} / {{ item.result.exam.total_marks }}</td>
+                    <td>- / {{ item.result.exam.total_marks }}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td><button class="btn btn-success">View Question</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br><br>
+    <h4>Student Merit Calculation</h4>
+    <br>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial</th>
+                    <th>Course Name</th>
+                    <th>Total MCQ Marks</th>
+                    <th>Total Written Marks</th>
+                    <th>Total Obtained Marks</th>
+                    <th>Highest Marks</th>
+                    <th>Merit Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in all_results %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.result.date|date:"d, M Y" }}</td>
+                    <td>{{ item.result.exam.exam_name }}</td>
+                    <td>{{ item.model_name }}</td>
+                    <td>{{ item.result.marks }}</td>
+                    <td>0</td>
+                    <td>{{ item.result.marks }} / {{ item.result.exam.total_marks }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<style>
+    .container {
+        width: 80%;
+        margin: 20px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        overflow: hidden;
+    }
+    .student-info {
+        margin-bottom: 20px;
+    }
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+    }
+    .filters select, .filters button {
+        padding: 5px;
+        font-size: 14px;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+    th, td {
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .view-button {
+        background-color: #007FFF;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-right: 30px;
+    }
+    .view-button:hover {
+        background-color: #5a6268;
+    }
+</style>
+<script></script>
+{% endblock %}
