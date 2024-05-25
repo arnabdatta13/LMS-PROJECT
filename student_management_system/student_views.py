@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,AllExam
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -9,6 +9,7 @@ from django.db.models import Subquery
 from django.db.models import F,ExpressionWrapper, DurationField
 from django.contrib import messages
 from itertools import chain
+from django.db.models import Sum, Max
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -633,31 +634,80 @@ def STUDENT_PERFORMANCE_COURSE(request):
     return render(request,'student/performance_course.html',context)
 
 
+
+
 def STUDENT_PERFORMANCE(request, id):
     course = Course.objects.get(id=id)
     student = request.user.student
-    
-    practice_exam_results = Practice_Exam_Result.objects.filter(exam__course=course, student=student)
+    subject = Subject.objects.filter(class1 = student.class_id)
+    # Get the results for live exams
     live_exam_results = Live_Exam_Result.objects.filter(exam__course=course, student=student)
-    
-    # Combine and sort the querysets by date
+
+    # Sort the querysets by date
     all_results = sorted(
-        chain(practice_exam_results, live_exam_results),
+        live_exam_results,
         key=lambda result: result.date,
         reverse=True  # To show the most recent results first
     )
 
-    # Add model_name to each result
-    results_with_model_names = []
+    # Calculate the highest marks in the course for live exams
+    highest_live_marks = Live_Exam_Result.objects.filter(exam__course=course).aggregate(max_marks=Max('marks'))['max_marks'] or 0
+
+    # Function to get the sum of obtained marks for a student
+    def get_total_obtained_marks(student):
+        live_exam_sum = Live_Exam_Result.objects.filter(exam__course=course, student=student).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        return live_exam_sum
+
+    # Calculate the student's total obtained marks
+    student_total_obtained_marks = get_total_obtained_marks(student)
+
+    # Calculate merit position based on total obtained marks for all students in the course
+    all_students = Student.objects.filter(class_id=student.class_id)
+    all_students_results = [
+        {'student': student, 'total_marks': get_total_obtained_marks(student)}
+        for student in all_students
+    ]
+    sorted_results = sorted(all_students_results, key=lambda x: x['total_marks'], reverse=True)
+    overall_merit_position = next((index + 1 for index, result in enumerate(sorted_results) if result['student'] == student), None)
+
+    # Find the highest mark obtained by any student in the course for merit calculation
+    highest_total_marks = max(result['total_marks'] for result in sorted_results) if sorted_results else 0
+
+    # Prepare results with details and merit position for each result
+    results_with_details = []
     for result in all_results:
         model_name = result.exam._meta.model_name
-        results_with_model_names.append({
+        highest_marks = highest_live_marks
+
+        # Calculate merit position for this specific exam
+        all_exam_results = Live_Exam_Result.objects.filter(exam=result.exam).order_by('-marks')
+
+        if highest_marks == 0:
+            exam_merit_position = 0
+        else:
+            exam_merit_position = next((index + 1 for index, r in enumerate(all_exam_results) if r.student == student), None)
+
+        results_with_details.append({
             'result': result,
-            'model_name': model_name
+            'model_name': model_name,
+            'highest_marks': highest_marks,
+            'merit_position': exam_merit_position
         })
+
+    # Total exam marks for all results
+    total_exam_mark = sum(result.exam.total_marks for result in all_results)
+
+    # Determine overall merit position, set to 0 if highest_total_marks is 0
+    overall_merit_position = overall_merit_position if highest_total_marks > 0 else 0
 
     context = {
         'course': course,
-        'all_results': results_with_model_names,
+        'subject':subject,
+        'all_results': results_with_details,
+        'total_exam_mark': total_exam_mark,
+        'total_obtain_mark': student_total_obtained_marks,
+        'merit_position': overall_merit_position,
+        'course_name': course.name,
+        'highest_total_marks': highest_total_marks  # This is for merit calculation table
     }
     return render(request, 'student/performance.html', context)
