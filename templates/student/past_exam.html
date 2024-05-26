@@ -1,4 +1,115 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="container">
+    <div class="card">
+        <div class="in-branch">In-Branch</div>
+        <div class="header1">Final Model Test Exam For NDC-04</div>
+        <div class="details">
+            <p><strong>Date & Time</strong><br>26 May, 2024 09:00 AM to 05:00 PM</p>
+            <p><strong>Duration</strong><br>1 h 25 min</p>
+            <p><strong>Course</strong><br>NDC & SJC Admission Course [Offline]<br>College Admission Program 2024</p>
+        </div>
+        <div class="status">You didn't take the exam</div>
+        <button class="absent">Absent</button>
+    </div>
+    <div class="card">
+        <div class="in-branch">In-Branch</div>
+        <div class="header1">Final Model Test Exam For NDC-04</div>
+        <div class="details">
+            <p><strong>Date & Time</strong><br>26 May, 2024 09:00 AM to 05:00 PM</p>
+            <p><strong>Duration</strong><br>1 h 25 min</p>
+            <p><strong>Course</strong><br>NDC & SJC Admission Course [Offline]<br>College Admission Program 2024</p>
+        </div>
+        <div class="status">You didn't take the exam</div>
+        <button class="absent">Absent</button>
+    </div>
+    <div class="card">
+        <div class="in-branch">In-Branch</div>
+        <div class="header1">Final Model Test Exam For NDC-04</div>
+        <div class="details">
+            <p><strong>Date & Time</strong><br>26 May, 2024 09:00 AM to 05:00 PM</p>
+            <p><strong>Duration</strong><br>1 h 25 min</p>
+            <p><strong>Course</strong><br>NDC & SJC Admission Course [Offline]<br>College Admission Program 2024</p>
+        </div>
+        <div class="status">You didn't take the exam</div>
+        <button class="absent">Absent</button>
+    </div>
+    <!-- Add more card divs as needed -->
+</div>
 
-{%endblock%}
+<style>
+    body {
+        background-color: #f2ecf7;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        position: relative;
+        text-align: center;
+        box-sizing: border-box;
+        flex: 1 1 calc(50% - 40px); /* Two cards per row with space between */
+    }
+    .header1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #5e2e91;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    .details {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    .details p {
+        margin: 5px 0;
+    }
+    .absent {
+        background-color: #463072;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .absent:hover {
+        background-color: #36255a;
+    }
+    .status {
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+    .in-branch {
+        background-color: #009688;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 100%; /* One card per row on small screens */
+        }
+    }
+</style>
+{% endblock %}
