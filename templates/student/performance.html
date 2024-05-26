@@ -32,7 +32,7 @@
                     <th>Exam Name</th>
                     <th>Subject</th>
                     <th>Platform</th>
-                    <th>Marks</th>
+                    <th>Obtain Marks</th>
                     <th>Total Marks</th>
                     <th>Highest Marks</th>
                     <th>Merit</th>
@@ -43,15 +43,15 @@
                 {% for item in all_results %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ item.result.date|date:"d, M Y" }}</td>
-                    <td>{{ item.result.exam.exam_name }}</td>
-                    <td>{{ item.result.exam.subject }}</td>
+                    <td>{{ item.exam.start_time }}</td>
+                    <td>{{ item.exam.exam_name }}</td>
+                    <td>{{ item.exam.subject }}</td>
                     <td>{{ item.model_name }}</td>
-                    <td>{{ item.result.marks }}</td>
-                    <td>{{ item.result.marks }} / {{ item.result.exam.total_marks }}</td>
+                    <td>{{ item.obtained_marks }}</td>
+                    <td>{{ item.obtained_marks }} / {{ item.total_marks }}</td>
                     <td>{{ item.highest_marks }}</td>
                     <td>{{ item.merit_position }}</td> <!-- Merit position for this exam -->
-                    <td><button class="btn btn-success">View Question</button></td>
+                    <td><a href="{% url "student-performance-view-question" item.exam.id %}"><button class="btn btn-success">View Question</button></a></td>
                 </tr>
                 {% endfor %}
             </tbody>

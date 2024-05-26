@@ -622,6 +622,8 @@ def JOIN_ONLINE_LIVE_CLASS_HOME(request, id):
     return redirect(online_class.join_url)
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PERFORMANCE_COURSE(request):
     user = request.user
     student = Student.objects.get(admin=user)
@@ -636,19 +638,21 @@ def STUDENT_PERFORMANCE_COURSE(request):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PERFORMANCE(request, id):
     course = Course.objects.get(id=id)
     student = request.user.student
-    subject = Subject.objects.filter(class1 = student.class_id)
+    subject = Subject.objects.filter(class1=student.class_id)
+
+    # Get all exams for the course
+    all_exams = Live_Exam.objects.filter(course=course)
+
     # Get the results for live exams
     live_exam_results = Live_Exam_Result.objects.filter(exam__course=course, student=student)
 
-    # Sort the querysets by date
-    all_results = sorted(
-        live_exam_results,
-        key=lambda result: result.date,
-        reverse=True  # To show the most recent results first
-    )
+    # Create a dictionary to map exams to results
+    exam_results_dict = {result.exam.id: result for result in live_exam_results}
 
     # Calculate the highest marks in the course for live exams
     highest_live_marks = Live_Exam_Result.objects.filter(exam__course=course).aggregate(max_marks=Max('marks'))['max_marks'] or 0
@@ -675,34 +679,39 @@ def STUDENT_PERFORMANCE(request, id):
 
     # Prepare results with details and merit position for each result
     results_with_details = []
-    for result in all_results:
-        model_name = result.exam._meta.model_name
+    for exam in all_exams:
+        result = exam_results_dict.get(exam.id)
+        model_name = result.exam._meta.model_name if result else 'N/A'
         highest_marks = highest_live_marks
 
         # Calculate merit position for this specific exam
-        all_exam_results = Live_Exam_Result.objects.filter(exam=result.exam).order_by('-marks')
-
-        if highest_marks == 0:
-            exam_merit_position = 0
-        else:
+        if result:
+            all_exam_results = Live_Exam_Result.objects.filter(exam=exam).order_by('-marks')
             exam_merit_position = next((index + 1 for index, r in enumerate(all_exam_results) if r.student == student), None)
+            obtained_marks = result.marks
+        else:
+            exam_merit_position = 0
+            obtained_marks = 0
 
         results_with_details.append({
+            'exam': exam,
             'result': result,
             'model_name': model_name,
             'highest_marks': highest_marks,
-            'merit_position': exam_merit_position
+            'merit_position': exam_merit_position,
+            'obtained_marks': obtained_marks,
+            'total_marks': exam.total_marks,
         })
 
     # Total exam marks for all results
-    total_exam_mark = sum(result.exam.total_marks for result in all_results)
+    total_exam_mark = sum(exam.total_marks for exam in all_exams)
 
     # Determine overall merit position, set to 0 if highest_total_marks is 0
     overall_merit_position = overall_merit_position if highest_total_marks > 0 else 0
 
     context = {
         'course': course,
-        'subject':subject,
+        'subject': subject,
         'all_results': results_with_details,
         'total_exam_mark': total_exam_mark,
         'total_obtain_mark': student_total_obtained_marks,
@@ -711,3 +720,15 @@ def STUDENT_PERFORMANCE(request, id):
         'highest_total_marks': highest_total_marks  # This is for merit calculation table
     }
     return render(request, 'student/performance.html', context)
+
+def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
+    exam = Live_Exam.objects.get(id = id)
+    questions = LiveExamQuestion.objects.filter(exam=exam)
+    context={
+        'question':questions
+    }
+    return render(request,'student/performance_view_question.html',context)
+
+
+def STUDENT_PAST_EXAM(request):
+    return render(request,'student/past_exam.html')

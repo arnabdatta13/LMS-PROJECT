@@ -235,7 +235,9 @@ urlpatterns = [
 
     path('student-performance',student_views.STUDENT_PERFORMANCE_COURSE,name='student-performance'),
     path('student-performance/<int:id>',student_views.STUDENT_PERFORMANCE,name='student-performance'),
+    path('student-performance-view-question/<int:id>',student_views.STUDENT_PERFORMANCE_VIEW_QUESTION,name='student-performance-view-question'),
 
+    path('student-past-exam',student_views.STUDENT_PAST_EXAM,name='student-past-exam'),
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
 

@@ -15,6 +15,7 @@ import hmac
 import hashlib
 import time
 from datetime import timedelta,datetime
+from django.db.models import Sum
 
 
 
@@ -946,8 +947,18 @@ def ADD_PRACTICE_EXAM_QUESTION(request):
 def SAVE_PRACTICE_EXAM_QUESTION(request):
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
+        exam = Practice_Exam.objects.get(id=exam_id)
+        existing_questions_count = PracticeExamQuestion.objects.filter(exam=exam).count()
+        total_questions_allowed = exam.total_questions
+
+        # Calculate the sum of marks for existing questions
+        existing_total_marks = PracticeExamQuestion.objects.filter(exam=exam).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        total_marks_allowed = exam.total_marks
+
         question_counter = 1
-        
+        added_questions_count = 0
+        added_marks = 0
+
         while True:
             question_key = f'question{question_counter}' if question_counter > 1 else 'question'
             mark_key = f'mark{question_counter}' if question_counter > 1 else 'mark'
@@ -968,10 +979,17 @@ def SAVE_PRACTICE_EXAM_QUESTION(request):
             if not question_text:
                 break
 
-            # Assuming exam_id exists in Exam model, validate other fields as per your requirements
+            if existing_questions_count + added_questions_count > total_questions_allowed:
+                messages.error(request, 'You cannot add more questions than the total number allowed for this exam.')
+                return redirect('admin-add-practice-exam-question')
+
+            if existing_total_marks + added_marks + int(marks) > total_marks_allowed:
+                messages.error(request, 'You cannot add more marks than the total marks allowed for this exam.')
+                return redirect('admin-add-practice-exam-question')
+
             # Create and save the question object
             PracticeExamQuestion.objects.create(
-                exam_id=exam_id,
+                exam=exam,
                 marks=marks,
                 question=question_text,
                 option1=option1,
@@ -981,10 +999,13 @@ def SAVE_PRACTICE_EXAM_QUESTION(request):
                 answer=answer
             )
             
+            added_questions_count += 1
+            added_marks += int(marks)
             question_counter += 1
-        messages.success(request,'Question are added successfully')
+        
+        messages.success(request, 'Questions are added successfully')
         return redirect('admin-add-practice-exam-question')
-    
+
 
 
 @login_required(login_url='login')
@@ -1321,8 +1342,18 @@ def ADD_LIVE_EXAM_QUESTION(request):
 def SAVE_LIVE_EXAM_QUESTION(request):
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
+        exam = Live_Exam.objects.get(id=exam_id)
+        existing_questions_count = LiveExamQuestion.objects.filter(exam=exam).count()
+        total_questions_allowed = exam.total_questions
+
+        # Calculate the sum of marks for existing questions
+        existing_total_marks = LiveExamQuestion.objects.filter(exam=exam).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        total_marks_allowed = exam.total_marks
+
         question_counter = 1
-        
+        added_questions_count = 0
+        added_marks = 0
+
         while True:
             question_key = f'question{question_counter}' if question_counter > 1 else 'question'
             mark_key = f'mark{question_counter}' if question_counter > 1 else 'mark'
@@ -1343,10 +1374,17 @@ def SAVE_LIVE_EXAM_QUESTION(request):
             if not question_text:
                 break
 
-            # Assuming exam_id exists in Exam model, validate other fields as per your requirements
+            if existing_questions_count + added_questions_count > total_questions_allowed:
+                messages.error(request, 'You cannot add more questions than the total number allowed for this exam.')
+                return redirect('admin-add-live-exam-question')
+
+            if existing_total_marks + added_marks + int(marks) > total_marks_allowed:
+                messages.error(request, 'You cannot add more marks than the total marks allowed for this exam.')
+                return redirect('admin-add-live-exam-question')
+
             # Create and save the question object
             LiveExamQuestion.objects.create(
-                exam_id=exam_id,
+                exam=exam,
                 marks=marks,
                 question=question_text,
                 option1=option1,
@@ -1356,10 +1394,13 @@ def SAVE_LIVE_EXAM_QUESTION(request):
                 answer=answer
             )
             
+            added_questions_count += 1
+            added_marks += int(marks)
             question_counter += 1
-        messages.success(request,'Question are added successfully')
+        
+        messages.success(request, 'Questions are added successfully')
         return redirect('admin-add-live-exam-question')
-    
+
 
 
 
