@@ -1,40 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
+    {% for exam, exam_type in all_exams %}
     <div class="card">
-        <div class="in-branch">In-Branch</div>
-        <div class="header1">Final Model Test Exam For NDC-04</div>
+        {% if exam_type == 'live' %}
+            <div class="in-branch">Live Exam</div>
+        {% else %}
+            <div class="in-branch">Practice Exam</div>
+        {% endif %}
+        <div class="header1">{{ exam.exam_name }}</div>
         <div class="details">
-            <p><strong>Date & Time</strong><br>26 May, 2024 09:00 AM to 05:00 PM</p>
-            <p><strong>Duration</strong><br>1 h 25 min</p>
-            <p><strong>Course</strong><br>NDC & SJC Admission Course [Offline]<br>College Admission Program 2024</p>
+            <p><strong>Date & Time</strong><br>
+                {% if exam.start_time %}
+                    {{ exam.start_time|date:"d M, Y h:i A" }} to {{ exam.end_time|date:"d M, Y h:i A" }}
+                {% else %}
+                    {{ exam.created_at|date:"d M, Y h:i A" }}
+                {% endif %}
+            </p>
+            <p><strong>Duration</strong><br>{{ exam.duration }}</p>
+            <p><strong>Course</strong><br>{{ exam.course.name }}</p>
         </div>
-        <div class="status">You didn't take the exam</div>
-        <button class="absent">Absent</button>
+        {% if exam_type == 'live' %}
+            {% if exam.id in live_exam_reports %}
+                <div class="status">You took the exam</div>
+                <a href="{% url "student-view-online-exam-result" exam.id%}" class="view-result">View Result</a>
+            {% else %}
+                <div class="status">You didn't take the exam</div>
+                <button class="absent">Absent</button>
+            {% endif %}
+        {% elif exam_type == 'practice' %}
+            {% if exam.id in practice_exam_results %}
+                <div class="status">You took the exam</div>
+                <a href="" class="view-result">View Result</a>
+            {% else %}
+                <div class="status">You didn't take the exam</div>
+                <button class="absent">Absent</button>
+            {% endif %}
+        {% endif %}
     </div>
-    <div class="card">
-        <div class="in-branch">In-Branch</div>
-        <div class="header1">Final Model Test Exam For NDC-04</div>
-        <div class="details">
-            <p><strong>Date & Time</strong><br>26 May, 2024 09:00 AM to 05:00 PM</p>
-            <p><strong>Duration</strong><br>1 h 25 min</p>
-            <p><strong>Course</strong><br>NDC & SJC Admission Course [Offline]<br>College Admission Program 2024</p>
-        </div>
-        <div class="status">You didn't take the exam</div>
-        <button class="absent">Absent</button>
-    </div>
-    <div class="card">
-        <div class="in-branch">In-Branch</div>
-        <div class="header1">Final Model Test Exam For NDC-04</div>
-        <div class="details">
-            <p><strong>Date & Time</strong><br>26 May, 2024 09:00 AM to 05:00 PM</p>
-            <p><strong>Duration</strong><br>1 h 25 min</p>
-            <p><strong>Course</strong><br>NDC & SJC Admission Course [Offline]<br>College Admission Program 2024</p>
-        </div>
-        <div class="status">You didn't take the exam</div>
-        <button class="absent">Absent</button>
-    </div>
-    <!-- Add more card divs as needed -->
+    {% endfor %}
 </div>
 
 <style>
@@ -90,6 +94,19 @@
     }
     .absent:hover {
         background-color: #36255a;
+    }
+    .view-result {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+    .view-result:hover {
+        background-color: #45a049;
     }
     .status {
         color: #0066cc;

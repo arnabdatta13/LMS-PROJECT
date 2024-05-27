@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -10,6 +10,9 @@ from django.db.models import F,ExpressionWrapper, DurationField
 from django.contrib import messages
 from itertools import chain
 from django.db.models import Sum, Max
+from operator import attrgetter
+from django.db.models import Count
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -54,7 +57,7 @@ def HOME(request):
     total_live_exams = Live_Exam.objects.filter(
             end_time__gt=current_time,
             class_id=student_class,
-        ).count()
+        ).exclude(pk__in=Subquery(taken_exams)).count()
     
     valid_online_live_class = [
         online_class for online_class in live_class
@@ -525,19 +528,31 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
         total_obtained_marks = 0
         correct_answers = 0
 
-        for i in range(len(questions)):
+        for i, question in enumerate(questions):
             selected_answer = request.POST.get(str(i+1))  # Assuming the radio button names are the question IDs
-            correct_answer = questions[i].answer
+            correct_answer = question.answer
+
+            # Save the selected option
+            LiveExamQuestionOptionSelect.objects.create(
+                question=question,
+                user=request.user,
+                selected_option=selected_answer if selected_answer else "No Answer"  # Handle None case
+            )
+
             if selected_answer == correct_answer:
-                total_obtained_marks += questions[i].marks
+                total_obtained_marks += question.marks
                 correct_answers += 1
-        exam_timer = LiveExamTimer.objects.get(exam=exam,user = request.user)
+
+        exam_timer = LiveExamTimer.objects.get(exam=exam, user=request.user)
         exam_timer.delete()
+
         exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
-        live_exam_report = Live_Exam_Report.objects.create(exam = exam,user = request.user,is_taken = True)
+        live_exam_report = Live_Exam_Report.objects.create(exam=exam, user=request.user, is_taken=True)
 
         return redirect('student-live-exam-mark')
-      
+
+
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -721,6 +736,9 @@ def STUDENT_PERFORMANCE(request, id):
     }
     return render(request, 'student/performance.html', context)
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
     exam = Live_Exam.objects.get(id = id)
     questions = LiveExamQuestion.objects.filter(exam=exam)
@@ -730,5 +748,48 @@ def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
     return render(request,'student/performance_view_question.html',context)
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PAST_EXAM(request):
-    return render(request,'student/past_exam.html')
+    student = request.user.student
+    live_exams = Live_Exam.objects.all()
+    practice_exams = Practice_Exam.objects.all()
+
+    live_exam_reports = {report.exam_id: report for report in Live_Exam_Report.objects.filter(user=request.user)}
+    practice_exam_results = {result.exam_id: result for result in Practice_Exam_Result.objects.filter(student=student)}
+
+    # Merge and sort exams by date
+    all_exams = sorted(
+        chain(
+            [(exam, 'live') for exam in live_exams],
+            [(exam, 'practice') for exam in practice_exams]
+        ),
+        key=lambda x: x[0].created_at,
+        reverse=True
+    )
+
+    context = {
+        'all_exams': all_exams,
+        'live_exam_reports': live_exam_reports,
+        'practice_exam_results': practice_exam_results,
+    }
+    return render(request, 'student/past_exam.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_VIEW_ONLINE_EXAM_RESULT(request, id):
+    exam = Live_Exam.objects.get(id=id)
+    live_exam_questions = LiveExamQuestion.objects.filter(exam=exam)
+    student = request.user
+    # Get the user's answers for this exam
+    user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_questions, user=student)
+    user_answers_dict = {answer.question.id: answer.selected_option for answer in user_answers}
+
+    
+    context = {
+        'question': live_exam_questions,
+        'user_answers': user_answers_dict,
+
+    }
+    return render(request, 'student/view_online_exam_result.html', context)

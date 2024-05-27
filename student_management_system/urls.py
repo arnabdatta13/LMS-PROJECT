@@ -239,6 +239,8 @@ urlpatterns = [
 
     path('student-past-exam',student_views.STUDENT_PAST_EXAM,name='student-past-exam'),
 
+    path('student-view-online-exam-result/<int:id>',student_views.STUDENT_VIEW_ONLINE_EXAM_RESULT,name='student-view-online-exam-result'),
+
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
 
 

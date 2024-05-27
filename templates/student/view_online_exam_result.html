@@ -1,0 +1,175 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    {% for i in question%}
+    <div class="card">
+        <div class="question">
+            <p class="question-number">Question {{forloop.counter}}</p>
+            <p class="question-text"><strong>{{i.question}}</strong></p>
+        </div>
+        <div class="options">
+            <label class="option">
+                <span class="option-label">A</span>
+                <span>{{i.option1}}</span>
+            </label>
+            <label class="option">
+                <span class="option-label">B</span>
+                <span>{{i.option2}}</span>
+            </label>
+            <label class="option">
+                <span class="option-label">C</span>
+                <span>{{i.option3}}</span>
+            </label>
+            <label class="option">
+                <span class="option-label">D</span>
+                <span>{{i.option4}}</span>
+            </label>
+        </div>
+        <div class="result">
+            <span class="correct">Correct</span>
+        </div>
+        <div class="statistics">
+            <div class="stat">
+                <span class="stat-label">A</span>
+                <span class="percentage">1%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">B</span>
+                <span class="percentage">95%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">C</span>
+                <span class="percentage">1%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">D</span>
+                <span class="percentage">4%</span>
+            </div>
+        </div>
+        <div class="solution">
+            <span>Solution: <br>{{i.solution_details}}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+    
+    body {
+        background-color: #f2ecf7;
+
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+    .card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        position: relative;
+        margin: 20px;
+        overflow: hidden;
+    }
+    .question-number {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #555;
+        font-weight: 500;
+    }
+    .question-text {
+        font-size: 25px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    .options {
+        margin-bottom: 20px;
+    }
+    .option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        transition: background-color 0.3s, transform 0.3s;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .option:hover {
+        background-color: #e6e6e6;
+        transform: translateY(-2px);
+    }
+    .option input[type="radio"] {
+        margin-right: 10px;
+    }
+    .option-label {
+        font-weight: 500;
+        margin-right: 10px;
+        color: #444;
+        flex: 0 0 30px;
+        text-align: center;
+    }
+    .unit {
+        font-size: 14px;
+        margin-left: 5px;
+        color: #777;
+    }
+    .result {
+        background-color: #4CAF50;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .statistics {
+        display: flex;
+        justify-content: space-around;
+        background-color: #FF7F50;
+        padding: 2px;
+        border-radius: 10px;
+        box-shadow: 0 0.7px 6px rgb(250, 95, 85);
+        gap: 5px;
+    }
+    .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        flex: 1;
+        padding: 2px;
+        text-align: center;
+        border-radius: 8px;
+        background-color: #FF5722;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+    
+    .stat-label {
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .percentage {
+        font-size: 1em;
+    }
+    .solution {
+        background-color: #e6ffe6;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid green;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

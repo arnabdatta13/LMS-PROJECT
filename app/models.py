@@ -157,6 +157,7 @@ class PracticeExamQuestion(models.Model):
     option4=models.CharField(max_length=200)
     cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
     answer=models.CharField(max_length=200,choices=cat)
+    solution_details = models.TextField(default="No Solution Available")
 
     def __str__(self):
         return self.exam.exam_name
@@ -281,9 +282,7 @@ class SchoolExamStudentResult(models.Model):
 
 
 class Add_Notice(models.Model):
-      
       notice = models.TextField()
-      
       created_at = models.DateTimeField(auto_now_add=True)
       updated_at= models.DateTimeField(auto_now=True)
       def __str__(self):
@@ -351,9 +350,20 @@ class LiveExamQuestion(models.Model):
     option4=models.CharField(max_length=200)
     cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
     answer=models.CharField(max_length=200,choices=cat)
+    solution_details = models.TextField(default="No Solution Available")
 
     def __str__(self):
         return self.exam.exam_name
+
+
+class LiveExamQuestionOptionSelect(models.Model):
+    question = models.ForeignKey(LiveExamQuestion, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    selected_option = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.question.question
+
 
 
 class Live_Exam_Result(models.Model):

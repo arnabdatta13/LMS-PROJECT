@@ -7,6 +7,7 @@
 <div class="jumbotron my-4">
   <!-- Timer -->
   
+  
   <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-live-exam-calculate-marks' %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="exam_id" value="{{ exam.id }}">
