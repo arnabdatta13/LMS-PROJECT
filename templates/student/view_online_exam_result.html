@@ -1,73 +1,95 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    {% for question in questions %}
-    <div class="card">
-        <div class="question">
-            <p class="question-number">Question {{ forloop.counter }}</p>
-            <p class="question-text"><strong>{{ question.question }}</strong></p>
-        </div>
-        <div class="options">
-            <label class="option">
-                <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
-                <span>{{ question.option1 }}</span>
-                {% if question.answer == 'Option1' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-            <label class="option">
-                <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
-                <span>{{ question.option2 }}</span>
-                {% if question.answer == 'Option2' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-            <label class="option">
-                <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
-                <span>{{ question.option3 }}</span>
-                {% if question.answer == 'Option3' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-            <label class="option">
-                <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
-                <span>{{ question.option4 }}</span>
-                {% if question.answer == 'Option4' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-        </div>
-        <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
-            {% if question.is_correct %}
-            <span>Correct</span>
-            {% else %}
-            <span>Incorrect</span>
-            {% endif %}
-        </div>
-        <div class="statistics">
-            <div class="stat">
-                <span class="stat-label">A</span>
-                <span class="percentage">{{ question.option1_percentage }}%</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">B</span>
-                <span class="percentage">{{ question.option2_percentage }}%</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">C</span>
-                <span class="percentage">{{ question.option3_percentage }}%</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">D</span>
-                <span class="percentage">{{ question.option4_percentage }}%</span>
-            </div>
-        </div>
-        <div class="solution">
-            <span>Solution: <br>{{ question.solution_details }}</span>
-        </div>
+{% load static %}
+
+<div class="container-fluid analysis-report">
+    <div class="report-card">
+        <h3>Analysis Report</h3>
+        <p class="exam-name">Final Model Test Exam For NDC-04</p>
+        <p class="mcq-score">MCQ Obtained: 45/50 (Correct: 46, Incorrect: 4)</p>
+        <p class="written-exam-status">Written Exam Evaluation is Pending</p>
+        <p class="highest-marks">Highest Marks: 82</p>
+        <p class="merit-position">Merit Position: 169</p>
     </div>
-    {% endfor %}
+
+    <div class="mcq-section">
+        <h3>MCQ</h3>
+        {% for question in questions %}
+        <div class="card">
+            <div class="question">
+                <p class="question-number">Question {{ forloop.counter }}</p>
+                <p class="question-text"><strong>{{ question.question }}</strong></p>
+            </div>
+            <div class="options">
+                <label class="option">
+                    <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
+                    <span>{{ question.option1 }}</span>
+                    {% if question.answer == 'Option1' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
+                    <span>{{ question.option2 }}</span>
+                    {% if question.answer == 'Option2' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
+                    <span>{{ question.option3 }}</span>
+                    {% if question.answer == 'Option3' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
+                    <span>{{ question.option4 }}</span>
+                    {% if question.answer == 'Option4' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+            </div>
+            <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
+                {% if question.is_correct %}
+                <span>Correct</span>
+                {% else %}
+                <span>Incorrect</span>
+                {% endif %}
+            </div>
+            <div class="statistics">
+                <div class="stat">
+                    <span class="stat-label">A</span>
+                    <span class="percentage">{{ question.option1_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">B</span>
+                    <span class="percentage">{{ question.option2_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">C</span>
+                    <span class="percentage">{{ question.option3_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">D</span>
+                    <span class="percentage">{{ question.option4_percentage }}%</span>
+                </div>
+            </div>
+            <div class="solution">
+                <span>Solution: <br>{{ question.solution_details }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <br><br>
+    <div class="text-center">
+        <form method="get" action="{% url 'student-merit-position' exam.id %}">
+            <button type="submit" class="btn btn-primary">Merit Position</button>
+        </form>
+    </div>
+    <br>
 </div>
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
@@ -75,22 +97,53 @@
     body {
         background-color: #f2ecf7;
     }
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
+    .analysis-report {
+        padding: 20px;
+    }
+    .report-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .report-card h3 {
+        color: green;
+        margin-bottom: 10px;
+    }
+    .report-card .exam-info,
+    .report-card .exam-name,
+    .report-card .mcq-score,
+    .report-card .written-exam-status,
+    .report-card .highest-marks,
+    .report-card .merit-position {
+        margin: 5px 0;
+    }
+    .report-card .written-exam-status {
+        color: red;
+    }
+
+    .mcq-section {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .mcq-section h3 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
     }
     .card {
         background-color: #ffffff;
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         width: 100%;
-        padding: 20px;
         box-sizing: border-box;
+        padding: 20px;
         position: relative;
-        margin: 20px;
-        overflow: hidden;
+        margin-bottom: 20px;
     }
     .question-number {
         font-size: 18px;
@@ -197,3 +250,4 @@
     }
 </style>
 {% endblock %}
+

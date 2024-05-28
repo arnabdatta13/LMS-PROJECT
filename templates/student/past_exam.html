@@ -31,7 +31,7 @@
         {% elif exam_type == 'practice' %}
             {% if exam.id in practice_exam_results %}
                 <div class="status">You took the exam</div>
-                <a href="" class="view-result">View Result</a>
+                <a href="{% url "student-view-practice-exam-mark" exam.id%}" class="view-result">View Result</a>
             {% else %}
                 <div class="status">You didn't take the exam</div>
                 <button class="absent">Absent</button>

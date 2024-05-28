@@ -369,37 +369,6 @@ def STUDENT_VIEW_PRACTICE_EXAM_MARK(request,id):
 
 
 
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 3, login_url='login')
-def STUDENT_MERIT_POSITION(request, id):
-    exam = Practice_Exam.objects.get(id=id)
-    students = Student.objects.all()
-    
-    # Create a dictionary to store results for each student
-    student_results = {}
-    for student in students:
-        result = Practice_Exam_Result.objects.filter(exam=exam, student=student).first()
-        student_results[student] = result
-    
-    # Sort the students by their marks
-    sorted_students = sorted(student_results.keys(), key=lambda x: student_results[x].marks, reverse=True)
-    
-    # Retrieve the merit position for the logged-in student
-    student = Student.objects.get(admin=request.user.id)
-    merit_position = sorted_students.index(student) + 1 if student in sorted_students else None
-    
-    login_user_mark= student_results[student].marks
-    
-    context = {
-        'exam': exam,
-        'merit_position': merit_position,
-        'student_results': student_results,
-        'sorted_students': sorted_students,
-        'student': student,
-        'login_user_mark':login_user_mark,
-    }
-    
-    return render(request, 'student/merit_position.html', context)
 
 
 
@@ -611,8 +580,46 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
 
     context = {
         'questions': live_exam_questions,
+        'exam':exam,
     }
     return render(request, 'student/view_online_exam_result.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_MERIT_POSITION(request, id):
+    exam = Live_Exam.objects.get(id=id)
+    students = Student.objects.all()
+
+    # Create a dictionary to store results for each student who has taken the exam
+    student_results = {}
+    for student in students:
+        result = Live_Exam_Result.objects.filter(exam=exam, student=student).first()
+        if result:
+            student_results[student] = result
+
+    # Sort the students by their marks in descending order
+    sorted_students = sorted(student_results.items(), key=lambda x: x[1].marks, reverse=True)
+
+    # Retrieve the merit position for the logged-in student
+    student = Student.objects.get(admin=request.user.id)
+    merit_position = next((index + 1 for index, (s, r) in enumerate(sorted_students) if s == student), None)
+
+    # Get the logged-in student's marks
+    login_user_mark = student_results.get(student).marks if student in student_results else None
+
+    context = {
+        'exam': exam,
+        'merit_position': merit_position,
+        'student_results': student_results,
+        'sorted_students': sorted_students,
+        'student': student,
+        'login_user_mark': login_user_mark,
+    }
+
+    return render(request, 'student/merit_position.html', context)
+
+
 
 
 
