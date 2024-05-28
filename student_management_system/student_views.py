@@ -573,15 +573,46 @@ def STUDENT_LIVE_EXAM_MARK(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
-def STUDENT_VIEW_LIVE_EXAM_MARK(request,id):
-    exam=Live_Exam.objects.get(id=id)
-    student =Student.objects.get(admin=request.user.id)
-    results=Live_Exam_Result.objects.all().filter(exam=exam).filter(student=student)
+def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
+    exam = Live_Exam.objects.get(id=id)
+    live_exam_questions = LiveExamQuestion.objects.filter(exam=exam)
+    student = request.user
+    user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_questions, user=student)
+    
+    user_answers_dict = {answer.question.id: answer.selected_option for answer in user_answers}
+    
+    for question in live_exam_questions:
+        selected_option = user_answers_dict.get(question.id)
+        question.option1_selected = (selected_option == 'Option1')
+        question.option2_selected = (selected_option == 'Option2')
+        question.option3_selected = (selected_option == 'Option3')
+        question.option4_selected = (selected_option == 'Option4')
+        
+        question.is_correct = (selected_option == question.answer)
+        
+        # Calculate statistics for each option
+        total_answers = LiveExamQuestionOptionSelect.objects.filter(question=question).count()
+        option1_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option1').count()
+        option2_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option2').count()
+        option3_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option3').count()
+        option4_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option4').count()
+        
+        question.option1_percentage = (option1_count / total_answers) * 100 if total_answers > 0 else 0
+        question.option2_percentage = (option2_count / total_answers) * 100 if total_answers > 0 else 0
+        question.option3_percentage = (option3_count / total_answers) * 100 if total_answers > 0 else 0
+        question.option4_percentage = (option4_count / total_answers) * 100 if total_answers > 0 else 0
+        
+        # Debugging print statements
+        print(f"Question {question.id} Options: {question.option1}, {question.option2}, {question.option3}, {question.option4}")
+        print(f"Selected Option for Question {question.id}: {selected_option}")
+        print(f"Question {question.id} Flags: 1-{question.option1_selected}, 2-{question.option2_selected}, 3-{question.option3_selected}, 4-{question.option4_selected}")
+        print(f"Question {question.id} Correct: {question.is_correct}")
+        print(f"Question {question.id} Percentages: 1-{question.option1_percentage}%, 2-{question.option2_percentage}%, 3-{question.option3_percentage}%, 4-{question.option4_percentage}%")
 
     context = {
-        'result':results,
+        'questions': live_exam_questions,
     }
-    return render(request,'student/view_live_exam_mark.html',context)
+    return render(request, 'student/view_online_exam_result.html', context)
 
 
 
@@ -776,20 +807,6 @@ def STUDENT_PAST_EXAM(request):
     return render(request, 'student/past_exam.html', context)
 
 
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 3, login_url='login')
-def STUDENT_VIEW_ONLINE_EXAM_RESULT(request, id):
-    exam = Live_Exam.objects.get(id=id)
-    live_exam_questions = LiveExamQuestion.objects.filter(exam=exam)
-    student = request.user
-    # Get the user's answers for this exam
-    user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_questions, user=student)
-    user_answers_dict = {answer.question.id: answer.selected_option for answer in user_answers}
 
-    
-    context = {
-        'question': live_exam_questions,
-        'user_answers': user_answers_dict,
 
-    }
-    return render(request, 'student/view_online_exam_result.html', context)
+

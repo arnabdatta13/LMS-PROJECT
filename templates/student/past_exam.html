@@ -23,7 +23,7 @@
         {% if exam_type == 'live' %}
             {% if exam.id in live_exam_reports %}
                 <div class="status">You took the exam</div>
-                <a href="{% url "student-view-online-exam-result" exam.id%}" class="view-result">View Result</a>
+                <a href="{% url "student-view-live-exam-result" exam.id%}" class="view-result">View Result</a>
             {% else %}
                 <div class="status">You didn't take the exam</div>
                 <button class="absent">Absent</button>

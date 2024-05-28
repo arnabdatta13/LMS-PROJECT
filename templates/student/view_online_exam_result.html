@@ -1,64 +1,79 @@
-
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-    {% for i in question%}
+    {% for question in questions %}
     <div class="card">
         <div class="question">
-            <p class="question-number">Question {{forloop.counter}}</p>
-            <p class="question-text"><strong>{{i.question}}</strong></p>
+            <p class="question-number">Question {{ forloop.counter }}</p>
+            <p class="question-text"><strong>{{ question.question }}</strong></p>
         </div>
         <div class="options">
             <label class="option">
-                <span class="option-label">A</span>
-                <span>{{i.option1}}</span>
+                <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
+                <span>{{ question.option1 }}</span>
+                {% if question.answer == 'Option1' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
             </label>
             <label class="option">
-                <span class="option-label">B</span>
-                <span>{{i.option2}}</span>
+                <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
+                <span>{{ question.option2 }}</span>
+                {% if question.answer == 'Option2' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
             </label>
             <label class="option">
-                <span class="option-label">C</span>
-                <span>{{i.option3}}</span>
+                <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
+                <span>{{ question.option3 }}</span>
+                {% if question.answer == 'Option3' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
             </label>
             <label class="option">
-                <span class="option-label">D</span>
-                <span>{{i.option4}}</span>
+                <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
+                <span>{{ question.option4 }}</span>
+                {% if question.answer == 'Option4' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
             </label>
         </div>
-        <div class="result">
-            <span class="correct">Correct</span>
+        <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
+            {% if question.is_correct %}
+            <span>Correct</span>
+            {% else %}
+            <span>Incorrect</span>
+            {% endif %}
         </div>
         <div class="statistics">
             <div class="stat">
                 <span class="stat-label">A</span>
-                <span class="percentage">1%</span>
+                <span class="percentage">{{ question.option1_percentage }}%</span>
             </div>
             <div class="stat">
                 <span class="stat-label">B</span>
-                <span class="percentage">95%</span>
+                <span class="percentage">{{ question.option2_percentage }}%</span>
             </div>
             <div class="stat">
                 <span class="stat-label">C</span>
-                <span class="percentage">1%</span>
+                <span class="percentage">{{ question.option3_percentage }}%</span>
             </div>
             <div class="stat">
                 <span class="stat-label">D</span>
-                <span class="percentage">4%</span>
+                <span class="percentage">{{ question.option4_percentage }}%</span>
             </div>
         </div>
         <div class="solution">
-            <span>Solution: <br>{{i.solution_details}}</span>
+            <span>Solution: <br>{{ question.solution_details }}</span>
         </div>
     </div>
     {% endfor %}
 </div>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-    
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
     body {
         background-color: #f2ecf7;
-
     }
     .container {
         display: flex;
@@ -89,7 +104,7 @@
         color: #333;
     }
     .options {
-        margin-bottom: 20px;
+        margin-bottom: 2px;
     }
     .option {
         display: flex;
@@ -106,23 +121,28 @@
         background-color: #e6e6e6;
         transform: translateY(-2px);
     }
-    .option input[type="radio"] {
-        margin-right: 10px;
-    }
-    .option-label {
-        font-weight: 500;
-        margin-right: 10px;
-        color: #444;
-        flex: 0 0 30px;
+    .circle-label {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid black;
         text-align: center;
+        line-height: 22px;
+        margin-right: 10px;
+        font-weight: 500;
+        color: #444;
     }
-    .unit {
-        font-size: 14px;
-        margin-left: 5px;
-        color: #777;
+    .circle-label.filled {
+        background-color: black;
+        color: white;
+    }
+    .correct-icon {
+        color: green;
+        margin-left: 10px;
+        font-size: 20px;
     }
     .result {
-        background-color: #4CAF50;
         padding: 5px 10px;
         border-radius: 5px;
         font-size: 14px;
@@ -133,6 +153,12 @@
         color: white;
         font-weight: bold;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .result.correct {
+        background-color: #4CAF50;
+    }
+    .result.incorrect {
+        background-color: #FF5722;
     }
     .statistics {
         display: flex;
@@ -149,13 +175,11 @@
         align-items: center;
         color: white;
         flex: 1;
-        padding: 2px;
         text-align: center;
         border-radius: 8px;
         background-color: #FF5722;
         transition: background-color 0.3s, transform 0.3s;
     }
-    
     .stat-label {
         font-weight: bold;
         font-size: 14px;
@@ -168,7 +192,7 @@
         padding: 10px;
         border-radius: 5px;
         border: 1px solid green;
-        margin-top: 20px;
+        margin-top: 7px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 </style>
