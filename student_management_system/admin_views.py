@@ -1989,6 +1989,7 @@ def schedule_zoom_meeting(access_token,topic,start_time,duration):
 
 def ADD_ONLINE_LIVE_CLASS(request):
     class1 = Class.objects.all()
+    course = Course.objects.all()
     if request.method == "POST":
 
         access_token = get_zoom_access_token()
@@ -1997,9 +1998,11 @@ def ADD_ONLINE_LIVE_CLASS(request):
         start_time = request.POST.get('start_time')
         duration = request.POST.get('duration')
         class_id = request.POST.get('class_id')
+        course = request.POST.get("course")
         start_time = timezone.make_aware(datetime.strptime(start_time, '%Y-%m-%dT%H:%M'))
         start_time = start_time.strftime('%Y-%m-%dT%H:%M:%S')
         class1 = Class.objects.get(id = class_id)
+        course = Course.objects.get(id = course)
         meeting_data = schedule_zoom_meeting(access_token,topic,start_time,duration)
         print(meeting_data)
         OnlineLiveClass.objects.create(
@@ -2007,6 +2010,7 @@ def ADD_ONLINE_LIVE_CLASS(request):
             start_time=meeting_data['start_time'],
             duration=meeting_data['duration'],
             class1=class1,
+            course = course,
             zoom_meeting_id=meeting_data['id'],
             #host_email=meeting_data['host_email'],
             start_url=meeting_data['start_url'],
@@ -2019,6 +2023,7 @@ def ADD_ONLINE_LIVE_CLASS(request):
         return redirect("admin-view-online-live-class")
     context = {
         'class':class1,
+        'course':course
     }
     return render(request,"admin/add_online_live_class.html",context)
 

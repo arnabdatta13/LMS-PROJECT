@@ -229,7 +229,6 @@ urlpatterns = [
 
 
     path('student-view-online-live-class', student_views.VIEW_ONLINE_LIVE_CLASS, name='student-view-online-live-class'),
-    path('student-join-online-live-class/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS, name='student-join-online-live-class'),
     path('student-join-online-live-class-home/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS_HOME, name='student-join-online-live-class-home'),
 
 

@@ -5,11 +5,11 @@
 <div class="container-fluid analysis-report">
     <div class="report-card">
         <h3>Analysis Report</h3>
-        <p class="exam-name">Final Model Test Exam For NDC-04</p>
-        <p class="mcq-score">MCQ Obtained: 45/50 (Correct: 46, Incorrect: 4)</p>
+        <p class="exam-name">{{ exam.exam_name }}</p>
+        <p class="mcq-score">MCQ Obtained: {{ user_total_score }}/{{ exam.total_marks }}</p>
         <p class="written-exam-status">Written Exam Evaluation is Pending</p>
-        <p class="highest-marks">Highest Marks: 82</p>
-        <p class="merit-position">Merit Position: 169</p>
+        <p class="highest-marks">Highest Marks: {{ highest_mark }}</p>
+        <p class="merit-position">Merit Position: {{ merit_position }}</p>
     </div>
 
     <div class="mcq-section">
@@ -250,4 +250,3 @@
     }
 </style>
 {% endblock %}
-

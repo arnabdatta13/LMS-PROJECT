@@ -254,7 +254,9 @@
                      </ul>
                   </li>
 
-               
+                  <li class="{% active_link 'student-view-online-live-class' 'active' %}">
+                     <a href="{% url 'student-view-online-live-class'%}"><i class="fas fa-laptop-medical mr-2"></i> <span>Join Live Class</span></a>
+                  </li>
 
                   <li class="{% active_link 'student-view-attendance' 'active' %}">
                      <a href="{% url 'student-view-attendance'%}"><i class="fa fa-calendar"></i> <span>Attendance</span></a>
@@ -279,9 +281,7 @@
                      <a href="{% url 'student-notification'%}"><i class="fas fa-bell"></i> <span>Notification</span></a>
                   </li>
 
-                  <li class="{% active_link 'student-view-online-live-class' 'active' %}">
-                     <a href="{% url 'student-view-online-live-class'%}"><i class="fas fa-laptop-medical mr-2"></i> <span>Join Live Class</span></a>
-                  </li>
+                  
 
 
                   <li>

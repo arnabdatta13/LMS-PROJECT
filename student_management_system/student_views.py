@@ -550,6 +550,8 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
     
     user_answers_dict = {answer.question.id: answer.selected_option for answer in user_answers}
     
+    # Calculate user's total score
+    user_total_score = 0
     for question in live_exam_questions:
         selected_option = user_answers_dict.get(question.id)
         question.option1_selected = (selected_option == 'Option1')
@@ -558,6 +560,8 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         question.option4_selected = (selected_option == 'Option4')
         
         question.is_correct = (selected_option == question.answer)
+        if question.is_correct:
+            user_total_score += question.marks
         
         # Calculate statistics for each option
         total_answers = LiveExamQuestionOptionSelect.objects.filter(question=question).count()
@@ -570,19 +574,30 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         question.option2_percentage = (option2_count / total_answers) * 100 if total_answers > 0 else 0
         question.option3_percentage = (option3_count / total_answers) * 100 if total_answers > 0 else 0
         question.option4_percentage = (option4_count / total_answers) * 100 if total_answers > 0 else 0
-        
-        # Debugging print statements
-        print(f"Question {question.id} Options: {question.option1}, {question.option2}, {question.option3}, {question.option4}")
-        print(f"Selected Option for Question {question.id}: {selected_option}")
-        print(f"Question {question.id} Flags: 1-{question.option1_selected}, 2-{question.option2_selected}, 3-{question.option3_selected}, 4-{question.option4_selected}")
-        print(f"Question {question.id} Correct: {question.is_correct}")
-        print(f"Question {question.id} Percentages: 1-{question.option1_percentage}%, 2-{question.option2_percentage}%, 3-{question.option3_percentage}%, 4-{question.option4_percentage}%")
+
+    # Calculate the highest mark and merit position
+    user_scores = {}
+    for report in Live_Exam_Report.objects.filter(exam=exam):
+        user = report.user
+        user_total = LiveExamQuestionOptionSelect.objects.filter(
+            question__exam=exam, 
+            user=user,
+            question__answer=F('selected_option')
+        ).aggregate(total_score=Sum('question__marks'))['total_score'] or 0
+        user_scores[user] = user_total
+
+    highest_mark = max(user_scores.values(), default=0)
+    merit_position = sorted(user_scores.values(), reverse=True).index(user_total_score) + 1
 
     context = {
         'questions': live_exam_questions,
-        'exam':exam,
+        'exam': exam,
+        'highest_mark': highest_mark,
+        'merit_position': merit_position,
+        'user_total_score': user_total_score,
     }
     return render(request, 'student/view_online_exam_result.html', context)
+
 
 
 @login_required(login_url='login')
@@ -627,8 +642,8 @@ def STUDENT_MERIT_POSITION(request, id):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def VIEW_ONLINE_LIVE_CLASS(request):
     current_time = timezone.now()
-    class_id = Class.objects.get(id = request.user.id)
-    all_online_live_class = OnlineLiveClass.objects.filter(class1 = class_id)
+    class_id = Class.objects.get(id=request.user.id)
+    all_online_live_class = OnlineLiveClass.objects.filter(class1=class_id)
     
     # Filter out the classes that have already ended
     valid_online_live_class = [
@@ -640,24 +655,12 @@ def VIEW_ONLINE_LIVE_CLASS(request):
     
     context = {
         "class": valid_online_live_class,
+        "current_time": current_time
     }
 
     return render(request, "student/view_online_live_class.html", context)
 
 
-
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 3, login_url='login')
-def JOIN_ONLINE_LIVE_CLASS(request, id):
-
-    online_class = OnlineLiveClass.objects.get(id=id)
-    current_time = timezone.localtime(timezone.now())
-
-    if current_time <= online_class.start_time:
-        messages.error(request, "Live Class not start.")
-        return redirect('student-view-online-live-class')
-
-    return redirect(online_class.join_url)
 
 
 
@@ -781,7 +784,8 @@ def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
     exam = Live_Exam.objects.get(id = id)
     questions = LiveExamQuestion.objects.filter(exam=exam)
     context={
-        'question':questions
+        'question':questions,
+        'exam':exam
     }
     return render(request,'student/performance_view_question.html',context)
 

@@ -95,9 +95,12 @@
                 <p class="topic">{{i.topic}}</p>
                 <br>
                 <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
+                <br>
+                <p>Class: <br><strong>{{i.class1.name}}</strong></p>
                 <h4>Course:</h4>
-                <p>NDC & SJC Admission Course [Offline]</p>
-                <p>College Admission Program 2024</p>
+                <br>
+                <p>{{i.course.name}}</p>
+                
                 <br>
                 <a href="{% url "student-join-online-live-class-home" i.id %}"><button>Join Now</button><a>
             </div>

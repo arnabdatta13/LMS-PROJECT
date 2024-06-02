@@ -2,87 +2,153 @@
 
 {% block content %}
 <div class="content container-fluid">
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title">Online Live Class</h3>
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Online Live Class</li>
-                </ul>
+    <!-- Existing content -->
+    <div class="container">
+        {% for i in class %}
+        <div class="card">
+            <div class="header1">{{ i.topic }}</div>
+            <div class="details">
+                <p><strong>Start Date & Time</strong><br>
+                    {% if i.start_time %}
+                        {{ i.start_time|date:"d M, Y h:i A" }} 
+                    {% else %}
+                        {{ i.created_at|date:"d M, Y h:i A" }}
+                    {% endif %}
+                </p>
+                <p><strong>Duration</strong><br>{{ i.duration }} minute</p>
+                <p><strong>Class</strong><br>{{ i.class1.name }}</p>
+                <p><strong>Course</strong><br>{{ i.course.name }}</p>
             </div>
-
-            <div class="col-auto text-right float-right ml-auto">
-                <a id ="course-list-download" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
-                <a href="{% url 'admin-add-online-live-class' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
-            </div>
+            <div class="status"></div>
+            <a href="{{ i.join_url }}" class="view-result" style="display: none;">Join</a>
+            <div class="timer" data-start-time="{{ i.start_time|date:'Y-m-d H:i:s' }}" data-current-time="{{ current_time|date:'Y-m-d H:i:s' }}"></div>
         </div>
+        {% endfor %}
     </div>
 
-    {% include "base_desine/massages.html" %}
+    <style>
+        body {
+            background-color: #f2ecf7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            position: relative;
+            text-align: center;
+            box-sizing: border-box;
+            flex: 1 1 calc(50% - 40px); /* Two cards per row with space between */
+        }
+        .header1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #5e2e91;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .details {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .absent {
+            background-color: #463072;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .absent:hover {
+            background-color: #36255a;
+        }
+        .view-result {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        .view-result:hover {
+            background-color: #45a049;
+        }
+        .status {
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 14px;
+            color: #ff5722;
+            padding: 5px 10px;
+        }
+        @media (max-width: 768px) {
+            .card {
+                flex: 1 1 100%; /* One card per row on small screens */
+            }
+        }
+    </style>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function updateTimers() {
+                const timers = document.querySelectorAll('.timer');
+                timers.forEach(timer => {
+                    const startTime = new Date(timer.getAttribute('data-start-time')).getTime();
+                    const currentTime = new Date(timer.getAttribute('data-current-time')).getTime();
 
+                    const distance = startTime - currentTime;
+                    const card = timer.closest('.card');
+                    const status = card.querySelector('.status');
+                    const joinButton = card.querySelector('.view-result');
 
-    <form method="get" action="{% url 'admin-course-view' %}">
-        
-        <div class="form-group">
-            <label for="class_filter">Filter by Class:</label>
-            <select class="form-control" id="class_filter" name="class_filter" >
-                <option value="">All Classes</option>
-                {% for class_instance in classes %}
-                <option value="{{ class_instance.id }}" {% if class_instance.id|stringformat:"s" == selected_class %}selected{% endif %}>{{ class_instance.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="input-group-append">
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-        </div>
-    </form>
+                    if (distance > 0) {
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 
-    <br>
+                        timer.textContent = `Starts in ${hours}h ${minutes}m`;
+                        status.textContent = 'Wait. Exam do not start.';
+                        joinButton.style.display = 'none';
+                    } else {
+                        timer.textContent = 'Started';
+                        status.textContent = '';
+                        joinButton.style.display = 'inline-block';
+                    }
+                });
+            }
 
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card card-table">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="table_id" class=" table table-hover table-center mb-0 ">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Topic</th>
-                                    <th>Start Time</th>
-                                    <th>Duration</th>
-                                    <th>Start Class</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for i in class %}
-                                <tr>
-                                    <td>{{ i.id }}</td>
-                                    <td>{{ i.topic }}</td>
-                                    <td>{{ i.start_time|date:"Y-m-d H:i"}}</td>
-                                    <td>{{ i.duration }}</td>
-                                    <td>
-                                        <a href="{% url "student-join-online-live-class" i.id%}">
-                                            <button type="button" class="btn btn-success">
-                                                Join Class
-                                            </button>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            updateTimers();
+            setInterval(() => {
+                document.querySelectorAll('.timer').forEach(timer => {
+                    const currentTime = new Date(timer.getAttribute('data-current-time')).getTime() + 60000;
+                    timer.setAttribute('data-current-time', new Date(currentTime).toISOString());
+                });
+                updateTimers();
+            }, 60000); // update every minute
+        });
+    </script>
 </div>
-
-
 {% endblock %}

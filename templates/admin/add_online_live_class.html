@@ -48,7 +48,16 @@
                         </select>
                   </div>
                   <br>
-                  
+                  <div class="col-sm-11">
+                     <label>Course</label>
+                        <select class="form-control" name='course'required>
+                        <option value="" disabled selected>Select Course</option>
+                        {% for i in course%}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
                   <div class="col-sm-11">
                     <div class="form-group">
                        <label>Start Time (YYYY-MM-DDTHH:MM:SSZ):</label>

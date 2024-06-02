@@ -295,6 +295,7 @@ class OnlineLiveClass(models.Model):
     start_time = models.DateTimeField()
     duration = models.IntegerField()
     class1 = models.ForeignKey(Class,on_delete=models.CASCADE,default=0)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE,default=0)
     zoom_meeting_id = models.CharField(max_length=255, unique=True)  # Unique ID from Zoom
     start_url = models.URLField()
     join_url = models.URLField()
