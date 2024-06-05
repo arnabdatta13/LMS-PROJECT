@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="table_id" class="table table-hover table-center mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Roll</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in student %}
+                            <tr>
+                                <td>{{ i.id }}</td>
+                                <td>
+                                    <h2 class="table-avatar">
+                                        <a href="student-details.html">{{ i.admin.first_name }} &nbsp; {{ i.admin.last_name }}</a>
+                                    </h2>
+                                </td>
+                                <td>{{ i.class_id.name }}</td>
+                                <td>{{ i.roll_number }}</td>
+                                <td class="text-right">
+                                    <a href= "{% url "admin-view-student-performance" course.id  i.id%}"><button type="button" class="btn btn-success">
+                                        View Performance
+                                    </button></a>
+                                </td>
+                            </tr>
+                            
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

@@ -146,6 +146,9 @@ urlpatterns = [
     path('admin-student-send-notification', admin_views.STUDENT_SEND_NOTIFICATION,name='admin-student-send-notification'),
     path('admin-student-save-notification', admin_views.STUDENT_SAVE_NOTIFICATION,name='admin-student-save-notification'),
 
+    path('admin-view-student-performance',admin_views.VIEW_STUDENT_PERFORMANCE_COURSE,name='admin-view-student-performance'),
+    path('admin-view-student-performance/student/<int:id>',admin_views.VIEW_STUDENT_PERFORMANCE_STUDENT,name='admin-view-student-performance/student'),
+    path('admin-view-student-performance/<int:course_id>/<int:student_id>',admin_views.VIEW_STUDENT_PERFORMANCE,name='admin-view-student-performance'),
 
     path('admin-view-attendance', admin_views.ADMIN_VIEW_ATTENDANCE,name='admin-view-attendance'),
     
@@ -159,6 +162,8 @@ urlpatterns = [
     path('admin-add-online-live-class', admin_views.ADD_ONLINE_LIVE_CLASS, name='admin-add-online-live-class'),
     path('admin-view-online-live-class', admin_views.VIEW_ONLINE_LIVE_CLASS, name='admin-view-online-live-class'),
     path('admin-start-online-live-class/<int:id>', admin_views.START_ONLINE_LIVE_CLASS, name='admin-start-online-live-class'),
+    path('admin-online-class-delete/<int:id>', admin_views.DELETE_ONLINE_CLASS, name='admin-online-class-delete'),
+
 
     #this is teacher panel url
     path('teacher-home', teacher_views.HOME,name='teacher-home'),

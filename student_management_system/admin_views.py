@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamQuestion
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -15,7 +15,7 @@ import hmac
 import hashlib
 import time
 from datetime import timedelta,datetime
-from django.db.models import Sum
+from django.db.models import Sum,Max
 
 
 
@@ -1803,6 +1803,122 @@ def STUDENT_SAVE_NOTIFICATION(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_STUDENT_PERFORMANCE_COURSE(request):
+    course = Course.objects.all()
+
+    context = {
+        'course':course,
+    }
+    return render(request,'admin/view_student_performance_course.html',context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_STUDENT_PERFORMANCE_STUDENT(request,id):
+    course = Course.objects.get(id = id)
+    class1 = course.class1
+
+    student = Student.objects.filter(class_id=class1)
+
+
+    context = {
+        "course":course,
+        'student':student,
+    }
+    return render(request,'admin/view_student_performance_student.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_STUDENT_PERFORMANCE(request,course_id, student_id):
+    course = Course.objects.get(id=course_id)
+    student_id= Student.objects.get(id = student_id)
+    subject = Subject.objects.filter(class1=student_id.class_id)
+
+    # Get all exams for the course
+    all_exams = Live_Exam.objects.filter(course=course)
+
+    # Get the results for live exams
+    live_exam_results = Live_Exam_Result.objects.filter(exam__course=course, student=student_id)
+
+    # Create a dictionary to map exams to results
+    exam_results_dict = {result.exam.id: result for result in live_exam_results}
+
+    # Calculate the highest marks in the course for live exams
+    highest_live_marks = Live_Exam_Result.objects.filter(exam__course=course).aggregate(max_marks=Max('marks'))['max_marks'] or 0
+
+    # Function to get the sum of obtained marks for a student
+    def get_total_obtained_marks(student):
+        live_exam_sum = Live_Exam_Result.objects.filter(exam__course=course, student=student).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        return live_exam_sum
+
+    # Calculate the student's total obtained marks
+    student_total_obtained_marks = get_total_obtained_marks(student_id)
+
+    # Calculate merit position based on total obtained marks for all students in the course
+    all_students = Student.objects.filter(class_id=student_id.class_id)
+    all_students_results = [
+        {'student': student, 'total_marks': get_total_obtained_marks(student)}
+        for student in all_students
+    ]
+    sorted_results = sorted(all_students_results, key=lambda x: x['total_marks'], reverse=True)
+    overall_merit_position = next((index + 1 for index, result in enumerate(sorted_results) if result['student'] == student_id), None)
+
+    # Find the highest mark obtained by any student in the course for merit calculation
+    highest_total_marks = max(result['total_marks'] for result in sorted_results) if sorted_results else 0
+
+    # Prepare results with details and merit position for each result
+    results_with_details = []
+    for exam in all_exams:
+        result = exam_results_dict.get(exam.id)
+        model_name = result.exam._meta.model_name if result else 'N/A'
+        highest_marks = highest_live_marks
+
+        # Calculate merit position for this specific exam
+        if result:
+            all_exam_results = Live_Exam_Result.objects.filter(exam=exam).order_by('-marks')
+            exam_merit_position = next((index + 1 for index, r in enumerate(all_exam_results) if r.student == student_id), None)
+            obtained_marks = result.marks
+        else:
+            exam_merit_position = 0
+            obtained_marks = 0
+
+        results_with_details.append({
+            'exam': exam,
+            'result': result,
+            'model_name': model_name,
+            'highest_marks': highest_marks,
+            'merit_position': exam_merit_position,
+            'obtained_marks': obtained_marks,
+            'total_marks': exam.total_marks,
+        })
+
+    # Total exam marks for all results
+    total_exam_mark = sum(exam.total_marks for exam in all_exams)
+
+    # Determine overall merit position, set to 0 if highest_total_marks is 0
+    overall_merit_position = overall_merit_position if highest_total_marks > 0 else 0
+
+    context = {
+        "student":student_id,
+        'course': course,
+        'subject': subject,
+        'all_results': results_with_details,
+        'total_exam_mark': total_exam_mark,
+        'total_obtain_mark': student_total_obtained_marks,
+        'merit_position': overall_merit_position,
+        'course_name': course.name,
+        'highest_total_marks': highest_total_marks  # This is for merit calculation table
+    }
+    return render(request, 'admin/view_student_performance.html', context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADMIN_VIEW_ATTENDANCE(request):
     session_year = Session_Year.objects.all()
     class1 = Class.objects.all()
@@ -2030,8 +2146,24 @@ def ADD_ONLINE_LIVE_CLASS(request):
 
 def VIEW_ONLINE_LIVE_CLASS(request):
     all_online_live_class= OnlineLiveClass.objects.all().order_by('-start_time')
+    class1 = Class.objects.all()
+    course = Course.objects.all()
+    subject = Subject.objects.all()
+
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+    course_filter = request.GET.get('course_filter', '')
+    subject_filter = request.GET.get('subject_filter', '')
+
+    if class_filter:
+        all_online_live_class = all_online_live_class.filter(class1=class_filter)
+    elif class_filter:
+        all_online_live_class = all_online_live_class.filter(course=course_filter)
 
     context = {
+        "classes":class1,
+        "course":course,
+        "subject":subject,
         "class":all_online_live_class,
     }
 
@@ -2077,3 +2209,10 @@ def generate_signature(api_key, api_secret, meeting_number, role):
     hash = hmac.new(secret, message, hashlib.sha256)
     hash = base64.b64encode(hash.digest())
     return f"{api_key}.{meeting_number}.{timestamp}.{role}.{hash.decode('utf-8')}"
+
+
+def DELETE_ONLINE_CLASS(request,id):
+    online_class = OnlineLiveClass.objects.get(id = id)
+    online_class.delete()
+    messages.success(request,"Online Class Delete Successfully")
+    return redirect("admin-view-online-live-class")

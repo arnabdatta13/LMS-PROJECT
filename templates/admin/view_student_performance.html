@@ -7,8 +7,8 @@
     <h1 style="text-align: center;">Student's Performance Report</h1>
     <hr>
     <div class="student-info">
-        <p>Student's Name: {{ request.user.first_name }} {{ request.user.last_name }}</p>
-        <p>Reg. & Roll No.: {{ request.user.student.registration_number }} ({{ request.user.student.roll_number }})</p>
+        <p>Student's Name: {{ student.admin.first_name }} {{ student.admin.last_name }}</p>
+        <p>Reg. & Roll No.: ({{ student.roll_number }})</p>
         <p>Institute: {{ request.user.student.institute_name }}</p>
     </div>
     <hr>

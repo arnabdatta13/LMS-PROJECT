@@ -20,7 +20,7 @@
 
     {% include "base_desine/massages.html" %}
 
-
+<hr>
 
 <br><br>
     
@@ -34,7 +34,7 @@
 
             <p><strong>Class</strong><br>{{ i.class1.name }}</p>
         </div>
-            <a href="{%url "student-performance" i.id %}" class="view-result">View Report</a>
+            <a href="{%url "admin-view-student-performance/student" i.id %}" class="view-result">View Report</a>
 
         
     </div>
@@ -130,8 +130,6 @@
         }
     }
 </style>
-
-
 
 
 {% endblock %}

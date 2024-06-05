@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include "base_desine/loader.html" %}
+
 <div class="content container-fluid">
     <div class="page-header">
         <div class="row align-items-center">
@@ -144,13 +146,13 @@
                                   <tr>
                                     <td>{{ i.message }}</td>
                                     <td class="text-right">
-                                      <div class="actions">
+                                        <div class="actions">
                                           {% if i.status == 0 %}
                                           <span class="badge badge-danger">Unread The Message</span>
                                           {% else %}
                                           <span class="badge badge-success">Read The Message</span>
                                           {% endif %}
-                                      </div>
+                                        <div>
                                     </td>
                                    
                                    
