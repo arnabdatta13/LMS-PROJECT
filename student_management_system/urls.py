@@ -128,6 +128,7 @@ urlpatterns = [
 
 
 
+
     path('admin-student-activity-add', admin_views.STUDENT_ACTIVITY_ADD,name='admin-student-activity-add'),
     path('admin-student-activity-view', admin_views.STUDENT_ACTIVITY_VIEW,name='admin-student-activity-view'),
     path('admin-student-activity-edit/<str:id>', admin_views.STUDENT_ACTIVITY_EDIT,name='admin-student-activity-edit'),
@@ -163,6 +164,7 @@ urlpatterns = [
     path('admin-view-online-live-class', admin_views.VIEW_ONLINE_LIVE_CLASS, name='admin-view-online-live-class'),
     path('admin-start-online-live-class/<int:id>', admin_views.START_ONLINE_LIVE_CLASS, name='admin-start-online-live-class'),
     path('admin-online-class-delete/<int:id>', admin_views.DELETE_ONLINE_CLASS, name='admin-online-class-delete'),
+
 
 
     #this is teacher panel url

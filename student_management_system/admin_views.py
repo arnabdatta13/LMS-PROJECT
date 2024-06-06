@@ -2226,3 +2226,5 @@ def DELETE_ONLINE_CLASS(request,id):
     online_class.delete()
     messages.success(request,"Online Class Delete Successfully")
     return redirect("admin-view-online-live-class")
+
+
