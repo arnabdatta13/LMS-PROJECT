@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -416,8 +416,8 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
         return redirect('student-live-exam')
 
 
-    total_question = LiveExamQuestion.objects.all().filter(exam = exam).count()
-    questions=LiveExamQuestion.objects.all().filter(exam=exam)
+    total_question = LiveExamMCQQuestion.objects.all().filter(exam = exam).count()
+    questions=LiveExamMCQQuestion.objects.all().filter(exam=exam)
     total_marks=0
     for q in questions:
         total_marks=total_marks + q.marks
@@ -456,7 +456,7 @@ def STUDENT_START_LIVE_EXAM(request,id):
         messages.error(request, "You already has taken the exam.")
         return redirect('student-live-exam')
     
-    questions= LiveExamQuestion.objects.filter(exam = exam)
+    questions= LiveExamMCQQuestion.objects.filter(exam = exam)
     start_time = timezone.localtime(timezone.now())
     user = request.user
     duration_seconds = exam.duration.total_seconds()
@@ -491,7 +491,7 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id') 
         exam = Live_Exam.objects.get(id=exam_id)
-        questions = LiveExamQuestion.objects.filter(exam=exam)
+        questions = LiveExamMCQQuestion.objects.filter(exam=exam)
         student = request.user.student
 
         total_obtained_marks = 0
@@ -544,7 +544,7 @@ def STUDENT_LIVE_EXAM_MARK(request):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
     exam = Live_Exam.objects.get(id=id)
-    live_exam_questions = LiveExamQuestion.objects.filter(exam=exam)
+    live_exam_questions = LiveExamMCQQuestion.objects.filter(exam=exam)
     student = request.user
     user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_questions, user=student)
     
@@ -782,7 +782,7 @@ def STUDENT_PERFORMANCE(request, id):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
     exam = Live_Exam.objects.get(id = id)
-    questions = LiveExamQuestion.objects.filter(exam=exam)
+    questions = LiveExamMCQQuestion.objects.filter(exam=exam)
     context={
         'question':questions,
         'exam':exam

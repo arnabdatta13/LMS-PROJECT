@@ -84,13 +84,17 @@
                      </ul>
                   </li>
 
-                  <li class="submenu {% active_link 'admin-live-exam-add' 'active' %} {% active_link 'admin-live-exam-view' 'active' %} {% active_link 'admin-add-live-exam-question' 'active' %} {% active_link 'admin-view-live-exam-question' 'active' %}">
+                  <li class="submenu {% active_link 'admin-live-exam-add' 'active' %} {% active_link 'admin-live-exam-view' 'active' %} {% active_link 'admin-add-live-exam-mcq-question' 'active' %} {% active_link 'admin-view-live-exam-mcq-question' 'active' %}">
                      <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span>Live Exam</span> <span class="menu-arrow"></span></a>
                      <ul>
                         <li><a href="{% url 'admin-live-exam-add'%}">Add Exam </a></li>
                         <li><a href="{% url 'admin-live-exam-view'%}">View Exam</a></li>
-                        <li><a href="{% url 'admin-add-live-exam-question'%}">Add Question </a></li>
-                        <li><a href="{% url 'admin-view-live-exam-question'%}">View Question</a></li>
+                        <hr>
+                        <li><a href="{% url 'admin-add-live-exam-mcq-question'%}">Add MCQ Question </a></li>
+                        <li><a href="{% url 'admin-view-live-exam-mcq-question'%}">View MCQ Question</a></li>
+                        <hr>
+                        <li><a href="">Add Written Question </a></li>
+                        <li><a href="">View Written Question</a></li>
                         
                      </ul>
                   </li>

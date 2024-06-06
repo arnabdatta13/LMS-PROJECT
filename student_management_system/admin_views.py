@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamQuestion,Live_Exam_Result
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -1300,7 +1300,7 @@ def LIVE_EXAM_DELETE(request,id):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def ADD_LIVE_EXAM_QUESTION(request):
+def ADD_LIVE_EXAM_MCQ_QUESTION(request):
     class1 = Class.objects.all()
 
     action = request.GET.get('action')
@@ -1333,21 +1333,21 @@ def ADD_LIVE_EXAM_QUESTION(request):
         'exam':exam,
 
     }
-    return render(request,'admin/add_live_exam_question.html',context)
+    return render(request,'admin/add_live_exam_mcq_question.html',context)
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def SAVE_LIVE_EXAM_QUESTION(request):
+def SAVE_LIVE_EXAM_MCQ_QUESTION(request):
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
         exam = Live_Exam.objects.get(id=exam_id)
-        existing_questions_count = LiveExamQuestion.objects.filter(exam=exam).count()
+        existing_questions_count = LiveExamMCQQuestion.objects.filter(exam=exam).count()
         total_questions_allowed = exam.total_questions
 
         # Calculate the sum of marks for existing questions
-        existing_total_marks = LiveExamQuestion.objects.filter(exam=exam).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        existing_total_marks = LiveExamMCQQuestion.objects.filter(exam=exam).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
         total_marks_allowed = exam.total_marks
 
         question_counter = 1
@@ -1362,7 +1362,8 @@ def SAVE_LIVE_EXAM_QUESTION(request):
             option3_key = f'option3{question_counter}' if question_counter > 1 else 'option3'
             option4_key = f'option4{question_counter}' if question_counter > 1 else 'option4'
             answer_key = f'answer{question_counter}' if question_counter > 1 else 'answer'
-            
+            solution_key = f'solution{question_counter}' if question_counter > 1 else 'solution'
+
             question_text = request.POST.get(question_key)
             marks = request.POST.get(mark_key)
             option1 = request.POST.get(option1_key)
@@ -1370,20 +1371,21 @@ def SAVE_LIVE_EXAM_QUESTION(request):
             option3 = request.POST.get(option3_key)
             option4 = request.POST.get(option4_key)
             answer = request.POST.get(answer_key)
+            solution = request.POST.get(solution_key)
 
             if not question_text:
                 break
 
             if existing_questions_count + added_questions_count > total_questions_allowed:
                 messages.error(request, 'You cannot add more questions than the total number allowed for this exam.')
-                return redirect('admin-add-live-exam-question')
+                return redirect('admin-add-live-exam-mcq-question')
 
             if existing_total_marks + added_marks + int(marks) > total_marks_allowed:
                 messages.error(request, 'You cannot add more marks than the total marks allowed for this exam.')
-                return redirect('admin-add-live-exam-question')
+                return redirect('admin-add-live-exam-mcq-question')
 
             # Create and save the question object
-            LiveExamQuestion.objects.create(
+            LiveExamMCQQuestion.objects.create(
                 exam=exam,
                 marks=marks,
                 question=question_text,
@@ -1391,7 +1393,8 @@ def SAVE_LIVE_EXAM_QUESTION(request):
                 option2=option2,
                 option3=option3,
                 option4=option4,
-                answer=answer
+                answer=answer,
+                solution_details = solution
             )
             
             added_questions_count += 1
@@ -1399,7 +1402,7 @@ def SAVE_LIVE_EXAM_QUESTION(request):
             question_counter += 1
         
         messages.success(request, 'Questions are added successfully')
-        return redirect('admin-add-live-exam-question')
+        return redirect('admin-add-live-exam-mcq-question')
 
 
 
@@ -1407,7 +1410,7 @@ def SAVE_LIVE_EXAM_QUESTION(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def VIEW_LIVE_EXAM_QUESTION_FILTER(request):
+def VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER(request):
     exam = Live_Exam.objects.all()
 
     context = {
@@ -1415,42 +1418,42 @@ def VIEW_LIVE_EXAM_QUESTION_FILTER(request):
        
     }
 
-    return render(request,'admin/view_live_exam_question_filter.html',context)
+    return render(request,'admin/view_live_exam_mcq_question_filter.html',context)
 
 
 
 
-def VIEW_LIVE_EXAM_QUESTION(request,id):
+def VIEW_LIVE_EXAM_MCQ_QUESTION(request,id):
     exam = Live_Exam.objects.get(id = id)
 
-    question = LiveExamQuestion.objects.filter(exam=exam)
+    question = LiveExamMCQQuestion.objects.filter(exam=exam)
 
     context = {
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/view_live_exam_question.html',context)
+    return render(request,'admin/view_live_exam_mcq_question.html',context)
 
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def EDIT_LIVE_EXAM_QUESTION(request,id):
+def EDIT_LIVE_EXAM_MCQ_QUESTION(request,id):
     exam = Live_Exam.objects.all()
-    question = LiveExamQuestion.objects.filter(id = id)
+    question = LiveExamMCQQuestion.objects.filter(id = id)
 
     context = {
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/edit_live_exam_question.html',context)
+    return render(request,'admin/edit_live_exam_mcq_question.html',context)
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def UPDATE_LIVE_EXAM_QUESTION(request):
+def UPDATE_LIVE_EXAM_MCQ_QUESTION(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id')
         question_text = request.POST.get('question')
@@ -1461,9 +1464,9 @@ def UPDATE_LIVE_EXAM_QUESTION(request):
         option3 = request.POST.get('option3')
         option4 = request.POST.get('option4')
         answer = request.POST.get('answer')
-
+        solution = request.POST.get('solution')
         exam= Live_Exam.objects.get(id = exam_id)
-        question = LiveExamQuestion.objects.get(id = question_id)
+        question = LiveExamMCQQuestion.objects.get(id = question_id)
 
         question.exam=exam
         question.marks=marks
@@ -1473,11 +1476,12 @@ def UPDATE_LIVE_EXAM_QUESTION(request):
         question.option3=option3
         question.option4=option4
         question.answer=answer
+        question.solution_details=solution
 
         question.save()
 
         messages.success(request,'Queation Are Successfully Updated')
-        return redirect('admin-view-live-exam-question')
+        return redirect('admin-view-live-exam-mcq-question')
 
 
 
@@ -1485,9 +1489,9 @@ def UPDATE_LIVE_EXAM_QUESTION(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def DELETE_LIVE_EXAM_QUESTION(request,id):
+def DELETE_LIVE_EXAM_MCQ_QUESTION(request,id):
 
-    question = LiveExamQuestion.objects.get(id = id)
+    question = LiveExamMCQQuestion.objects.get(id = id)
     question.delete()
 
     messages.success(request,'Question are successfully deleted.')

@@ -341,7 +341,7 @@ class LiveExamTimer(models.Model):
         return self.exam.exam_name
 
 
-class LiveExamQuestion(models.Model):
+class LiveExamMCQQuestion(models.Model):
     exam =models.ForeignKey(Live_Exam,on_delete=models.CASCADE,default=0)
     marks=models.PositiveIntegerField()
     question=models.CharField(max_length=600)
@@ -358,7 +358,7 @@ class LiveExamQuestion(models.Model):
 
 
 class LiveExamQuestionOptionSelect(models.Model):
-    question = models.ForeignKey(LiveExamQuestion, on_delete=models.CASCADE)
+    question = models.ForeignKey(LiveExamMCQQuestion, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     selected_option = models.CharField(max_length=200)
 
@@ -366,12 +366,32 @@ class LiveExamQuestionOptionSelect(models.Model):
         return self.question.question
 
 
+class LiveExamWrittenQuestion(models.Model):
+    exam =models.ForeignKey(Live_Exam,on_delete=models.CASCADE,default=0)
+    marks=models.PositiveIntegerField()
+    question=models.CharField(max_length=600)
+    
+    solution_details = models.TextField(default="No Solution Available")
+
+    def __str__(self):
+        return self.exam.exam_name
+   
+    
+class LiveExamStudentWrittenAnswer(models.Model):
+    question = models.ForeignKey(LiveExamWrittenQuestion, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    answer_image = models.ImageField(upload_to='media/answers/')
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student.username} - {self.question.question[:50]}"
 
 class Live_Exam_Result(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)
     exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
     marks = models.PositiveIntegerField()
     date = models.DateTimeField(auto_now=True)
+
 
 
 class Message(models.Model):

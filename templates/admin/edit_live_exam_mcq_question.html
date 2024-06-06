@@ -17,7 +17,7 @@
 
          <div class="col-auto text-right float-right ml-auto">
 
-            <a href="{% url 'admin-view-practice-exam-question' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+            <a href="{% url 'admin-view-live-exam-mcq-question' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
          </div>
       </div>
 </div>
@@ -28,7 +28,7 @@
    <div class="col-sm-12">
       <div class="card">
          <div class="card-body">
-            <form method='post' action='{% url "admin-update-live-exam-question" %}' >
+            <form method='post' action='{% url "admin-update-live-exam-mcq-question" %}' >
                {% csrf_token%}
                   <div class="col-12">
                      <h5 class="form-title"><span>Edit Question</span></h5>
@@ -95,7 +95,12 @@
                            </select>
                      </div>
                      <br>
-                 
+                     <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Solution</label>
+                            <textarea class="form-control" name='solution'required >{% for i in question %} {{i.solution_details}} {%endfor%}</textarea>
+                        </div>
+                    </div>
                   
                   
                  

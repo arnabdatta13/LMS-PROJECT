@@ -112,13 +112,13 @@ urlpatterns = [
     path('admin-live-exam-delete/<str:id>', admin_views.LIVE_EXAM_DELETE,name='admin-live-exam-delete'),
 
 
-    path('admin-add-live-exam-question', admin_views.ADD_LIVE_EXAM_QUESTION,name='admin-add-live-exam-question'),
-    path('admin-save-live-exam-question', admin_views.SAVE_LIVE_EXAM_QUESTION,name='admin-save-live-exam-question'),
-    path('admin-view-live-exam-question', admin_views.VIEW_LIVE_EXAM_QUESTION_FILTER,name='admin-view-live-exam-question'),
-    path('admin-view-live-exam-question/<str:id>', admin_views.VIEW_LIVE_EXAM_QUESTION,name='admin-view-live-exam-question'),
-    path('admin-edit-live-exam-question/<str:id>', admin_views.EDIT_LIVE_EXAM_QUESTION,name='admin-edit-live-exam-question'),
-    path('admin-update-live-exam-question', admin_views.UPDATE_LIVE_EXAM_QUESTION,name='admin-update-live-exam-question'),
-    path('admin-delete-live-exam-question/<str:id>', admin_views.DELETE_LIVE_EXAM_QUESTION,name='admin-delete-live-exam-question'),
+    path('admin-add-live-exam-mcq-question', admin_views.ADD_LIVE_EXAM_MCQ_QUESTION,name='admin-add-live-exam-mcq-question'),
+    path('admin-save-live-exam-mcq-question', admin_views.SAVE_LIVE_EXAM_MCQ_QUESTION,name='admin-save-live-exam-mcq-question'),
+    path('admin-view-live-exam-mcq-question', admin_views.VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER,name='admin-view-live-exam-mcq-question'),
+    path('admin-view-live-exam-mcq-question/<str:id>', admin_views.VIEW_LIVE_EXAM_MCQ_QUESTION,name='admin-view-live-exam-mcq-question'),
+    path('admin-edit-live-exam-mcq-question/<str:id>', admin_views.EDIT_LIVE_EXAM_MCQ_QUESTION,name='admin-edit-live-exam-mcq-question'),
+    path('admin-update-live-exam-mcq-question', admin_views.UPDATE_LIVE_EXAM_MCQ_QUESTION,name='admin-update-live-exam-mcq-question'),
+    path('admin-delete-live-exam-mcq-question/<str:id>', admin_views.DELETE_LIVE_EXAM_MCQ_QUESTION,name='admin-delete-live-exam-mcq-question'),
 
 
     path('admin-star-student-add', admin_views.STAR_STUDENT_ADD,name='admin-star-student-add'),
