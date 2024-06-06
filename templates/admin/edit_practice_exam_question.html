@@ -95,7 +95,12 @@
                            </select>
                      </div>
                      <br>
-                 
+                     <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Solution</label>
+                            <textarea class="form-control" name='solution'required >{% for i in question %} {{i.solution_details}} {%endfor%}</textarea>
+                        </div>
+                    </div>
                   
                   
                  

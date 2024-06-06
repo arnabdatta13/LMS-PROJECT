@@ -967,6 +967,8 @@ def SAVE_PRACTICE_EXAM_QUESTION(request):
             option3_key = f'option3{question_counter}' if question_counter > 1 else 'option3'
             option4_key = f'option4{question_counter}' if question_counter > 1 else 'option4'
             answer_key = f'answer{question_counter}' if question_counter > 1 else 'answer'
+            solution_key = f'solution{question_counter}' if question_counter > 1 else 'solution'
+
             
             question_text = request.POST.get(question_key)
             marks = request.POST.get(mark_key)
@@ -975,6 +977,7 @@ def SAVE_PRACTICE_EXAM_QUESTION(request):
             option3 = request.POST.get(option3_key)
             option4 = request.POST.get(option4_key)
             answer = request.POST.get(answer_key)
+            solution = request.POST.get(solution_key)
 
             if not question_text:
                 break
@@ -996,7 +999,8 @@ def SAVE_PRACTICE_EXAM_QUESTION(request):
                 option2=option2,
                 option3=option3,
                 option4=option4,
-                answer=answer
+                answer=answer,
+                solution_details = solution
             )
             
             added_questions_count += 1
@@ -1061,6 +1065,7 @@ def UPDATE_PRACTICE_EXAM_QUESTION(request):
         option3 = request.POST.get('option3')
         option4 = request.POST.get('option4')
         answer = request.POST.get('answer')
+        solution = request.POST.get('solution')
 
         exam= Practice_Exam.objects.get(id = exam_id)
         question = PracticeExamQuestion.objects.get(id = question_id)
@@ -1073,6 +1078,7 @@ def UPDATE_PRACTICE_EXAM_QUESTION(request):
         question.option3=option3
         question.option4=option4
         question.answer=answer
+        question.solution_details=solution
 
         question.save()
 
