@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -429,6 +429,16 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
     }
     return render(request,'student/take_live_exam.html',context)
 
+
+def STUDENT_START_LIVE_EXAM_WRITTEN(request,id):
+    exam = Live_Exam.objects.get(id = id)
+
+    question = LiveExamWrittenQuestion.objects.filter(exam=exam)
+    context = {
+        "exam":exam,
+        "questions":question,
+    }
+    return render(request,"student/start_live_exam_written.html",context)
 
 
 @login_required(login_url='login')

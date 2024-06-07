@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+
+<div class="timer-container">
+  <div id="timer" class="timer"></div>
+</div>
+<div class="jumbotron my-4">
+  <!-- Timer -->
+  
+  
+  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-live-exam-calculate-marks' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="exam_id" value="{{ exam.id }}">
+    <h1 style="text-align: center;">{{ exam.exam_name }}</h1>
+    <br>
+    {% if no_questions %}
+    <br>
+      <h3 class="no-questions" >NO QUESTIONS AVAILABLE.</h3>
+    {% else %}
+      {% for q in questions %}
+      <div class="question-container">
+        <h3 class="question-title text-info">{{ forloop.counter }}. {{ q.question }}</h3>
+        <h4 class="question-marks" style="text-align: right;">[Marks {{ q.marks }}]</h4>
+        <br><br>
+        <div class="col-sm-11">
+            <div class="form-group">
+               
+               <textarea class="form-control" name='address'required placeholder="Write your answer here."></textarea>
+            </div>
+         </div>
+         <hr>
+        
+      </div>
+      {% endfor %}
+      <br><br>
+    {% endif %}
+    <br>
+    <button class="btn btn-info btn-lg" type="submit">Submit</button>
+  </form>
+</div>
+
+<style>
+  .timer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+    background-color: #333;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  .timer {
+    font-size: 40px;
+    color: #fff;
+  }
+
+  .question-container {
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  .question-title {
+    margin-bottom: 10px;
+  }
+
+  .question-marks {
+    margin-top: -40px;
+    margin-bottom: 15px;
+  }
+
+  
+
+  .no-questions {
+    color: #007FFF; /* Text color for no questions available */
+    text-align: center;
+  }
+</style>
+
+<script>
+  // Retrieve the initial timer duration from the model
+  var remainingTime = parseInt("{{ remaining_time }}"); // Convert remaining time to seconds
+
+  function updateTimer() {
+    var hours = Math.floor(remainingTime / 3600);
+    var minutes = Math.floor((remainingTime % 3600) / 60);
+    var seconds = remainingTime % 60;
+    
+    // Pad with leading zeros if necessary
+    hours = String(hours).padStart(2, '0');
+    minutes = String(minutes).padStart(2, '0');
+    seconds = String(seconds).padStart(2, '0');
+
+    // Display the remaining time
+    document.getElementById('timer').innerHTML = hours + ":" + minutes + ":" + seconds;
+
+    // Update the remaining time
+    remainingTime--;
+
+    // Check if the remaining time has reached zero
+    if (remainingTime < 0) {
+      // Submit the form after a delay (e.g., 1 second)
+      setTimeout(function() {
+        document.querySelector('form').submit(); // This submits the form
+      }, 1000);
+    } else {
+      // Schedule the next update after 1 second
+      setTimeout(updateTimer, 1000);
+    }
+  }
+
+  // Start the timer
+  window.onload = function() {
+    updateTimer();
+  };
+</script>
+
+<br><br><br><br><br><br>
+{% endblock %}
