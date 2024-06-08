@@ -7,48 +7,64 @@
   <div id="timer" class="timer"></div>
 </div>
 <div class="jumbotron my-4">
-  <!-- Timer -->
-  
-  
-  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-live-exam-calculate-marks' %}" method="POST">
+  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-live-exam-calculate-marks' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" name="exam_id" value="{{ exam.id }}">
     <h1 style="text-align: center;">{{ exam.exam_name }}</h1>
     <br>
     {% if no_questions %}
-    <br>
-      <h3 class="no-questions" >NO QUESTIONS AVAILABLE.</h3>
+      <br>
+      <h3 class="no-questions">NO QUESTIONS AVAILABLE.</h3>
     {% else %}
       {% for q in questions %}
-      <div class="question-container">
-        <h3 class="question-title text-info">{{ forloop.counter }}. {{ q.question }}</h3>
-        <h4 class="question-marks" style="text-align: right;">[Marks {{ q.marks }}]</h4>
-        <br><br>
-        <div class="col-sm-11">
-            <div class="form-group">
-               
-               <textarea class="form-control" name='address'required placeholder="Write your answer here."></textarea>
+        <div class="question-container">
+          <h3 class="question-title">{{ forloop.counter }}. {{ q.question }}</h3>
+          <h4 class="question-marks">[Marks {{ q.marks }}]</h4>
+          <br><br>
+          <div class="answer-container">
+            <textarea class="form-control answer-textarea" name="answer_{{ forloop.counter }}" required placeholder="Write your answer here..."></textarea>
+          </div>
+          <hr>
+          <div id="image-preview-container-{{ forloop.counter }}" class="image-preview-container" ondragover="allowDrop(event)" ondrop="drop(event, {{ forloop.counter }})">
+            <div class="drop-box">
+              Drag & drop files here, or click to select files
             </div>
-         </div>
-         <hr>
-        
-      </div>
+          </div>
+          <div class="form-group text-center">
+            <label for="answer_image_{{ forloop.counter }}" class="btn btn-primary btn-upload">Upload Answer Image</label>
+            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
+          </div>
+          
+        </div>
       {% endfor %}
-      <br><br>
+      <br>
     {% endif %}
-    <br>
-    <button class="btn btn-info btn-lg" type="submit">Submit</button>
+
+    <button class="btn btn-info btn-lg submit-button" type="submit">Submit</button>
   </form>
 </div>
 
 <style>
+  /* General Styles */
+  body {
+    background-color: #f8f9fa;
+    color: #333;
+  }
+  
+  .jumbotron {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
   .timer-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100px;
-    background-color: #333;
+    background-color: #007FFF;
     border-radius: 10px;
     margin-bottom: 20px;
   }
@@ -61,63 +77,219 @@
   .question-container {
     margin-bottom: 20px;
     border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fff;
   }
 
   .question-title {
-    margin-bottom: 10px;
+    color: #007FFF;
+    font-size: 25px;
+    margin-bottom: 5px;
   }
 
   .question-marks {
+    color: #555;
+    text-align: right;
     margin-top: -40px;
     margin-bottom: 15px;
   }
 
-  
-
   .no-questions {
-    color: #007FFF; /* Text color for no questions available */
+    color: #007FFF;
     text-align: center;
+  }
+
+  .answer-container {
+    margin-bottom: 20px;
+  }
+
+  .answer-textarea {
+    width: 100%;
+    height: 150px;
+    padding: 20px;
+    margin-bottom:40px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .answer-textarea:focus {
+    border-color: #007FFF;
+    box-shadow: 0 0 5px rgba(0,127,255,0.5);
+  }
+
+  .image-preview-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    margin-bottom:15px;
+    border: 2px dashed #007FFF;
+    border-radius: 5px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .image-preview-container:hover {
+    background-color: #f0f0f0;
+  }
+
+  .drop-box {
+    text-align: center;
+    color: #007FFF;
+    font-weight: bold;
+    padding:55px;
+  }
+
+  .drop-box::before {
+    content: "📂";
+    font-size: 40px;
+    display: block;
+    color: #007FFF;
+  }
+
+  .image-preview {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-preview .delete-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.7);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+  }
+
+  .btn-upload {
+    margin-top: 10px;
+    background-color: #007FFF;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-upload:hover {
+    background-color: #005BB5;
+  }
+
+  .submit-button {
+    background-color: #28a745;
+    border: none;
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .submit-button:hover {
+    background-color: #218838;
   }
 </style>
 
 <script>
-  // Retrieve the initial timer duration from the model
-  var remainingTime = parseInt("{{ remaining_time }}"); // Convert remaining time to seconds
+  var remainingTime = parseInt("{{ remaining_time }}");
 
   function updateTimer() {
     var hours = Math.floor(remainingTime / 3600);
     var minutes = Math.floor((remainingTime % 3600) / 60);
     var seconds = remainingTime % 60;
     
-    // Pad with leading zeros if necessary
     hours = String(hours).padStart(2, '0');
     minutes = String(minutes).padStart(2, '0');
     seconds = String(seconds).padStart(2, '0');
 
-    // Display the remaining time
     document.getElementById('timer').innerHTML = hours + ":" + minutes + ":" + seconds;
 
-    // Update the remaining time
     remainingTime--;
 
-    // Check if the remaining time has reached zero
     if (remainingTime < 0) {
-      // Submit the form after a delay (e.g., 1 second)
       setTimeout(function() {
-        document.querySelector('form').submit(); // This submits the form
+        document.querySelector('form').submit();
       }, 1000);
     } else {
-      // Schedule the next update after 1 second
       setTimeout(updateTimer, 1000);
     }
   }
 
-  // Start the timer
   window.onload = function() {
     updateTimer();
   };
+
+  function allowDrop(event) {
+    event.preventDefault();
+  }
+
+  function drop(event, counter) {
+    event.preventDefault();
+    var files = event.dataTransfer.files;
+    previewFiles(files, counter);
+  }
+
+  function previewImages(input, counter) {
+    var files = input.files;
+    previewFiles(files, counter);
+  }
+
+  function previewFiles(files, counter) {
+    var container = document.getElementById('image-preview-container-' + counter);
+    container.innerHTML = "";
+    
+    var dropBox = document.createElement('div');
+    dropBox.className = 'drop-box';
+    dropBox.textContent = "Drag & drop files here, or click to select files";
+    container.appendChild(dropBox);
+
+    Array.from(files).forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var imageDiv = document.createElement('div');
+        imageDiv.className = 'image-preview';
+        var img = document.createElement('img');
+        img.src = e.target.result;
+        var deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.onclick = function() {
+          container.removeChild(imageDiv);
+        };
+        imageDiv.appendChild(img);
+        imageDiv.appendChild(deleteButton);
+        container.appendChild(imageDiv);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 </script>
 
 <br><br><br><br><br><br>
