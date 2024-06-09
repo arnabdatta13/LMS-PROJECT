@@ -233,6 +233,7 @@ urlpatterns = [
     path('student-live-exam-mark',student_views.STUDENT_LIVE_EXAM_MARK,name='student-live-exam-mark'),
     path('student-view-live-exam-result/<int:id>',student_views.STUDENT_VIEW_LIVE_EXAM_RESULT,name='student-view-live-exam-result'),
     path('student-start-live-exam-written/<str:id>',student_views.STUDENT_START_LIVE_EXAM_WRITTEN,name='student-start-live-exam-written'),
+    path('student-submit-live-exam-written',student_views.STUDENT_SUBMIT_LIVE_EXAM_WRITTEN,name='student-submit-live-exam-written'),
 
 
 

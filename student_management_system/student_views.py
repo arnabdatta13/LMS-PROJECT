@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -439,6 +439,40 @@ def STUDENT_START_LIVE_EXAM_WRITTEN(request,id):
         "questions":question,
     }
     return render(request,"student/start_live_exam_written.html",context)
+
+
+
+def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
+    if request.method == 'POST':
+        exam_id = request.POST.get('exam_id')
+        exam = Live_Exam.objects.get(id=exam_id)
+        student = request.user.student
+
+        questions = LiveExamWrittenQuestion.objects.filter(exam=exam)
+
+        for index, question in enumerate(questions, start=1):
+            answer_text = request.POST.get(f'answer_{index}')
+            answer_images = request.FILES.getlist(f'answer_image_{index}')
+
+            # Debugging prints
+            print(f'Processing question {index}')
+            print(f'Answer text: {answer_text}')
+            print(f'Number of images: {len(answer_images)}')
+
+            # Save each image separately
+            for answer_image in answer_images:
+                print(f'Saving image {answer_image.name}')
+                new_answer = LiveExamStudentWrittenAnswer.objects.create(
+                    question=question,
+                    student=student,
+                    answer_image=answer_image,
+                    submitted_at=timezone.now()
+                )
+                print(f'Created answer: {new_answer.id}')
+
+        return redirect('student-live-exam')  
+
+
 
 
 @login_required(login_url='login')

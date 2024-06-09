@@ -7,12 +7,12 @@
   <div id="timer" class="timer"></div>
 </div>
 <div class="jumbotron my-4">
-  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-live-exam-calculate-marks' %}" method="POST" enctype="multipart/form-data">
+  <form class="form" autocomplete="off" action="{% url 'student-submit-live-exam-written' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" name="exam_id" value="{{ exam.id }}">
     <h1 style="text-align: center;">{{ exam.exam_name }}</h1>
     <br>
-    {% if no_questions %}
+    {% if not questions %}
       <br>
       <h3 class="no-questions">NO QUESTIONS AVAILABLE.</h3>
     {% else %}
@@ -22,27 +22,26 @@
           <h4 class="question-marks">[Marks {{ q.marks }}]</h4>
           <br><br>
           <div class="answer-container">
-            <textarea class="form-control answer-textarea" name="answer_{{ forloop.counter }}" required placeholder="Write your answer here..."></textarea>
+            <textarea class="form-control answer-textarea" name="answer_{{ forloop.counter }}" placeholder="Write your answer here..."></textarea>
           </div>
           <hr>
           <div id="image-preview-container-{{ forloop.counter }}" class="image-preview-container" ondragover="allowDrop(event)" ondrop="drop(event, {{ forloop.counter }})">
             <div class="drop-box" ondragover="allowDrop(event)" ondrop="drop(event, {{ forloop.counter }})">
               <label for="answer_image_{{ forloop.counter }}" style="cursor: pointer;">Drag & drop files here, or click to select files</label>
-          </div>          
+            </div>
           </div>
           <div class="form-group text-center">
             <label for="answer_image_{{ forloop.counter }}" class="btn btn-primary btn-upload">Upload Answer Image</label>
             <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
           </div>
-          
         </div>
       {% endfor %}
       <br>
     {% endif %}
-
     <button class="btn btn-info btn-lg submit-button" type="submit">Submit</button>
-  </form>
+  </form>  
 </div>
+
 
 <style>
   /* General Styles */
