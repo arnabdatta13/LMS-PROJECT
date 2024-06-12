@@ -32,7 +32,7 @@
           </div>
           <div class="form-group text-center">
             <label for="answer_image_{{ forloop.counter }}" class="btn btn-primary btn-upload">Upload Answer Image</label>
-            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
+            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}[]" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
           </div>
         </div>
       {% endfor %}
@@ -41,7 +41,6 @@
     <button class="btn btn-info btn-lg submit-button" type="submit">Submit</button>
   </form>  
 </div>
-
 
 <style>
   /* General Styles */
@@ -262,17 +261,7 @@
 
   function previewFiles(files, counter) {
     var container = document.getElementById('image-preview-container-' + counter);
-  
-    // Check if the container is empty before appending images
-    if (container.querySelectorAll('.image-preview').length === 0) {
-      // Show upload icon and drag and drop text
-      container.innerHTML = `
-        <div class="drop-box" ondragover="allowDrop(event)" ondrop="drop(event, ${counter})" onclick="openFileInput(${counter})">
-          Drag & drop files here, or click to select files
-        </div>
-      `;
-    }
-  
+
     Array.from(files).forEach(function(file) {
       var reader = new FileReader();
       reader.onload = function(e) {
@@ -289,8 +278,8 @@
           if (container.querySelectorAll('.image-preview').length === 0) {
             // Show upload icon and drag and drop text
             container.innerHTML = `
-              <div class="drop-box" ondragover="allowDrop(event)" ondrop="drop(event, ${counter})" onclick="openFileInput(${counter})">
-                Drag & drop files here, or click to select files
+              <div class="drop-box" ondragover="allowDrop(event)" ondrop="drop(event, ${counter})">
+                <label for="answer_image_${counter}" style="cursor: pointer;">Drag & drop files here, or click to select files</label>
               </div>
             `;
           }
@@ -298,23 +287,13 @@
         imageDiv.appendChild(img);
         imageDiv.appendChild(deleteButton);
         container.appendChild(imageDiv);
-  
-        // Hide upload icon and drag and drop text after uploading images
-        container.querySelector('.drop-box').style.display = 'none';
       };
       reader.readAsDataURL(file);
     });
+
+    // Remove the initial drag and drop text and icon if any image is added
+    container.querySelector('.drop-box')?.remove();
   }
-  
-  function openFileInput(counter) {
-    console.log('Opening file input for counter:', counter);
-    var fileInput = document.getElementById('answer_image_' + counter);
-    console.log('File input element:', fileInput);
-    fileInput.click();
-  }
-  
-  
-  
 </script>
 
 <br><br><br><br><br><br>

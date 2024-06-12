@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -24,7 +24,7 @@ def HOME(request):
 
     current_time = timezone.localtime(timezone.now())
     live_class = OnlineLiveClass.objects.filter(class1 = student_class)
-    taken_exams = Live_Exam_Report.objects.filter(user=user, is_taken=True).values('exam')
+    taken_exams = Live_Exam_MCQ_Report.objects.filter(user=user, is_taken=True).values('exam')
     live_exam = Live_Exam.objects.filter(end_time__gt=current_time, class_id=student_class).exclude(pk__in=Subquery(taken_exams))
 
     practice_exam = Practice_Exam.objects.filter(class_id=student_class)
@@ -379,7 +379,7 @@ def STUDENT_LIVE_EXAM(request):
     student = Student.objects.get(admin=user)
     student_class = student.class_id
     current_time = timezone.localtime(timezone.now())  # Get the current time in the local timezone
-    taken_exams = Live_Exam_Report.objects.filter(user=user, is_taken=True).values('exam')
+    taken_exams = Live_Exam_MCQ_Report.objects.filter(user=user, is_taken=True).values('exam')
     exams = Live_Exam.objects.filter(
         end_time__gt=current_time,
         class_id=student_class,
@@ -411,7 +411,7 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
         messages.error(request, "You cannot take the exam outside the scheduled time.")
         return redirect('student-live-exam')
     
-    if Live_Exam_Report.objects.filter(exam = exam,user = request.user,is_taken = True).exists() :
+    if Live_Exam_MCQ_Report.objects.filter(exam = exam,user = request.user,is_taken = True).exists() :
         messages.error(request, "You already has taken the exam.")
         return redirect('student-live-exam')
 
@@ -452,23 +452,17 @@ def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
 
         for index, question in enumerate(questions, start=1):
             answer_text = request.POST.get(f'answer_{index}')
-            answer_images = request.FILES.getlist(f'answer_image_{index}')
+            answer_images = request.FILES.getlist(f'answer_image_{index}[]')
 
             # Debugging prints
             print(f'Processing question {index}')
             print(f'Answer text: {answer_text}')
             print(f'Number of images: {len(answer_images)}')
 
-            # Save each image separately
-            for answer_image in answer_images:
-                print(f'Saving image {answer_image.name}')
-                new_answer = LiveExamStudentWrittenAnswer.objects.create(
-                    question=question,
-                    student=student,
-                    answer_image=answer_image,
-                    submitted_at=timezone.now()
-                )
-                print(f'Created answer: {new_answer.id}')
+            for img in answer_images:
+                print(f'Image name: {img.name}')
+                print(f'Image size: {img.size}')
+                print(f'Image content type: {img.content_type}')
 
         return redirect('student-live-exam')  
 
@@ -496,7 +490,7 @@ def STUDENT_TAKE_LIVE_EXAM_HOME(request,id):
 def STUDENT_START_LIVE_EXAM(request,id):
     exam=Live_Exam.objects.get(id=id)
 
-    if Live_Exam_Report.objects.filter(exam = exam,user = request.user,is_taken = True).exists() :
+    if Live_Exam_MCQ_Report.objects.filter(exam = exam,user = request.user,is_taken = True).exists() :
         messages.error(request, "You already has taken the exam.")
         return redirect('student-live-exam')
     
@@ -560,7 +554,7 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
         exam_timer.delete()
 
         exam_result = Live_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
-        live_exam_report = Live_Exam_Report.objects.create(exam=exam, user=request.user, is_taken=True)
+        live_exam_report = Live_Exam_MCQ_Report.objects.create(exam=exam, user=request.user, is_taken=True)
 
         return redirect('student-live-exam-mark')
 
@@ -621,7 +615,7 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
 
     # Calculate the highest mark and merit position
     user_scores = {}
-    for report in Live_Exam_Report.objects.filter(exam=exam):
+    for report in Live_Exam_MCQ_Report.objects.filter(exam=exam):
         user = report.user
         user_total = LiveExamQuestionOptionSelect.objects.filter(
             question__exam=exam, 
@@ -841,7 +835,7 @@ def STUDENT_PAST_EXAM(request):
     live_exams = Live_Exam.objects.all()
     practice_exams = Practice_Exam.objects.all()
 
-    live_exam_reports = {report.exam_id: report for report in Live_Exam_Report.objects.filter(user=request.user)}
+    live_exam_reports = {report.exam_id: report for report in Live_Exam_MCQ_Report.objects.filter(user=request.user)}
     practice_exam_results = {result.exam_id: result for result in Practice_Exam_Result.objects.filter(student=student)}
 
     # Merge and sort exams by date

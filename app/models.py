@@ -322,9 +322,19 @@ class Live_Exam(models.Model):
         return self.exam_name
 
 
-class Live_Exam_Report(models.Model):
-    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='taken_exams', blank=True, null=True)
+class Live_Exam_MCQ_Report(models.Model):
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE, related_name='mcq_reports')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='mcq_taken_exams', blank=True, null=True)
+    is_taken = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at= models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.exam.exam_name
+
+
+class Live_Exam_WRITTEN_Report(models.Model):
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE, related_name='written_reports')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='written_taken_exams', blank=True, null=True)
     is_taken = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null=True)
     updated_at= models.DateTimeField(auto_now=True)
@@ -394,6 +404,18 @@ class Live_Exam_Result(models.Model):
     marks = models.PositiveIntegerField()
     date = models.DateTimeField(auto_now=True)
 
+
+class Live_Exam_MCQ_Result(models.Model):
+    student = models.ForeignKey(Student,on_delete=models.CASCADE)
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
+    marks = models.PositiveIntegerField()
+    date = models.DateTimeField(auto_now=True)
+
+class Live_Exam_Written_Result(models.Model):
+    student = models.ForeignKey(Student,on_delete=models.CASCADE)
+    exam = models.ForeignKey(Live_Exam,on_delete=models.CASCADE)
+    marks = models.PositiveIntegerField()
+    date = models.DateTimeField(auto_now=True)
 
 
 class Message(models.Model):
