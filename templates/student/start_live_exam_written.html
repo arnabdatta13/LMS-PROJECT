@@ -274,11 +274,9 @@
         deleteButton.innerHTML = '&times;';
         deleteButton.onclick = function() {
           container.removeChild(imageDiv);
-          // Check if there are no images left
-          if (container.querySelectorAll('.image-preview').length === 0) {
-            // Show upload icon and drag and drop text
+          if (!container.querySelector('.image-preview')) {
             container.innerHTML = `
-              <div class="drop-box" ondragover="allowDrop(event)" ondrop="drop(event, ${counter})">
+              <div class="drop-box">
                 <label for="answer_image_${counter}" style="cursor: pointer;">Drag & drop files here, or click to select files</label>
               </div>
             `;

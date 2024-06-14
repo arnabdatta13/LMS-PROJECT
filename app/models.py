@@ -391,12 +391,19 @@ class LiveExamStudentWrittenAnswer(models.Model):
     question = models.ForeignKey(LiveExamWrittenQuestion, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     answer_text = models.TextField(blank=True, null=True)
-    answer_image = models.ImageField(upload_to='media/answers/', blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.student.admin.username} - {self.question.question[:50]}"
     
+    
+class LiveExamStudentWrittenAnswerImage(models.Model):
+    answer = models.ForeignKey(LiveExamStudentWrittenAnswer, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='media/answers/')
+
+    def __str__(self):
+        return f"Image for {self.answer.student.admin.username}'s answer"
+
 
 class Live_Exam_Result(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)

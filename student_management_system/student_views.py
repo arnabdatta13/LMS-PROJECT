@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -430,6 +430,7 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
     return render(request,'student/take_live_exam.html',context)
 
 
+
 def STUDENT_START_LIVE_EXAM_WRITTEN(request,id):
     exam = Live_Exam.objects.get(id = id)
 
@@ -439,6 +440,7 @@ def STUDENT_START_LIVE_EXAM_WRITTEN(request,id):
         "questions":question,
     }
     return render(request,"student/start_live_exam_written.html",context)
+
 
 
 
@@ -454,19 +456,21 @@ def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
             answer_text = request.POST.get(f'answer_{index}')
             answer_images = request.FILES.getlist(f'answer_image_{index}[]')
 
-            # Debugging prints
-            print(f'Processing question {index}')
-            print(f'Answer text: {answer_text}')
-            print(f'Number of images: {len(answer_images)}')
+            # Create the answer record
+            answer_record = LiveExamStudentWrittenAnswer.objects.create(
+                question=question,
+                student=student,
+                answer_text=answer_text
+            )
 
+            # Save each image in the new model
             for img in answer_images:
-                print(f'Image name: {img.name}')
-                print(f'Image size: {img.size}')
-                print(f'Image content type: {img.content_type}')
+                LiveExamStudentWrittenAnswerImage.objects.create(
+                    answer=answer_record,
+                    image=img
+                )
 
-        return redirect('student-live-exam')  
-
-
+        return redirect('student-live-exam')
 
 
 @login_required(login_url='login')
