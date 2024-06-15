@@ -22,7 +22,7 @@
           <h4 class="question-marks">[Marks {{ q.marks }}]</h4>
           <br><br>
           <div class="answer-container">
-            <textarea class="form-control answer-textarea" name="answer_{{ forloop.counter }}" placeholder="Write your answer here..."></textarea>
+            <textarea class="form-control answer-textarea" name="answer" placeholder="Write your answer here..."></textarea>
           </div>
           <hr>
           <div id="image-preview-container-{{ forloop.counter }}" class="image-preview-container" ondragover="allowDrop(event)" ondrop="drop(event, {{ forloop.counter }})">
@@ -32,7 +32,7 @@
           </div>
           <div class="form-group text-center">
             <label for="answer_image_{{ forloop.counter }}" class="btn btn-primary btn-upload">Upload Answer Image</label>
-            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}[]" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
+            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_images_{{ forloop.counter }}" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
           </div>
         </div>
       {% endfor %}
