@@ -453,15 +453,9 @@ def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
 
         questions = LiveExamWrittenQuestion.objects.filter(exam=exam)
 
-        for i in range(1, len(request.FILES) + 1):
-            file_name = f'answer_images_{i}'
-            uploaded_file = request.FILES.get(file_name)
-
-            # Find the corresponding question for this file
-            question = questions[i - 1]  # Adjust index to match question order
-
-            # Get answer text from form data (if needed)
-            answer_text = request.POST.get(f'answer_{question.id}')  # Adjust as per your form structure
+        for index, question in enumerate(questions, start=1):
+            answer_text = request.POST.get(f'answer_{index}')
+            answer_images = request.FILES.getlist(f'answer_image_{index}[]')
 
             # Create the answer record
             answer_record = LiveExamStudentWrittenAnswer.objects.create(
@@ -471,13 +465,17 @@ def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
             )
 
             # Save each image in the new model
-            if uploaded_file:
+            for img in answer_images:
                 LiveExamStudentWrittenAnswerImage.objects.create(
                     answer=answer_record,
-                    image=uploaded_file
+                    image=img
                 )
 
         return redirect('student-live-exam')
+
+
+
+
 
 
 @login_required(login_url='login')

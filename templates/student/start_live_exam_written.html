@@ -22,7 +22,7 @@
           <h4 class="question-marks">[Marks {{ q.marks }}]</h4>
           <br><br>
           <div class="answer-container">
-            <textarea class="form-control answer-textarea" name="answer" placeholder="Write your answer here..."></textarea>
+            <textarea class="form-control answer-textarea" name="answer_{{ forloop.counter }}" placeholder="Write your answer here..."></textarea>
           </div>
           <hr>
           <div id="image-preview-container-{{ forloop.counter }}" class="image-preview-container" ondragover="allowDrop(event)" ondrop="drop(event, {{ forloop.counter }})">
@@ -32,7 +32,7 @@
           </div>
           <div class="form-group text-center">
             <label for="answer_image_{{ forloop.counter }}" class="btn btn-primary btn-upload">Upload Answer Image</label>
-            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_images_{{ forloop.counter }}" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
+            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}[]" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
           </div>
         </div>
       {% endfor %}
@@ -261,6 +261,7 @@
 
   function previewFiles(files, counter) {
     var container = document.getElementById('image-preview-container-' + counter);
+    var fileInput = document.getElementById('answer_image_' + counter);
 
     Array.from(files).forEach(function(file) {
       var reader = new FileReader();
@@ -274,6 +275,7 @@
         deleteButton.innerHTML = '&times;';
         deleteButton.onclick = function() {
           container.removeChild(imageDiv);
+          updateFileInput(fileInput, container);
           if (!container.querySelector('.image-preview')) {
             container.innerHTML = `
               <div class="drop-box">
@@ -291,8 +293,28 @@
 
     // Remove the initial drag and drop text and icon if any image is added
     container.querySelector('.drop-box')?.remove();
+
+    // Update the file input with the current state of the images in the container
+    updateFileInput(fileInput, container);
+  }
+
+  function updateFileInput(fileInput, container) {
+    var dataTransfer = new DataTransfer();
+    container.querySelectorAll('.image-preview img').forEach(function(img) {
+      var file = dataURLtoFile(img.src, 'image.jpg');  // Default file name and type
+      dataTransfer.items.add(file);
+    });
+    fileInput.files = dataTransfer.files;
+  }
+
+  function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type:mime});
   }
 </script>
 
-<br><br><br><br><br><br>
 {% endblock %}
