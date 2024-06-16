@@ -1980,6 +1980,10 @@ def ADMIN_VIEW_ATTENDANCE(request):
 
 
 
+def ADMIN_STUDENT_WRITTEN_ANSWER(request):
+    return render(request,'admin/student_written_answer.html')
+
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')

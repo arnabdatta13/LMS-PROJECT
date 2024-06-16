@@ -152,7 +152,8 @@ urlpatterns = [
     path('admin-view-student-performance/<int:course_id>/<int:student_id>',admin_views.VIEW_STUDENT_PERFORMANCE,name='admin-view-student-performance'),
 
     path('admin-view-attendance', admin_views.ADMIN_VIEW_ATTENDANCE,name='admin-view-attendance'),
-    
+    path('admin-student-written-answer', admin_views.ADMIN_STUDENT_WRITTEN_ANSWER,name='admin-student-written-answer'),
+
 
     path('admin-delete-all-expire-student', admin_views.ADMIN_DELETE_ALL_EXPIRE_STUDENT,name='admin-delete-all-expire-student'),
     

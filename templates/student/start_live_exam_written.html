@@ -32,7 +32,7 @@
           </div>
           <div class="form-group text-center">
             <label for="answer_image_{{ forloop.counter }}" class="btn btn-primary btn-upload">Upload Answer Image</label>
-            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}[]" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
+            <input type="file" class="form-control-file d-none" id="answer_image_{{ forloop.counter }}" name="answer_image_{{ forloop.counter }}" accept="image/*" onchange="previewImages(this, {{ forloop.counter }})" multiple>
           </div>
         </div>
       {% endfor %}

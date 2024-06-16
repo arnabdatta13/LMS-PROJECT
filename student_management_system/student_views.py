@@ -403,6 +403,8 @@ def STUDENT_LIVE_EXAM(request):
     return render(request,'student/live_exam.html',context)
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_TAKE_LIVE_EXAM(request,id):
     exam = Live_Exam.objects.get(id = id)
     current_time = timezone.localtime(timezone.now()) 
@@ -431,6 +433,8 @@ def STUDENT_TAKE_LIVE_EXAM(request,id):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_START_LIVE_EXAM_WRITTEN(request,id):
     exam = Live_Exam.objects.get(id = id)
 
@@ -445,6 +449,9 @@ def STUDENT_START_LIVE_EXAM_WRITTEN(request,id):
 
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
     if request.method == 'POST':
         exam_id = request.POST.get('exam_id')
@@ -455,7 +462,7 @@ def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
 
         for index, question in enumerate(questions, start=1):
             answer_text = request.POST.get(f'answer_{index}')
-            answer_images = request.FILES.getlist(f'answer_image_{index}[]')
+            answer_images = request.FILES.getlist(f'answer_image_{index}')  # Ensure this matches the name in HTML
 
             # Create the answer record
             answer_record = LiveExamStudentWrittenAnswer.objects.create(
@@ -472,8 +479,6 @@ def STUDENT_SUBMIT_LIVE_EXAM_WRITTEN(request):
                 )
 
         return redirect('student-live-exam')
-
-
 
 
 

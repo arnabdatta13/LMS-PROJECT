@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+{% load static %}
+<div class="container">
+    <div class="titel">
+        <h2>Templated Written</h2>
+    </div>
+    <div class="question-container">
+        <div class="question-header">
+            <h3>Question 1</h3>
+            <div class="score">
+               <span>1/1</span>
+            </div>
+        </div>
+        <div class="question-content-box">
+            <div class="question-content">
+                <p>s বিন্দু একটি শব্দের উৎস এবং তা হতে 15m দূরে একটি দেয়াল অবস্থিত। ঐদিন শব্দের বেগ 330ms<sup>-1</sup> হলে s বিন্দুতে প্রতিধ্বনিটি শোনা যাবে কিনা?</p>
+            </div>
+        </div>
+        <br>
+        <div class="image-container">
+            <img src="{% static 'images/answer_image_1.jpg' %}" alt="Answer Image 1">
+            <img src="{% static 'images/answer_image_2.jpg' %}" alt="Answer Image 2">
+        </div>
+        <br>
+        <div class="answer-content">
+            <p>
+                প্রতিধ্বনি শোনা যাবে না, লিখার জন্য 0.5 নম্বর।
+                <br>
+                [বি.দ্র. সূত্র না লিখে সঠিক মান বসালে সূলের জন্য বাদ দেওয়া নম্বর প্রদান করা হবে। এক্ষেত্রে না লিখলে বা ভুল একটি লিখলে 0.5 নম্বর কাটা হবে। শুধু উৎস লিখলেও (প্রতিধ্বনি শোনা যাবে না) সম্পূর্ণ নম্বর পাবে।]
+            </p>
+        </div>
+        <hr>
+        <div class="col-sm-11">
+            <div class="form-group">
+                <label>Student Mark</label>
+                <input type="number" class="form-control" name="student_number" required>
+            </div>
+        </div>
+        <div class="button-group">
+            <button type="button" class="btn btn-primary">Submit Mark</button>
+            <button type="button" class="btn btn-danger">Wrong Answer</button>
+            <button type="button" class="btn btn-warning">Not Answered</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .titel {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .titel h2 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    .question-container {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .question-header h3 {
+        font-size: 20px;
+        color: #007FFF;
+        margin: 0;
+    }
+
+    .score {
+        font-size: 18px;
+        color: #007FFF;
+    }
+
+    .question-content-box {
+        border: 1px solid #007FFF;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #f0f8ff;
+        margin-bottom: 20px;
+    }
+
+    .question-content {
+        font-size: 16px;
+        color: #333;
+    }
+
+    .image-container {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+    }
+
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .answer-content {
+        font-size: 16px;
+        color: #333;
+        border: 1px solid #007FFF;
+        padding: 10px;
+        border-radius: 10px;
+        background-color: #f0f8ff;
+        margin-bottom: 30px;
+    }
+
+    .col-sm-11 {
+        margin-top:30px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .button-group {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .button-group .btn {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .button-group .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .button-group .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .button-group .btn-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+</style>
+{% endblock %}

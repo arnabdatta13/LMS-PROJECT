@@ -87,6 +87,7 @@
                   <li class="submenu {% active_link 'admin-live-exam-add' 'active' %} {% active_link 'admin-live-exam-view' 'active' %} {% active_link 'admin-add-live-exam-mcq-question' 'active' %} {% active_link 'admin-view-live-exam-mcq-question' 'active' %}">
                      <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span>Live Exam</span> <span class="menu-arrow"></span></a>
                      <ul>
+                        <hr>
                         <li><a href="{% url 'admin-live-exam-add'%}">Add Exam </a></li>
                         <li><a href="{% url 'admin-live-exam-view'%}">View Exam</a></li>
                         <hr>
@@ -95,7 +96,7 @@
                         <hr>
                         <li><a href="">Add Written Question </a></li>
                         <li><a href="">View Written Question</a></li>
-                        
+                        <hr>
                      </ul>
                   </li>
                   <li class="{% active_link 'admin-view-student-performance' 'active' %}">
@@ -104,7 +105,10 @@
                   <li class="{% active_link 'admin-view-attendance' 'active' %}">
                      <a href="{% url 'admin-view-attendance'%}"><i class="fa fa-calendar"></i> <span>View Attendance</span></a>
                   </li>
-                  
+
+                  <li class="{% active_link 'admin-student-written-answer' 'active' %}">
+                     <a href="{% url 'admin-student-written-answer'%}"><i class="fa fa-calendar"></i> <span>Student Written answer.</span></a>
+                  </li>
                   
 
                   <li class="{% active_link 'admin-student-send-notification' 'active' %}">
