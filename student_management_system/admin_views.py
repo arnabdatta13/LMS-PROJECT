@@ -1,6 +1,6 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -16,6 +16,7 @@ import hashlib
 import time
 from datetime import timedelta,datetime
 from django.db.models import Sum,Max
+from django.http import HttpResponseBadRequest
 
 
 
@@ -1980,8 +1981,51 @@ def ADMIN_VIEW_ATTENDANCE(request):
 
 
 
-def ADMIN_STUDENT_WRITTEN_ANSWER(request):
-    return render(request,'admin/student_written_answer.html')
+
+
+
+def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
+    if request.method == 'POST':
+        action = request.GET.get('action')
+        if action == 'Show-Courses':
+            selected_class_id = request.POST.get('class_id')
+            courses = Course.objects.filter(class1=selected_class_id)
+            return render(request, "admin/student_written_answer_filter.html", {"action": "Show-Courses", "courses": courses, "selected_class_id": selected_class_id})
+        
+        elif action == 'Show-Exams':
+            selected_class_id = request.POST.get('class_id')
+            selected_course_id = request.POST.get('course_id')
+            exams = Live_Exam.objects.filter(course_id=selected_course_id)
+            return render(request, "admin/student_written_answer_filter.html", {"action": "Show-Exams", "exams": exams, "selected_course_id": selected_course_id, "selected_class_id": selected_class_id})
+        
+        elif action == 'Show-Students':
+            selected_class_id = request.POST.get('class_id')
+            selected_course_id = request.POST.get('course_id')
+            selected_exam_id = request.POST.get('exam_id')
+           
+            get_class = Class.objects.get(id=selected_class_id)
+            students = Student.objects.filter(class_id=get_class)
+
+            context = {
+                "action": "Show-Students", 
+                "students": students, 
+                "class":selected_class_id, 
+                "selected_course_id": selected_course_id,
+                "exam":selected_exam_id
+            }
+            return render(request, "admin/student_written_answer_filter.html", context)
+    else:
+        classes = Class.objects.all()
+        return render(request, "admin/student_written_answer_filter.html", {"classes": classes})
+    
+
+
+def ADMIN_STUDENT_WRITTEN_ANSWER(request,student_id,exam_id):
+    question = LiveExamWrittenQuestion.objects.filter(exam = exam_id)
+    context = {
+        "question":question,
+    }
+    return render(request,'admin/student_written_answer.html',context)
 
 
 

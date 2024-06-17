@@ -107,17 +107,18 @@
                   </li>
 
                   <li class="{% active_link 'admin-student-written-answer' 'active' %}">
-                     <a href="{% url 'admin-student-written-answer'%}"><i class="fa fa-calendar"></i> <span>Student Written answer.</span></a>
+                     <a href="{% url 'admin-student-written-answer'%}"><i class="fas fa-object-group mr-2"></i> <span>Student Written answer</span></a>
                   </li>
                   
 
-                  <li class="{% active_link 'admin-student-send-notification' 'active' %}">
-                     <a href="{% url 'admin-student-send-notification'%}"><i class="fas fa-bullhorn"></i> <span>Send Student Notification</span></a>
-                  </li >
+                  <li class="submenu {% active_link 'admin-student-send-notification' 'active' %} {% active_link 'admin-teacher-send-notification' 'active' %}">
+                     <a href="#"><i class="fas fa-bullhorn"></i> <span>Notification</span> <span class="menu-arrow"></span></a>
+                     <ul>
+                        <li><a href="{% url 'admin-student-send-notification'%}">Send Student Notification</a></li>
+                        <li><a href="{% url 'admin-teacher-send-notification'%}">Send Teacher Notification</a></li>
+                     </ul>
+                  </li>
 
-                  <li class="{% active_link 'admin-teacher-send-notification' 'active' %}">
-                     <a href="{% url 'admin-teacher-send-notification'%}"><i class="fas fa-bullhorn"></i> <span>Send Teacher Notification</span></a>
-                  </li >
 
                   <li class="{% active_link 'admin-teacher-feedback' 'active' %}">
                      <a href="{% url "admin-teacher-feedback" %}"><i class="fas fa-comments"></i> <span>Teacher Feadback</span></a>
@@ -129,10 +130,7 @@
                      <a href="{% url "logout" %}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
                   </li>
                   
-                  
-                  
-                  
-                 
+
                </ul>
                {% elif  user.user_type == 2 %}
 
