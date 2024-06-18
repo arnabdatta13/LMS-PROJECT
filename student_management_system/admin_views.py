@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -1507,6 +1507,19 @@ def DELETE_LIVE_EXAM_MCQ_QUESTION(request,id):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def ADD_LIVE_EXAM_WRITTEN_QUESTION(request):
+    return render(request,"admin/add_live_exam_written_question.html")
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_LIVE_EXAM_WRITTEN_QUESTION_FILTER(request):
+    return render(request,"admin/view_live_exam_written_question.html")
+
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
@@ -1599,6 +1612,9 @@ def STAR_STUDENT_DELETE(request,id):
     return redirect('admin_home')
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def STUDENT_ACTIVITY_ADD(request):
     if request.method == "POST":
         date = request.POST.get('date')
@@ -1740,8 +1756,6 @@ def TEACHER_Feedback_SAVE(request):
         feedback_id= request.POST.get('feedback_id')
         feedback_reply = request.POST.get('feedback_reply')
 
-      
-
         feedback = Teacher_Feedback.objects.get(id=feedback_id)
 
         feedback.feedback_reply=feedback_reply
@@ -1777,8 +1791,6 @@ def STUDENT_SEND_NOTIFICATION(request):
         student = student.filter(roll_number=roll_number_query)
 
 
-
-    
     context = {
         'student':student,
         'notification':notification,
@@ -1981,9 +1993,8 @@ def ADMIN_VIEW_ATTENDANCE(request):
 
 
 
-
-
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
     if request.method == 'POST':
         action = request.GET.get('action')
@@ -2020,19 +2031,30 @@ def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
     
 
 
-def ADMIN_STUDENT_WRITTEN_ANSWER(request,student_id,exam_id):
-    question = LiveExamWrittenQuestion.objects.filter(exam = exam_id)
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def ADMIN_STUDENT_WRITTEN_ANSWER(request, student_id, exam_id):
+    exam = Live_Exam.objects.get(id = exam_id)
+    # Get the questions for the exam
+    questions = LiveExamWrittenQuestion.objects.filter(exam=exam_id)
+    
+    # Get the student's written answers for the exam
+    student =Student.objects.get( id=student_id)
+    written_answers = LiveExamStudentWrittenAnswer.objects.filter(student=student, question__exam=exam_id).select_related('question').prefetch_related('images')
+    
     context = {
-        "question":question,
+        "questions": questions,
+        "written_answers": written_answers,
+        "student": student,
+        "exam":exam,
     }
-    return render(request,'admin/student_written_answer.html',context)
-
+    
+    return render(request, 'admin/student_written_answer.html', context)
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADMIN_DELETE_ALL_EXPIRE_STUDENT(request):
-    
     current_date = timezone.now().date()
 
     # Get all session years whose end date is less than the current date

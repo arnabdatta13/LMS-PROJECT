@@ -3,60 +3,113 @@
 {% include "base_desine/loader.html" %}
 {% load static %}
 <div class="container">
-    <div class="titel">
-        <h2>Templated Written</h2>
-    </div>
-    {% for i in question%}
-    <div class="question-container">
-        <div class="question-header">
-            <h3>Question {{forloop.counter}}</h3>
-            <div class="score">
-               <span>1/1</span>
-            </div>
+    <!-- Student Information Container -->
+    <div class="student-info-container">
+        <h2>Student Information</h2>
+        <div class="info-group">
+            <p><strong>Student Name:</strong> {{ student.name }}</p>
         </div>
-        <div class="question-content-box">
-            <div class="question-content">
-                <p>{{i.question}}</p>
-            </div>
+        <div class="info-group">
+            <p><strong>Class:</strong> {{ student.class_id.name }}</p>
         </div>
-        <br>
-        <div class="image-container">
-            <img src="{% static 'images/answer_image_1.jpg' %}" alt="Answer Image 1">
-            <img src="{% static 'images/answer_image_2.jpg' %}" alt="Answer Image 2">
+        <div class="info-group">
+            <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
         </div>
-        <br>
-        <div class="answer-content">
-            <p>
-                প্রতিধ্বনি শোনা যাবে না, লিখার জন্য 0.5 নম্বর।
-                <br>
-                [বি.দ্র. সূত্র না লিখে সঠিক মান বসালে সূলের জন্য বাদ দেওয়া নম্বর প্রদান করা হবে। এক্ষেত্রে না লিখলে বা ভুল একটি লিখলে 0.5 নম্বর কাটা হবে। শুধু উৎস লিখলেও (প্রতিধ্বনি শোনা যাবে না) সম্পূর্ণ নম্বর পাবে।]
-            </p>
+        <div class="info-group">
+            <p><strong>Exam Name:</strong> {{ exam.exam_name }}</p>
         </div>
-        <hr>
-        <div class="col-sm-11">
-            <div class="form-group">
-                <label>Student Mark</label>
-                <input type="number" class="form-control" name="student_number" required>
-            </div>
-        </div>
-        <div class="button-group">
-            <button type="button" class="btn btn-primary">Submit Mark</button>
-            <button type="button" class="btn btn-danger">Wrong Answer</button>
-            <button type="button" class="btn btn-warning">Not Answered</button>
+        <div class="info-group">
+            <p><strong>Course:</strong> {{ exam.course.name }}</p>
         </div>
     </div>
-    {% endfor %}
+
+    <!-- Questions Container -->
+    <div class="questions-container">
+        <div class="titel">
+            <h2>Templated Written</h2>
+        </div>
+        {% for question in questions %}
+        <div class="question-container">
+            <div class="question-header">
+                <h3>Question {{ forloop.counter }}</h3>
+                <div class="score">
+                   <span>{{ question.marks }}</span>
+                </div>
+            </div>
+            <div class="question-content-box">
+                <div class="question-content">
+                    <p>{{ question.question }}</p>
+                </div>
+            </div>
+            <br>
+            
+            {% for answer in written_answers %}
+                {% if answer.question.id == question.id %}
+                <div class="answer-container">
+                    <div class="answer-content">
+                        <p>{{ answer.answer_text }}</p>
+                    </div>
+                    <div class="image-container">
+                        {% for image in answer.images.all %}
+                        <img src="{{ image.image.url }}" alt="Answer Image">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            
+            <hr>
+            <div class="col-sm-11">
+                <div class="form-group">
+                    <label for="student_number">Student Mark</label>
+                    <input type="number" class="form-control" id="student_number" name="student_number" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-primary">Submit Mark</button>
+                <button type="button" class="btn btn-danger">Wrong Answer</button>
+                <button type="button" class="btn btn-warning">Not Answered</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 <style>
     .container {
-        max-width: 800px;
+        max-width: 1000px;
         margin: auto;
         padding: 20px;
         background-color: #f8f9fa;
-        border: 1px solid #ddd;
         border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .student-info-container, .questions-container {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+    }
+
+    .student-info-container {
+        margin-bottom: 40px;
+    }
+
+    .student-info-container h2, .questions-container .titel h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .info-group {
+        margin-bottom: 10px;
+    }
+
+    .info-group p {
+        font-size: 16px;
+        color: #333;
+        margin: 0;
     }
 
     .titel {
@@ -74,6 +127,7 @@
         border-radius: 10px;
         padding: 20px;
         border: 1px solid #ccc;
+        margin-bottom: 20px;
     }
 
     .question-header {
@@ -107,14 +161,23 @@
         color: #333;
     }
 
+    .answer-container {
+        margin-top: 20px;
+    }
+
     .image-container {
         display: flex;
-        justify-content: space-around;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
         margin-bottom: 20px;
     }
 
     .image-container img {
         max-width: 100%;
+        max-height: 300px;
+        object-fit: contain;
         height: auto;
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -131,7 +194,7 @@
     }
 
     .col-sm-11 {
-        margin-top:30px;
+        margin-top: 30px;
         margin-bottom: 20px;
     }
 
@@ -152,6 +215,13 @@
         font-size: 16px;
         border: 1px solid #ccc;
         border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
     }
 
     .button-group {
@@ -166,6 +236,11 @@
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .button-group .btn:hover {
+        transform: translateY(-2px);
     }
 
     .button-group .btn-primary {
@@ -173,14 +248,55 @@
         color: white;
     }
 
+    .button-group .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
     .button-group .btn-danger {
         background-color: #dc3545;
         color: white;
     }
 
+    .button-group .btn-danger:hover {
+        background-color: #c82333;
+    }
+
     .button-group .btn-warning {
         background-color: #ffc107;
         color: black;
+    }
+
+    .button-group .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .question-container {
+            padding: 10px;
+        }
+
+        .question-header h3, .score {
+            font-size: 16px;
+        }
+
+        .question-content {
+            font-size: 14px;
+        }
+
+        .answer-content {
+            font-size: 14px;
+        }
+
+        .form-group input {
+            padding: 6px;
+            font-size: 14px;
+        }
+
+        .button-group .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
     }
 </style>
 {% endblock %}
