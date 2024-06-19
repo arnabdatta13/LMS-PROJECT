@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -2051,6 +2051,29 @@ def ADMIN_STUDENT_WRITTEN_ANSWER(request, student_id, exam_id):
     
     return render(request, 'admin/student_written_answer.html', context)
 
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def GIVE_STUDENT_WRITTEN_EXAM_MARK(request):
+    if request.method == "POST":
+        student = request.POST.get("student_id")
+        exam = request.POST.get("exam_id")
+
+        student = Student.objects.get(id = student)
+        exam = Live_Exam.objects.get(id = exam)
+
+        for question in LiveExamWrittenQuestion.objects.filter(exam=exam):
+            marks = request.POST.get(f'marks_{question.id}')
+            if marks is not None:
+                Live_Exam_Written_Result.objects.create(
+                    student=student,
+                    exam=exam,
+                    question=question,
+                    marks=int(marks)
+                )
+        return redirect('')
+        
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')

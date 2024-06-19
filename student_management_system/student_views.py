@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage,Live_Exam_Written_Result
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -596,15 +596,19 @@ def STUDENT_LIVE_EXAM_MARK(request):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
     exam = Live_Exam.objects.get(id=id)
-    live_exam_questions = LiveExamMCQQuestion.objects.filter(exam=exam)
+    live_exam_mcq_questions = LiveExamMCQQuestion.objects.filter(exam=exam)
+    live_exam_written_questions = LiveExamWrittenQuestion.objects.filter(exam=exam)
+
     student = request.user
-    user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_questions, user=student)
-    
+    user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_mcq_questions, user=student)
+
+    written_answers = LiveExamStudentWrittenAnswer.objects.filter(student=student.student, question__exam=exam).select_related('question').prefetch_related('images')
+
     user_answers_dict = {answer.question.id: answer.selected_option for answer in user_answers}
-    
-    # Calculate user's total score
+
+    # Calculate user's total score for MCQ
     user_total_score = 0
-    for question in live_exam_questions:
+    for question in live_exam_mcq_questions:
         selected_option = user_answers_dict.get(question.id)
         question.option1_selected = (selected_option == 'Option1')
         question.option2_selected = (selected_option == 'Option2')
@@ -627,6 +631,7 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         question.option3_percentage = (option3_count / total_answers) * 100 if total_answers > 0 else 0
         question.option4_percentage = (option4_count / total_answers) * 100 if total_answers > 0 else 0
 
+
     # Calculate the highest mark and merit position
     user_scores = {}
     for report in Live_Exam_MCQ_Report.objects.filter(exam=exam):
@@ -642,12 +647,15 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
     merit_position = sorted(user_scores.values(), reverse=True).index(user_total_score) + 1
 
     context = {
-        'questions': live_exam_questions,
+        'mcq_questions': live_exam_mcq_questions,
+        'written_questions': live_exam_written_questions,
         'exam': exam,
         'highest_mark': highest_mark,
         'merit_position': merit_position,
         'user_total_score': user_total_score,
+        'written_answers': written_answers,
     }
+
     return render(request, 'student/view_online_exam_result.html', context)
 
 
