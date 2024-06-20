@@ -601,7 +601,6 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
 
     student = request.user
     user_answers = LiveExamQuestionOptionSelect.objects.filter(question__in=live_exam_mcq_questions, user=student)
-
     written_answers = LiveExamStudentWrittenAnswer.objects.filter(student=student.student, question__exam=exam).select_related('question').prefetch_related('images')
 
     user_answers_dict = {answer.question.id: answer.selected_option for answer in user_answers}
@@ -631,7 +630,6 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         question.option3_percentage = (option3_count / total_answers) * 100 if total_answers > 0 else 0
         question.option4_percentage = (option4_count / total_answers) * 100 if total_answers > 0 else 0
 
-
     # Calculate the highest mark and merit position
     user_scores = {}
     for report in Live_Exam_MCQ_Report.objects.filter(exam=exam):
@@ -646,6 +644,29 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
     highest_mark = max(user_scores.values(), default=0)
     merit_position = sorted(user_scores.values(), reverse=True).index(user_total_score) + 1
 
+    # Calculate written results
+    written_results = {}
+    written_marks = Live_Exam_Written_Result.objects.filter(student=student.student, exam=exam)
+    
+    
+    status_result = {}
+    for marks in written_marks:
+        written_results[marks.question.id] = marks.marks
+        status_result[marks.question.id]= marks.status
+
+    
+    processed_written_results = []
+    for question in live_exam_written_questions:
+        number = written_results.get(question.id, None)
+        status = status_result.get(question.id,"Pendding")
+        processed_written_results.append({
+            'id': question.id,
+            'question': question.question,
+            'marks': question.marks,
+            'obtained_marks': number,
+            "status":status,
+        })
+    
     context = {
         'mcq_questions': live_exam_mcq_questions,
         'written_questions': live_exam_written_questions,
@@ -654,6 +675,7 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         'merit_position': merit_position,
         'user_total_score': user_total_score,
         'written_answers': written_answers,
+        'written_results': processed_written_results,
     }
 
     return render(request, 'student/view_online_exam_result.html', context)

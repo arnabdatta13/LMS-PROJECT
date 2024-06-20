@@ -13,130 +13,133 @@
         <p class="merit-position">Merit Position: {{ merit_position }}</p>
     </div>
 
-    <div class="mcq-section">
-        <h3>MCQ</h3>
-        {% for question in mcq_questions %}
-        <div class="card">
-            <div class="question">
-                <p class="question-number">Question {{ forloop.counter }}</p>
-                <p class="question-text"><strong>{{ question.question }}</strong></p>
-            </div>
-            <div class="options">
-                <label class="option">
-                    <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
-                    <span>{{ question.option1 }}</span>
-                    {% if question.answer == 'Option1' %}
-                    <i class="fa fa-check-circle correct-icon"></i>
-                    {% endif %}
-                </label>
-                <label class="option">
-                    <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
-                    <span>{{ question.option2 }}</span>
-                    {% if question.answer == 'Option2' %}
-                    <i class="fa fa-check-circle correct-icon"></i>
-                    {% endif %}
-                </label>
-                <label class="option">
-                    <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
-                    <span>{{ question.option3 }}</span>
-                    {% if question.answer == 'Option3' %}
-                    <i class="fa fa-check-circle correct-icon"></i>
-                    {% endif %}
-                </label>
-                <label class="option">
-                    <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
-                    <span>{{ question.option4 }}</span>
-                    {% if question.answer == 'Option4' %}
-                    <i class="fa fa-check-circle correct-icon"></i>
-                    {% endif %}
-                </label>
-            </div>
-            <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
-                {% if question.is_correct %}
-                <span>Correct</span>
-                {% else %}
-                <span>Incorrect</span>
+<div class="mcq-section">
+    <h3>MCQ</h3>
+    {% for question in mcq_questions %}
+    <div class="card">
+        <div class="question">
+            <p class="question-number">Question {{ forloop.counter }}</p>
+            <p class="question-text"><strong>{{ question.question }}</strong></p>
+        </div>
+        <div class="options">
+            <label class="option">
+                <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
+                <span>{{ question.option1 }}</span>
+                {% if question.answer == 'Option1' %}
+                <i class="fa fa-check-circle correct-icon"></i>
                 {% endif %}
+            </label>
+            <label class="option">
+                <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
+                <span>{{ question.option2 }}</span>
+                {% if question.answer == 'Option2' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
+            </label>
+            <label class="option">
+                <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
+                <span>{{ question.option3 }}</span>
+                {% if question.answer == 'Option3' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
+            </label>
+            <label class="option">
+                <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
+                <span>{{ question.option4 }}</span>
+                {% if question.answer == 'Option4' %}
+                <i class="fa fa-check-circle correct-icon"></i>
+                {% endif %}
+            </label>
+        </div>
+        <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
+            {% if question.is_correct %}
+            <span>Correct</span>
+            {% else %}
+            <span>Incorrect</span>
+            {% endif %}
+        </div>
+        <div class="statistics">
+            <div class="stat">
+                <span class="stat-label">A</span>
+                <span class="percentage">{{ question.option1_percentage }}%</span>
             </div>
-            <div class="statistics">
-                <div class="stat">
-                    <span class="stat-label">A</span>
-                    <span class="percentage">{{ question.option1_percentage }}%</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">B</span>
-                    <span class="percentage">{{ question.option2_percentage }}%</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">C</span>
-                    <span class="percentage">{{ question.option3_percentage }}%</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">D</span>
-                    <span class="percentage">{{ question.option4_percentage }}%</span>
-                </div>
+            <div class="stat">
+                <span class="stat-label">B</span>
+                <span class="percentage">{{ question.option2_percentage }}%</span>
             </div>
-            <div class="solution">
-                <span>Solution: <br>{{ question.solution_details }}</span>
+            <div class="stat">
+                <span class="stat-label">C</span>
+                <span class="percentage">{{ question.option3_percentage }}%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">D</span>
+                <span class="percentage">{{ question.option4_percentage }}%</span>
             </div>
         </div>
+        <div class="solution">
+            <span>Solution: <br>{{ question.solution_details }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<br><br>
+
+<!-- Questions Container -->
+
+<div class="questions-container">
+    <div class="title">
+        <h2>Templated Written</h2>
+    </div>
+    {% for question in written_questions %}
+        {% for i in written_results%}
+    <div class="question-container">
+        <div class="question-header">
+            <h3>Question {{ forloop.counter }}</h3>
+            <div class="score">
+                {% if i.obtained_marks != None %}
+                <span><u>Obtained: {{ i.obtained_marks }}/{{ question.marks }}</u></span>
+                {%else%}
+                <span><u>Obtained: {{i.status}}</u></span>
+                {%endif%}
+            </div>
+        </div>
+        <div class="question-content-box">
+            <div class="question-content">
+                <p>{{ question.question }}</p>
+            </div>
+        </div>
+        <br>
+        
+        {% for answer in written_answers %}
+            {% if answer.question.id == question.id %}
+            <div class="answer-container">
+                <h4>Your Answer:</h4>
+                <div class="answer-content">
+                    <p>{{ answer.answer_text }}</p>
+                </div>
+                <h4>Picture Answer:</h4>
+                <br>
+                <div class="image-container">
+                    {% for image in answer.images.all %}
+                    <img src="{{ image.image.url }}" alt="Answer Image">
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
         {% endfor %}
     </div>
-    <br><br>
-
-    <!-- Questions Container -->
-
-    <div class="questions-container">
-        <div class="title">
-            <h2>Templated Written</h2>
-        </div>
-        {% for question in written_questions %}
-        <div class="question-container">
-            <div class="question-header">
-                <h3>Question {{ forloop.counter }}</h3>
-                <div class="score">
-                    {% if question.id in written_results %}
-                    <span><u> Obtained: {{ written_results.question.id }}/{{ question.marks }}</u></span>
-                    {% else %}
-                        <span><u> Obtained: -/{{ exam.total_marks }}</u></span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="question-content-box">
-                <div class="question-content">
-                    <p>{{ question.question }}</p>
-                </div>
-            </div>
-            <br>
-            
-            {% for answer in written_answers %}
-                {% if answer.question.id == question.id %}
-                <div class="answer-container">
-                    <h4>Your Answer:</h4>
-                    <div class="answer-content">
-                        <p>{{ answer.answer_text }}</p>
-                    </div>
-                    <div class="image-container">
-                        {% for image in answer.images.all %}
-                        <img src="{{ image.image.url }}" alt="Answer Image">
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% endfor %}
-    </div>
-    
-
-    <div class="text-center">
-        <form method="get" action="{% url 'student-merit-position' exam.id %}">
-            <button type="submit" class="btn btn-primary">Merit Position</button>
-        </form>
-    </div>
-    <br>
+        {%endfor%}
+    {% endfor %}
 </div>
 
+
+<div class="text-center">
+    <form method="get" action="{% url 'student-merit-position' exam.id %}">
+        <button type="submit" class="btn btn-primary">Merit Position</button>
+    </form>
+</div>
+<br>
+</div>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');

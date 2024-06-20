@@ -418,12 +418,15 @@ class Live_Exam_MCQ_Result(models.Model):
     marks = models.PositiveIntegerField()
     date = models.DateTimeField(auto_now=True)
 
+
 class Live_Exam_Written_Result(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     exam = models.ForeignKey(Live_Exam, on_delete=models.CASCADE)
     question = models.ForeignKey(LiveExamWrittenQuestion, on_delete=models.CASCADE,default=1)
     marks = models.PositiveIntegerField()
+    status = models.CharField(max_length=30, default="Pending")
     date = models.DateTimeField(auto_now=True)
+
 
 class Message(models.Model):
     name = models.CharField(max_length=100)
