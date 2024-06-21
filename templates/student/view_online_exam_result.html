@@ -90,45 +90,49 @@
     <div class="title">
         <h2>Templated Written</h2>
     </div>
-    {% for question in written_questions %}
-        {% for i in written_results%}
+    {% for item in written_questions %}
     <div class="question-container">
         <div class="question-header">
             <h3>Question {{ forloop.counter }}</h3>
             <div class="score">
-                {% if i.obtained_marks != None %}
-                <span><u>Obtained: {{ i.obtained_marks }}/{{ question.marks }}</u></span>
-                {%else%}
-                <span><u>Obtained: {{i.status}}</u></span>
-                {%endif%}
+                {% for answer in item.answers %}
+                {% if item.results.obtained_marks != None %}
+                    <span><u>Obtained: {{ item.results.obtained_marks }}/{{ item.results.marks }}</u></span>
+                {% elif answer.answer_text == None%}
+                    <span><u>Not Answer</u></span>
+                {% else %}
+                    <span><u>Pending</u></span>
+                {% endif %}
+                {% endfor %}
             </div>
         </div>
         <div class="question-content-box">
             <div class="question-content">
-                <p>{{ question.question }}</p>
+                <p>{{ item.question.question }}</p>
             </div>
         </div>
         <br>
         
-        {% for answer in written_answers %}
-            {% if answer.question.id == question.id %}
-            <div class="answer-container">
-                <h4>Your Answer:</h4>
-                <div class="answer-content">
+        <div class="answer-container">
+            <h4>Your Answer:</h4>
+            <div class="answer-content">
+                {% for answer in item.answers %}
                     <p>{{ answer.answer_text }}</p>
-                </div>
-                <h4>Picture Answer:</h4>
-                <br>
-                <div class="image-container">
-                    {% for image in answer.images.all %}
-                    <img src="{{ image.image.url }}" alt="Answer Image">
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
-            {% endif %}
-        {% endfor %}
+
+            <h4>Picture Answer:</h4>
+            <br>
+            <div class="image-container">
+                {% for answer in item.answers %}
+                {% for image in answer.images.all %}
+                    <img src="{{ image.image.url }}" alt="Image">
+                {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
-        {%endfor%}
+    
     {% endfor %}
 </div>
 

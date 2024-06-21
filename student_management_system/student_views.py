@@ -613,18 +613,18 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         question.option2_selected = (selected_option == 'Option2')
         question.option3_selected = (selected_option == 'Option3')
         question.option4_selected = (selected_option == 'Option4')
-        
+
         question.is_correct = (selected_option == question.answer)
         if question.is_correct:
             user_total_score += question.marks
-        
+
         # Calculate statistics for each option
         total_answers = LiveExamQuestionOptionSelect.objects.filter(question=question).count()
         option1_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option1').count()
         option2_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option2').count()
         option3_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option3').count()
         option4_count = LiveExamQuestionOptionSelect.objects.filter(question=question, selected_option='Option4').count()
-        
+
         question.option1_percentage = (option1_count / total_answers) * 100 if total_answers > 0 else 0
         question.option2_percentage = (option2_count / total_answers) * 100 if total_answers > 0 else 0
         question.option3_percentage = (option3_count / total_answers) * 100 if total_answers > 0 else 0
@@ -645,40 +645,44 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
     merit_position = sorted(user_scores.values(), reverse=True).index(user_total_score) + 1
 
     # Calculate written results
-    written_results = {}
     written_marks = Live_Exam_Written_Result.objects.filter(student=student.student, exam=exam)
-    
-    
-    status_result = {}
-    for marks in written_marks:
-        written_results[marks.question.id] = marks.marks
-        status_result[marks.question.id]= marks.status
+    written_results_dict = {result.question.id: {'marks': result.marks, 'status': result.status} for result in written_marks}
 
-    
     processed_written_results = []
     for question in live_exam_written_questions:
-        number = written_results.get(question.id, None)
-        status = status_result.get(question.id,"Pendding")
+        result = written_results_dict.get(question.id, {'marks': None, 'status': 'Pending'})
+        obtained_marks = result['marks']
+        status = result['status']
         processed_written_results.append({
             'id': question.id,
             'question': question.question,
             'marks': question.marks,
-            'obtained_marks': number,
-            "status":status,
+            'obtained_marks': obtained_marks,
+            'status': status,
         })
-    
+
+    # Combine written questions and their answers
+    combined_written_data = []
+    for question in live_exam_written_questions:
+        result = next((item for item in processed_written_results if item['id'] == question.id), None)
+        combined_data = {
+            'question': question,
+            'results': result,
+            'answers': [answer for answer in written_answers if answer.question.id == question.id],
+        }
+        combined_written_data.append(combined_data)
+
     context = {
         'mcq_questions': live_exam_mcq_questions,
-        'written_questions': live_exam_written_questions,
+        'written_questions': combined_written_data,
         'exam': exam,
         'highest_mark': highest_mark,
         'merit_position': merit_position,
         'user_total_score': user_total_score,
-        'written_answers': written_answers,
-        'written_results': processed_written_results,
     }
 
     return render(request, 'student/view_online_exam_result.html', context)
+
 
 
 

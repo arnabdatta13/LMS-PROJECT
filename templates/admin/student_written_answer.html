@@ -26,59 +26,71 @@
             </div>
         </div>
 
-    <!-- Questions Container -->
-    <div class="questions-container">
-        <div class="title">
-            <h2>Templated Written</h2>
-        </div>
-        {% for question in questions %}
-        <div class="question-container">
-            <div class="question-header">
-                <h3>Question {{ forloop.counter }}</h3>
-                <div class="score">
-                   <span>{{ question.marks }} Marks</span>
-                </div>
+        <!-- Questions Container -->
+        <div class="questions-container">
+            <div class="title">
+                <h2>Templated Written</h2>
             </div>
-            <div class="question-content-box">
-                <div class="question-content">
-                    <p>{{ question.question }}</p>
-                </div>
-            </div>
-            <br>
-            
-            {% for answer in written_answers %}
-                {% if answer.question.id == question.id %}
-                <div class="answer-container">
-                    <h4>Student Answer:</h4>
-                    <div class="answer-content">
-                        <p>{{ answer.answer_text }}</p>
-                    </div>
-                    <div class="image-container">
-                        {% for image in answer.images.all %}
-                        <img src="{{ image.image.url }}" alt="Answer Image">
-                        {% endfor %}
+            {% for question in questions %}
+            <div class="question-container">
+                <div class="question-header">
+                    <h3>Question {{ forloop.counter }}</h3>
+                    <div class="score">
+                        <span>{{ question.marks }} Marks</span>
                     </div>
                 </div>
-                {% endif %}
-            
-            <hr>
-            <div class="col-sm-11">
-                <div class="form-group">
-                    <label for="student_number_{{ question.id }}">Student Mark</label>
-                    <input type="number" class="form-control" id="student_number_{{ question.id }}" name="marks_{{ question.id }}" required>
+                <div class="question-content-box">
+                    <div class="question-content">
+                        <p>{{ question.question }}</p>
+                    </div>
                 </div>
+                <br>
+                
+                {% for answer in written_answers %}
+                    {% if answer.question.id == question.id %}
+                    <div class="answer-container">
+                        <h4>Student Answer:</h4>
+                        <div class="answer-content">
+                            <p>{{ answer.answer_text }}</p>
+                        </div>
+                        <div class="image-container">
+                            {% for image in answer.images.all %}
+                            <img src="{{ image.image.url }}" alt="Answer Image">
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {%if question.solution_details != None%}
+                    <hr>
+                    <h4>Solution:</h4>
+                    <div class="question-content-box">
+                        <div class="question-content">
+                            <p>{{ question.solution_details }}</p>
+                        </div>
+                    </div>
+                    <br>
+                    {%endif%}
+                    {% if answer.answer_text or answer.images.count > 0 %}
+                    <hr>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label for="student_number_{{ question.id }}">Student Mark</label>
+                            <input type="number" class="form-control" id="student_number_{{ question.id }}" name="marks_{{ question.id }}" required>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                {% endfor %}
             </div>
             {% endfor %}
-        </div>
-        {% endfor %}
-        <input type="hidden" name="student_id" value="{{ student.id }}">
-        <input type="hidden" name="exam_id" value="{{ exam.id }}">
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+            <input type="hidden" name="exam_id" value="{{ exam.id }}">
 
-        <div class="button-group">
-            <button type="submit" class="btn btn-primary">Submit Marks</button>
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Submit Marks</button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
 </div>
 <style>
     body {
@@ -87,249 +99,249 @@
         color: #333;
     }
 
-.container {
-    max-width: 1000px;
-    margin: auto;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.85);
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-}
-
-.student-info-container, .questions-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.student-info-container:hover, .questions-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.student-info-container h2, .questions-container .title h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #007bff;
-    font-weight: bold;
-}
-
-.info-group {
-    margin-bottom: 10px;
-}
-
-.info-group p {
-    font-size: 16px;
-    margin: 0;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 10px;
-    transition: background-color 0.3s ease;
-}
-
-.info-group p:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-}
-
-.title h2 {
-    font-size: 24px;
-    color: #333;
-}
-
-.question-container {
-    background-color: rgba(255, 255, 255, 0.85);
-    border-radius: 15px;
-    padding: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    margin-bottom: 0px;
-}
-
-.question-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 10px;
-}
-
-.question-header h3 {
-    font-size: 20px;
-    color: #007bff;
-    margin: 0;
-}
-
-.score {
-    font-size: 18px;
-    color: #007bff;
-}
-
-.question-content-box {
-    border: 1px solid #007bff;
-    border-radius: 10px;
-    padding: 15px;
-    background-color: rgba(240, 248, 255, 0.5);
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.question-content {
-    font-size: 16px;
-    color: #333;
-}
-
-.answer-container {
-    margin-top: 0px;
-}
-
-.image-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-.image-container img {
-    max-width: 100%;
-    max-height: 300px;
-    object-fit: contain;
-    height: auto;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    transition: transform 0.3s ease;
-}
-
-.image-container img:hover {
-    transform: scale(1.05);
-}
-
-.answer-content {
-    font-size: 16px;
-    color: #333;
-    border: 1px solid #007bff;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: rgba(240, 248, 255, 0.5);
-    margin-bottom: 30px;
-}
-
-.col-sm-11 {
-    margin-top: 30px;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 5px;
-    display: block;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.2s ease;
-}
-
-.form-group input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.button-group {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.button-group .btn {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.button-group .btn:hover {
-    transform: translateY(-2px);
-}
-
-.button-group .btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.button-group .btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.button-group .btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.button-group .btn-danger:hover {
-    background-color: #c82333;
-}
-
-.button-group .btn-warning {
-    background-color: #ffc107;
-    color: black;
-}
-
-.button-group .btn-warning:hover {
-    background-color: #e0a800;
-}
-
-/* Keyframes for animations */
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .question-container {
-        padding: 10px;
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.85);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
     }
 
-    .question-header h3, .score {
+    .student-info-container, .questions-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .student-info-container:hover, .questions-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .student-info-container h2, .questions-container .title h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .info-group {
+        margin-bottom: 10px;
+    }
+
+    .info-group p {
         font-size: 16px;
+        margin: 0;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .info-group p:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .title h2 {
+        font-size: 24px;
+        color: #333;
+    }
+
+    .question-container {
+        background-color: rgba(255, 255, 255, 0.85);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        margin-bottom: 0px;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 10px;
+    }
+
+    .question-header h3 {
+        font-size: 20px;
+        color: #007bff;
+        margin: 0;
+    }
+
+    .score {
+        font-size: 18px;
+        color: #007bff;
+    }
+
+    .question-content-box {
+        border: 1px solid #007bff;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: rgba(240, 248, 255, 0.5);
+        animation: fadeIn 0.5s ease-in-out;
     }
 
     .question-content {
-        font-size: 14px;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .answer-container {
+        margin-top: 0px;
+    }
+
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .image-container img {
+        max-width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        height: auto;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        transition: transform 0.3s ease;
+    }
+
+    .image-container img:hover {
+        transform: scale(1.05);
     }
 
     .answer-content {
-        font-size: 14px;
+        font-size: 16px;
+        color: #333;
+        border: 1px solid #007bff;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: rgba(240, 248, 255, 0.5);
+        margin-bottom: 30px;
+    }
+
+    .col-sm-11 {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
     }
 
     .form-group input {
-        padding: 8px;
-        font-size: 14px;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .button-group {
+        text-align: center;
+        margin-top: 20px;
     }
 
     .button-group .btn {
-        padding: 8px 16px;
-        font-size: 14px;
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
     }
-}
+
+    .button-group .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .button-group .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .button-group .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .button-group .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .button-group .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .button-group .btn-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .button-group .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    /* Keyframes for animations */
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .question-container {
+            padding: 10px;
+        }
+
+        .question-header h3, .score {
+            font-size: 16px;
+        }
+
+        .question-content {
+            font-size: 14px;
+        }
+
+        .answer-content {
+            font-size: 14px;
+        }
+
+        .form-group input {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .button-group .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    }
 
 </style>
 {% endblock %}

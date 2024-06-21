@@ -380,7 +380,6 @@ class LiveExamWrittenQuestion(models.Model):
     exam =models.ForeignKey(Live_Exam,on_delete=models.CASCADE,default=0)
     marks=models.PositiveIntegerField()
     question=models.CharField(max_length=600)
-    
     solution_details = models.TextField(default="No Solution Available")
 
     def __str__(self):
@@ -424,7 +423,6 @@ class Live_Exam_Written_Result(models.Model):
     exam = models.ForeignKey(Live_Exam, on_delete=models.CASCADE)
     question = models.ForeignKey(LiveExamWrittenQuestion, on_delete=models.CASCADE,default=1)
     marks = models.PositiveIntegerField()
-    status = models.CharField(max_length=30, default="Pending")
     date = models.DateTimeField(auto_now=True)
 
 
