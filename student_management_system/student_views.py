@@ -646,25 +646,23 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
 
     # Calculate written results
     written_marks = Live_Exam_Written_Result.objects.filter(student=student.student, exam=exam)
-    written_results_dict = {result.question.id: {'marks': result.marks, 'status': result.status} for result in written_marks}
+    written_results_dict = {result.question.id: {'marks': result.marks} for result in written_marks}
 
     processed_written_results = []
     for question in live_exam_written_questions:
-        result = written_results_dict.get(question.id, {'marks': None, 'status': 'Pending'})
+        result = written_results_dict.get(question.id, {'marks': None})
         obtained_marks = result['marks']
-        status = result['status']
         processed_written_results.append({
             'id': question.id,
             'question': question.question,
             'marks': question.marks,
             'obtained_marks': obtained_marks,
-            'status': status,
         })
 
     # Combine written questions and their answers
     combined_written_data = []
     for question in live_exam_written_questions:
-        result = next((item for item in processed_written_results if item['id'] == question.id), None)
+        result = next((item for item in processed_written_results if item['id'] == question.id), {'marks': None})
         combined_data = {
             'question': question,
             'results': result,

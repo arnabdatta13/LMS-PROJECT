@@ -45,56 +45,75 @@
                     </div>
                 </div>
                 <br>
-                
+                {%if written_answers %}
                 {% for answer in written_answers %}
                     {% if answer.question.id == question.id %}
-                    <div class="answer-container">
-                        <h4>Student Answer:</h4>
-                        <div class="answer-content">
-                            <p>{{ answer.answer_text }}</p>
+                        <div class="answer-container">
+                            <h4>Student Answer:</h4>
+                            <div class="answer-content">
+                                <p>{{ answer.answer_text }}</p>
+                            </div>
+                            <div class="image-container">
+                                {% for image in answer.images.all %}
+                                <img src="{{ image.image.url }}" alt="Answer Image">
+                                {% endfor %}
+                            </div>
                         </div>
-                        <div class="image-container">
-                            {% for image in answer.images.all %}
-                            <img src="{{ image.image.url }}" alt="Answer Image">
-                            {% endfor %}
+                        
+                        {%if question.solution_details != None%}
+                            <hr>
+                            <h4>Solution:</h4>
+                            <div class="question-content-box">
+                                <div class="question-content">
+                                    <p>{{ question.solution_details }}</p>
+                                </div>
+                            </div>
+                            <br>
+                        {%endif%}
+                        {% if answer.answer_text or answer.images.count > 0 %}
+                            <hr>
+                            <div class="col-sm-11">
+                                <div class="form-group">
+                                    <label for="student_number_{{ question.id }}">Student Mark</label>
+                                    <input type="number" class="form-control" id="student_number_{{ question.id }}" name="marks_{{ question.id }}" required>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {%else%}
+                        <br>
+                        <div class= "not-answer">
+                            <h4>Student did not answer this question.</h6>
+                            <br>
                         </div>
-                    </div>
-                    
-                    {%if question.solution_details != None%}
-                    <hr>
-                    <h4>Solution:</h4>
-                    <div class="question-content-box">
-                        <div class="question-content">
-                            <p>{{ question.solution_details }}</p>
-                        </div>
-                    </div>
-                    <br>
-                    {%endif%}
-                    {% if answer.answer_text or answer.images.count > 0 %}
-                    <hr>
-                    <div class="col-sm-11">
-                        <div class="form-group">
-                            <label for="student_number_{{ question.id }}">Student Mark</label>
-                            <input type="number" class="form-control" id="student_number_{{ question.id }}" name="marks_{{ question.id }}" required>
-                        </div>
-                    </div>
-                    {% endif %}
                     {% endif %}
                 {% endfor %}
+                {%else%}
+                    <br>
+                    <div class= "not-answer">
+                        <h4>Student did not answer this question.</h6>
+                        <br>
+                    </div>
+                {%endif%}
             </div>
             {% endfor %}
             <input type="hidden" name="student_id" value="{{ student.id }}">
             <input type="hidden" name="exam_id" value="{{ exam.id }}">
-
+            
+            {%if written_answers%}
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">Submit Marks</button>
             </div>
+            {%else%}
+            <div class="button-group">
+                <a href="admin_home" ><button class="btn btn-primary">Go Back</button></a>
+            </div>
+            <br>
+            {%endif%}
         </div>
     </form>
 </div>
 <style>
     body {
-        font-family: 'Arial', sans-serif;
         background-color: #f0f2f5;
         color: #333;
     }
@@ -158,7 +177,7 @@
         border-radius: 15px;
         padding: 20px;
         border: 1px solid rgba(0, 0, 0, 0.1);
-        margin-bottom: 0px;
+        margin-bottom: 25px;
     }
 
     .question-header {
@@ -314,6 +333,9 @@
         100% { opacity: 1; transform: translateY(0); }
     }
 
+    .not-answer h4{
+        text-align: center;
+    }
     /* Responsive Design */
     @media (max-width: 768px) {
         .question-container {

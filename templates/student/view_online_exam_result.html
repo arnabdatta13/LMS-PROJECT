@@ -2,7 +2,6 @@
 {% block content %}
 {% load static %}
 {% include "base_desine/loader.html" %}
-
 <div class="container-fluid analysis-report">
     <div class="report-card">
         <h3>Analysis Report</h3>
@@ -13,136 +12,136 @@
         <p class="merit-position">Merit Position: {{ merit_position }}</p>
     </div>
 
-<div class="mcq-section">
-    <h3>MCQ</h3>
-    {% for question in mcq_questions %}
-    <div class="card">
-        <div class="question">
-            <p class="question-number">Question {{ forloop.counter }}</p>
-            <p class="question-text"><strong>{{ question.question }}</strong></p>
-        </div>
-        <div class="options">
-            <label class="option">
-                <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
-                <span>{{ question.option1 }}</span>
-                {% if question.answer == 'Option1' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-            <label class="option">
-                <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
-                <span>{{ question.option2 }}</span>
-                {% if question.answer == 'Option2' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-            <label class="option">
-                <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
-                <span>{{ question.option3 }}</span>
-                {% if question.answer == 'Option3' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-            <label class="option">
-                <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
-                <span>{{ question.option4 }}</span>
-                {% if question.answer == 'Option4' %}
-                <i class="fa fa-check-circle correct-icon"></i>
-                {% endif %}
-            </label>
-        </div>
-        <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
-            {% if question.is_correct %}
-            <span>Correct</span>
-            {% else %}
-            <span>Incorrect</span>
-            {% endif %}
-        </div>
-        <div class="statistics">
-            <div class="stat">
-                <span class="stat-label">A</span>
-                <span class="percentage">{{ question.option1_percentage }}%</span>
+    <div class="mcq-section">
+        <h3>MCQ</h3>
+        {% for question in mcq_questions %}
+        <div class="card">
+            <div class="question">
+                <p class="question-number">Question {{ forloop.counter }}</p>
+                <p class="question-text"><strong>{{ question.question }}</strong></p>
             </div>
-            <div class="stat">
-                <span class="stat-label">B</span>
-                <span class="percentage">{{ question.option2_percentage }}%</span>
+            <div class="options">
+                <label class="option">
+                    <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
+                    <span>{{ question.option1 }}</span>
+                    {% if question.answer == 'Option1' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
+                    <span>{{ question.option2 }}</span>
+                    {% if question.answer == 'Option2' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
+                    <span>{{ question.option3 }}</span>
+                    {% if question.answer == 'Option3' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
+                    <span>{{ question.option4 }}</span>
+                    {% if question.answer == 'Option4' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
             </div>
-            <div class="stat">
-                <span class="stat-label">C</span>
-                <span class="percentage">{{ question.option3_percentage }}%</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">D</span>
-                <span class="percentage">{{ question.option4_percentage }}%</span>
-            </div>
-        </div>
-        <div class="solution">
-            <span>Solution: <br>{{ question.solution_details }}</span>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-<br><br>
-
-<!-- Questions Container -->
-
-<div class="questions-container">
-    <div class="title">
-        <h2>Templated Written</h2>
-    </div>
-    {% for item in written_questions %}
-    <div class="question-container">
-        <div class="question-header">
-            <h3>Question {{ forloop.counter }}</h3>
-            <div class="score">
-                {% for answer in item.answers %}
-                {% if item.results.obtained_marks != None %}
-                    <span><u>Obtained: {{ item.results.obtained_marks }}/{{ item.results.marks }}</u></span>
-                {% elif answer.answer_text == None%}
-                    <span><u>Not Answer</u></span>
+            <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
+                {% if question.is_correct %}
+                <span>Correct</span>
                 {% else %}
-                    <span><u>Pending</u></span>
+                <span>Incorrect</span>
                 {% endif %}
-                {% endfor %}
+            </div>
+            <div class="statistics">
+                <div class="stat">
+                    <span class="stat-label">A</span>
+                    <span class="percentage">{{ question.option1_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">B</span>
+                    <span class="percentage">{{ question.option2_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">C</span>
+                    <span class="percentage">{{ question.option3_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">D</span>
+                    <span class="percentage">{{ question.option4_percentage }}%</span>
+                </div>
+            </div>
+            <div class="solution">
+                <span>Solution: <br>{{ question.solution_details }}</span>
             </div>
         </div>
-        <div class="question-content-box">
-            <div class="question-content">
-                <p>{{ item.question.question }}</p>
-            </div>
-        </div>
-        <br>
-        
-        <div class="answer-container">
-            <h4>Your Answer:</h4>
-            <div class="answer-content">
-                {% for answer in item.answers %}
-                    <p>{{ answer.answer_text }}</p>
-                {% endfor %}
-            </div>
-
-            <h4>Picture Answer:</h4>
-            <br>
-            <div class="image-container">
-                {% for answer in item.answers %}
-                {% for image in answer.images.all %}
-                    <img src="{{ image.image.url }}" alt="Image">
-                {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
+        {% endfor %}
     </div>
-    
-    {% endfor %}
-</div>
+    <br><br>
 
+    <!-- Questions Container -->
 
-<div class="text-center">
-    <form method="get" action="{% url 'student-merit-position' exam.id %}">
-        <button type="submit" class="btn btn-primary">Merit Position</button>
-    </form>
-</div>
-<br>
+    <div class="questions-container">
+        <div class="title">
+            <h2>Templated Written</h2>
+        </div>
+        {% for item in written_questions %}
+        <div class="question-container">
+            <div class="question-header">
+                <h3>Question {{ forloop.counter }}</h3>
+                <div class="score">
+                    {% if item.results.obtained_marks != None %}
+                        <span><u>Obtained: {{ item.results.obtained_marks }}/{{ item.results.marks }}</u></span>
+                    {% elif item.answers.0.answer_text or item.answers.0.images.all %}
+                        <span><u>Pending</u></span>
+                    {% else %}
+                        <span><u>Not Answered</u></span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="question-content-box">
+                <div class="question-content">
+                    <p>{{ item.question.question }}</p>
+                </div>
+            </div>
+            <br>
+            
+            {% for answer in item.answers %}
+            {% if answer.answer_text or answer.images.all %}
+            <div class="answer-container">
+                {% if answer.answer_text %}
+                <h4>Your Answer:</h4>
+                <div class="answer-content">
+                    <p>{{ answer.answer_text }}</p>
+                </div>
+                {% endif %}
+                
+                {% if answer.images.all %}
+                <h4>Picture Answer:</h4>
+                <br>
+                <div class="image-container">
+                    {% for image in answer.images.all %}
+                        <img src="{{ image.image.url }}" alt="Image">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center">
+        <form method="get" action="{% url 'student-merit-position' exam.id %}">
+            <button type="submit" class="btn btn-primary">Merit Position</button>
+        </form>
+    </div>
+    <br>
 </div>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -320,33 +319,33 @@
     }
     
     
- .questions-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
+    .questions-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
 
- .questions-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
+    .questions-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
 
- .questions-container .title h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #007bff;
-    font-weight: bold;
-}
+    .questions-container .title h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #007bff;
+        font-weight: bold;
+    }
 
     .question-container {
         background-color: rgba(255, 255, 255, 0.85);
         border-radius: 15px;
         padding: 20px;
         border: 1px solid rgba(0, 0, 0, 0.1);
-        margin-bottom: 0px;
+        margin-bottom: 25px;
     }
     
     .question-header {

@@ -2072,7 +2072,7 @@ def GIVE_STUDENT_WRITTEN_EXAM_MARK(request):
                     question=question,
                     marks=int(marks)
                 )
-        return redirect('')
+        return redirect('admin_home')
         
 
 @login_required(login_url='login')
