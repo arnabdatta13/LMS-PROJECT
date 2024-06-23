@@ -2072,6 +2072,21 @@ def GIVE_STUDENT_WRITTEN_EXAM_MARK(request):
                     question=question,
                     marks=int(marks)
                 )
+        
+        live_written_exam_mark = Live_Exam_Written_Result.objects.filter(exam=exam)
+        total_mark = 0
+        for i in live_written_exam_mark:
+            total_mark= total_mark + i.marks
+        
+        exam_result, created = Live_Exam_Result.objects.get_or_create(
+            student=student,
+            exam=exam,
+            defaults={'marks': total_mark}
+        )
+        if not created:
+            exam_result.marks += total_mark
+            exam_result.save()
+
         return redirect('admin_home')
         
 

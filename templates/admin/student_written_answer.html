@@ -10,7 +10,7 @@
         <div class="student-info-container">
             <h2>Student Information</h2>
             <div class="info-group">
-                <p><strong>Student Name:</strong> {{ student.name }}</p>
+                <p><strong>Student Name:</strong> {{ student.admin.first_name }} {{ student.admin.last_name }}</p>
             </div>
             <div class="info-group">
                 <p><strong>Class:</strong> {{ student.class_id.name }}</p>
@@ -49,10 +49,12 @@
                 {% for answer in written_answers %}
                     {% if answer.question.id == question.id %}
                         <div class="answer-container">
+                            {%if answer.answer_text%}
                             <h4>Student Answer:</h4>
                             <div class="answer-content">
                                 <p>{{ answer.answer_text }}</p>
                             </div>
+                            {%endif%}
                             <div class="image-container">
                                 {% for image in answer.images.all %}
                                 <img src="{{ image.image.url }}" alt="Answer Image">
@@ -61,6 +63,7 @@
                         </div>
                         
                         {%if question.solution_details != None%}
+                            {% if answer.answer_text or answer.images.count > 0 %}
                             <hr>
                             <h4>Solution:</h4>
                             <div class="question-content-box">
@@ -69,6 +72,7 @@
                                 </div>
                             </div>
                             <br>
+                            {%endif%}
                         {%endif%}
                         {% if answer.answer_text or answer.images.count > 0 %}
                             <hr>

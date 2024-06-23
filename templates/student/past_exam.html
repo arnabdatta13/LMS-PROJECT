@@ -23,13 +23,15 @@
             <p><strong>Course</strong><br>{{ exam.course.name }}</p>
         </div>
         {% if exam_type == 'live' %}
-            {% if exam.id in live_exam_reports %}
-                <div class="status">You took the exam</div>
-                <a href="{% url "student-view-live-exam-result" exam.id%}" class="view-result">View Result</a>
-            {% else %}
-                <div class="status">You didn't take the exam</div>
-                <button class="absent">Absent</button>
+            {% if exam.id in live_exam_reports or exam.id in written_answers %}
+                <p class="text-success">You have taken this exam.</p>
+            {% if exam.id in live_exam_reports or exam.id in written_answers %}
+                <a href="{% url 'student-view-live-exam-result' exam.id %}" class="view-result">View Result</a>
             {% endif %}
+            
+        {% else %}
+            <p class="text-danger">You did not take this exam.</p>
+        {% endif %}
         {% elif exam_type == 'practice' %}
             {% if exam.id in practice_exam_results %}
                 <div class="status">You took the exam</div>

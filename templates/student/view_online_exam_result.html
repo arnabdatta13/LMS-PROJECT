@@ -109,7 +109,10 @@
                 </div>
             </div>
             <br>
-            
+            <div class="solution">
+                <span>Solution: <br>{{ item.question.solution_details }}</span>
+            </div>
+            <br>
             {% for answer in item.answers %}
             {% if answer.answer_text or answer.images.all %}
             <div class="answer-container">
