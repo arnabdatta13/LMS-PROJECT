@@ -811,7 +811,6 @@ def STUDENT_PERFORMANCE_COURSE(request):
 
 
 
-
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_PERFORMANCE(request, id):
@@ -822,11 +821,13 @@ def STUDENT_PERFORMANCE(request, id):
     # Get all exams for the course
     all_exams = Live_Exam.objects.filter(course=course)
 
-    # Get the results for live exams
-    live_exam_results = Live_Exam_Result.objects.filter(exam__course=course, student=student)
+    # Get the results for live exams (MCQ and written)
+    live_mcq_results = Live_Exam_MCQ_Result.objects.filter(exam__course=course, student=student)
+    live_written_results = Live_Exam_Written_Result.objects.filter(exam__course=course, student=student)
 
-    # Create a dictionary to map exams to results
-    exam_results_dict = {result.exam.id: result for result in live_exam_results}
+    # Create dictionaries to map exams to results
+    mcq_results_dict = {result.exam.id: result for result in live_mcq_results}
+    written_results_dict = {result.exam.id: result for result in live_written_results}
 
     # Calculate the highest marks in the course for live exams
     highest_live_marks = Live_Exam_Result.objects.filter(exam__course=course).aggregate(max_marks=Max('marks'))['max_marks'] or 0
@@ -838,6 +839,13 @@ def STUDENT_PERFORMANCE(request, id):
 
     # Calculate the student's total obtained marks
     student_total_obtained_marks = get_total_obtained_marks(student)
+
+    # Calculate total MCQ and written marks
+    total_mcq_obtained_marks = sum(result.marks for result in live_mcq_results)
+    total_written_obtained_marks = sum(result.marks for result in live_written_results)
+
+    # Calculate total possible marks for the course
+    total_possible_marks = sum(exam.total_marks for exam in all_exams)
 
     # Calculate merit position based on total obtained marks for all students in the course
     all_students = Student.objects.filter(class_id=student.class_id)
@@ -854,27 +862,29 @@ def STUDENT_PERFORMANCE(request, id):
     # Prepare results with details and merit position for each result
     results_with_details = []
     for exam in all_exams:
-        result = exam_results_dict.get(exam.id)
-        model_name = result.exam._meta.model_name if result else 'N/A'
+        mcq_result = mcq_results_dict.get(exam.id)
+        written_result = written_results_dict.get(exam.id)
+        model_name = 'live_exam'  # Assuming 'live_exam' as the model name for all exams
         highest_marks = highest_live_marks
 
         # Calculate merit position for this specific exam
-        if result:
-            all_exam_results = Live_Exam_Result.objects.filter(exam=exam).order_by('-marks')
-            exam_merit_position = next((index + 1 for index, r in enumerate(all_exam_results) if r.student == student), None)
-            obtained_marks = result.marks
-        else:
-            exam_merit_position = 0
-            obtained_marks = 0
+        obtained_marks = 0
+        mcq_obtained_marks = mcq_result.marks if mcq_result else 0
+        written_obtained_marks = written_result.marks if written_result else 0
+        obtained_marks = mcq_obtained_marks + written_obtained_marks
+
+        all_exam_results = Live_Exam_Result.objects.filter(exam=exam).order_by('-marks')
+        exam_merit_position = next((index + 1 for index, r in enumerate(all_exam_results) if r.student == student), None)
 
         results_with_details.append({
             'exam': exam,
-            'result': result,
             'model_name': model_name,
-            'highest_marks': highest_marks,
-            'merit_position': exam_merit_position,
+            'mcq_obtained_marks': mcq_obtained_marks,
+            'written_obtained_marks': written_obtained_marks,
             'obtained_marks': obtained_marks,
             'total_marks': exam.total_marks,
+            'highest_marks': highest_marks,
+            'merit_position': exam_merit_position,
         })
 
     # Total exam marks for all results
@@ -889,11 +899,16 @@ def STUDENT_PERFORMANCE(request, id):
         'all_results': results_with_details,
         'total_exam_mark': total_exam_mark,
         'total_obtain_mark': student_total_obtained_marks,
+        'total_mcq_obtain_mark': total_mcq_obtained_marks,
+        'total_written_obtain_mark': total_written_obtained_marks,
+        'total_possible_marks': total_possible_marks,
         'merit_position': overall_merit_position,
         'course_name': course.name,
         'highest_total_marks': highest_total_marks  # This is for merit calculation table
     }
     return render(request, 'student/performance.html', context)
+
+
 
 
 @login_required(login_url='login')
