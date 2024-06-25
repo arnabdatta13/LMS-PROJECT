@@ -2015,7 +2015,10 @@ def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
             selected_exam_id = request.POST.get('exam_id')
            
             get_class = Class.objects.get(id=selected_class_id)
-            students = Student.objects.filter(class_id=get_class)
+            # Fetch students who do not have results for the selected exam
+            students = Student.objects.filter(class_id=get_class).exclude(
+                id__in=Live_Exam_Written_Result.objects.filter(exam_id=selected_exam_id).values_list('student_id', flat=True)
+            )
 
             context = {
                 "action": "Show-Students", 
@@ -2028,7 +2031,7 @@ def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
     else:
         classes = Class.objects.all()
         return render(request, "admin/student_written_answer_filter.html", {"classes": classes})
-    
+   
 
 
 @login_required(login_url='login')
@@ -2050,6 +2053,7 @@ def ADMIN_STUDENT_WRITTEN_ANSWER(request, student_id, exam_id):
     }
     
     return render(request, 'admin/student_written_answer.html', context)
+
 
 
 
