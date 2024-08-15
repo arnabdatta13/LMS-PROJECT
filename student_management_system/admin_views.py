@@ -1223,23 +1223,26 @@ def LIVE_EXAM_VIEW(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def LIVE_EXAM_EDIT(request,id):
-    exam = Live_Exam.objects.filter(id = id)
-
-    exam_id = Live_Exam.objects.get(id=id)
-    class_id = exam_id.class_id
+def LIVE_EXAM_EDIT(request, id):
+    exam = Live_Exam.objects.get(id=id)
+    class_id = exam.class_id
     course = Course.objects.filter(class1=class_id)
     subject = Subject.objects.filter(class1=class_id)
+    
+    # Format the start and end times
+    start_time_formatted = exam.start_time.strftime('%m-%d-%y,%I:%M %p')
+    end_time_formatted = exam.end_time.strftime('%m-%d-%y,%I:%M %p')
 
-    context= {
-        'exam':exam,
-        'class':class_id,
-        'course':course,
-        'subject':subject,
+    context = {
+        'exam': exam,
+        'class': class_id,
+        'course': course,
+        'subject': subject,
+        'start_time_formatted': start_time_formatted,
+        'end_time_formatted': end_time_formatted,
     }
     
-    return render(request,'admin/edit_live_exam.html',context)
-
+    return render(request, 'admin/edit_live_exam.html', context)
 
 
 
@@ -1247,35 +1250,33 @@ def LIVE_EXAM_EDIT(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def LIVE_EXAM_UPDATE(request):
-    if request.method == "POST":
+    if request.method == 'POST':
+        # Retrieve POST data
         exam_id = request.POST.get('exam_id')
-        class_id= request.POST.get('class_id')
-        exam_name= request.POST.get('exam_name')
-        total_questions= request.POST.get('total_question')
-        total_marks= request.POST.get('total_number')
-        
-        course_id= request.POST.get('course_id')
-        subject_id= request.POST.get('subject_id')
-        start_time_str= request.POST.get('start_time').strip()
-        end_time_str= request.POST.get('end_time').strip()
-        duration_str = request.POST.get('duration')
+        exam_name = request.POST.get('exam_name').strip()
+        total_questions = int(request.POST.get('total_question'))
+        total_marks = int(request.POST.get('total_number'))
+        class_id = request.POST.get('class_id')
+        course_id = request.POST.get('course_id')
+        subject_id = request.POST.get('subject_id')
+        start_time_str = request.POST.get('start_time').strip()
+        end_time_str = request.POST.get('end_time').strip()
+        duration = request.POST.get('duration').strip()
 
-        hours, minutes, seconds = map(int, duration_str.strip().split(':'))
+        # Parse the start and end times with the correct format
+        start_time = datetime.strptime(start_time_str, '%m-%d-%y,%I:%M %p').strftime('%Y-%m-%d %H:%M:%S')
+        end_time = datetime.strptime(end_time_str, '%m-%d-%y,%I:%M %p').strftime('%Y-%m-%d %H:%M:%S')
+
+        # Convert duration string to timedelta
+        hours, minutes, seconds = map(int, duration.split(':'))
         duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-
-        start_time_str = start_time_str.replace('a.m.', 'AM').replace('p.m.', 'PM')
-        end_time_str = end_time_str.replace('a.m.', 'AM').replace('p.m.', 'PM')
-
-        # Convert start_time and end_time to the correct format
-        start_time = datetime.strptime(start_time_str, '%B %d, %Y, %I:%M %p').strftime('%Y-%m-%d %H:%M:%S')
-        end_time = datetime.strptime(end_time_str, '%B %d, %Y, %I:%M %p').strftime('%Y-%m-%d %H:%M:%S')
-
-        # Update the exam object with the correct datetime format
+        
+        # Fetch the exam instance
         exam = Live_Exam.objects.get(id=exam_id)
-        class1= Class.objects.get(id=class_id)
+        class1 = Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
         subject = Subject.objects.get(id=subject_id)
-
+        # Update the exam instance with new data
         exam.exam_name = exam_name
         exam.total_questions = total_questions
         exam.total_marks = total_marks
@@ -1285,10 +1286,13 @@ def LIVE_EXAM_UPDATE(request):
         exam.start_time = start_time
         exam.end_time = end_time
         exam.duration = duration
+
+        # Save the updated exam
         exam.save()
 
-        messages.success(request, 'Live Exam Successfully Updated')
-        return redirect('admin-live-exam-view')
+        messages.success(request, "Live Exam updated successfully.")
+        return redirect('admin-live-exam-view')    
+        
 
 
 
@@ -1372,7 +1376,7 @@ def SAVE_LIVE_EXAM_MCQ_QUESTION(request):
             solution_key = f'solution{question_counter}' if question_counter > 1 else 'solution'
 
             question_text = request.POST.get(question_key)
-            marks = request.POST.get(mark_key)
+            marks_str = request.POST.get(mark_key)
             option1 = request.POST.get(option1_key)
             option2 = request.POST.get(option2_key)
             option3 = request.POST.get(option3_key)
@@ -1383,11 +1387,18 @@ def SAVE_LIVE_EXAM_MCQ_QUESTION(request):
             if not question_text:
                 break
 
-            if existing_questions_count + added_questions_count > total_questions_allowed:
+            try:
+                marks = int(marks_str)
+            except (ValueError, TypeError):
+                messages.error(request, f'Invalid marks value: {marks_str}')
+                return redirect('admin-add-live-exam-mcq-question')
+
+            if existing_questions_count + added_questions_count >= total_questions_allowed:
                 messages.error(request, 'You cannot add more questions than the total number allowed for this exam.')
                 return redirect('admin-add-live-exam-mcq-question')
 
-            if existing_total_marks + added_marks + int(marks) > total_marks_allowed:
+            new_total_marks = existing_total_marks + added_marks + marks
+            if new_total_marks > total_marks_allowed:
                 messages.error(request, 'You cannot add more marks than the total marks allowed for this exam.')
                 return redirect('admin-add-live-exam-mcq-question')
 
@@ -1401,16 +1412,15 @@ def SAVE_LIVE_EXAM_MCQ_QUESTION(request):
                 option3=option3,
                 option4=option4,
                 answer=answer,
-                solution_details = solution
+                solution_details=solution
             )
             
             added_questions_count += 1
-            added_marks += int(marks)
+            added_marks += marks
             question_counter += 1
-        
+
         messages.success(request, 'Questions are added successfully')
         return redirect('admin-add-live-exam-mcq-question')
-
 
 
 

@@ -1198,90 +1198,6 @@ body {
 
 
 
-.notification{
-    position: relative;
-    width: 35px;
-    height: 35px;
-    border-radius: 30px;
-    box-sizing: border-box;
-    text-align: center;
-    background-color: rgb(255, 255, 255);
-    box-shadow: 0 2px 5px rgba(0,0,0,.2);
-    border: 1.3px solid rgb(5, 250, 66) ;
-
-}
-
-
-
-.notification .fas{
-    color: rgb(0, 0, 0);
-    line-height: 35px;
-    
-    font-size: 15px;
-}
-
-
-
-
-
-.notification .num{
-    position:absolute;
-    display: flex;
-    top:-5px;
-    right: -5px;
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    background: #ff2c74;
-    color: #ffff;
-    line-height: 19px;
-    font-family: sans-serif;
-    justify-content: center;
-    text-align: center;
-    font-size: 11px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.ten-minit{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100px;
-}
-
-.minitlogo img{
-    height: 100px;
-    width: 290px;
-    padding: 10px;
-
-
-
-}
-
 .ticker-wrapper-h{
 	display: flex;	
 	position: relative;
@@ -1296,7 +1212,6 @@ body {
 	background-color: #1c6547;
 	height: 25px;
 	color: #fff;
-	
 	padding-bottom: 50px;
 	padding-right: 6px;
 	padding-top: 2px;

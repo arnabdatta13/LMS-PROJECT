@@ -38,20 +38,20 @@
                  <div class="col-sm-11">
                      <div class="form-group">
                         <label>Exam Name</label>
-                        <input type="text" class="form-control" name='exam_name' required value="{% for i in exam %} {{i.exam_name}} {% endfor%}">
-                        <input type="text" class="form-control" name='exam_id' value='{% for i in exam %} {{i.id}} {%endfor%}' hidden>
+                        <input type="text" class="form-control" name='exam_name' required value="{{exam.exam_name}}">
+                        <input type="text" class="form-control" name='exam_id' value="{{exam.id}}" hidden>
                      </div>
                  </div>
                  <div class="col-sm-11">
                   <div class="form-group">
                      <label>Total Question</label>
-                     <input type="text" class="form-control" name='total_question' required value="{% for i in exam %} {{i.total_questions}} {% endfor%}">
+                     <input type="text" class="form-control" name='total_question' required value="{{exam.total_questions}}">
                   </div>
               </div>
               <div class="col-sm-11">
                <div class="form-group">
                   <label>Total Number</label>
-                  <input type="text" class="form-control" name='total_number'required value="{% for i in exam %} {{i.total_marks}} {% endfor%}">
+                  <input type="text" class="form-control" name='total_number'required value="{{exam.total_marks}} ">
                </div>
                </div>
                <div class="col-sm-11">
@@ -84,26 +84,26 @@
                        </select>
                  </div>
                  <br>
-                 <div class="col-sm-11">
-                    <div class="form-group">
-                       <label>Start Time (MM:DD:YY,HH:MM)</label>
-                       <input type="text" class="form-control" name='start_time'required value="{% for i in exam %} {{i.start_time}} {% endfor%}">
-                    </div>
-                </div>
-
+                 
                 <div class="col-sm-11">
-                    <div class="form-group">
-                        <label>End Time (MM:DD:YY,HH:MM)</label>
-                        <input type="text" class="form-control" name='end_time'required value="{% for i in exam %} {{i.end_time}} {% endfor%}">
-                    </div>
-                </div>
-                  
-                 <div class="col-sm-11">
                   <div class="form-group">
-                     <label>Duration (HH:MM:SS)</label>
-                     <input type="text" class="form-control" name='duration'required value="{% for i in exam %} {{i.duration}} {% endfor%}">
+                      <label>Start Time (MM:DD:YY,HH:MM)</label>
+                      <input type="text" class="form-control" name="start_time" required value="{{ start_time_formatted }}">
                   </div>
+              </div>
+              
+              <div class="col-sm-11">
+                  <div class="form-group">
+                      <label>End Time (MM:DD:YY,HH:MM)</label>
+                      <input type="text" class="form-control" name="end_time" required value="{{ end_time_formatted }}">
                   </div>
+              </div>
+              <div class="col-sm-11">
+               <div class="form-group">
+                  <label>Duration (HH:MM:SS)</label>
+                  <input type="text" class="form-control" name='duration'required value="{{exam.duration}}">
+               </div>
+               </div>
                  
                  
                   <div class="col-12">

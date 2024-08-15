@@ -44,21 +44,51 @@
  <!-- home section ends -->
  
  
- <br><br><br>
- <div class="ticker-wrapper-h">
-    <div class="heading">School News</div>
-    
-    <ul class="news-ticker-h">
-       <li><a href="">What is Lorem Ipsum?</a></li>
-       <li><a href="">Why do we use it?</a></li>
-       <li><a href="">Where does it come from?</a></li>
-       <li><a href="">Where can I get some?</a></li>
-    </ul>
- </div>
  
+ <br><br><br>
  
  <!-- subjects section starts  -->
- 
+ <section class="notice-board-container">
+   <h1 class="notice-heading">Notice</h1>
+   <div class="marquee">
+      <marquee>2023 সালের অনার্স ২য় বর্ষ পরীক্ষার ফলাফলের সময় বৃদ্ধি সংক্রান্ত নোটিশ</marquee>
+   </div>
+   <table class="notice-board">
+      <thead>
+          <tr>
+              <th>Date</th>
+              <th>Notice</th>
+              <th>Views</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td>01-08-2024</td>
+              <td>২০২৩ সালের অনার্স ২য় বর্ষ পরীক্ষার ফলাফলের সময় বৃদ্ধি সংক্রান্ত নোটিশ</td>
+              <td>3</td>
+          </tr>
+          <tr>
+              <td>17-07-2024</td>
+              <td>ঢাকা সিটি কলেজ প্রশাসনের পক্ষ থেকে অধ্যক্ষের বিদায়</td>
+              <td>0</td>
+          </tr>
+          <tr>
+              <td>16-07-2024</td>
+              <td>Notice for Hons. and Masters All Students</td>
+              <td>13</td>
+          </tr>
+          <tr>
+              <td>16-07-2024</td>
+              <td>Notice for Masters Regular Students (Session: 2021-2022)</td>
+              <td>0</td>
+          </tr>
+          
+      </tbody>
+   </table>
+</section>
+
+
+
  <section class="subjects">
  
     <h1 class="heading"> </h1>
@@ -209,7 +239,7 @@
              </div>
           </div>
  
-          <div class="swiper-slide slide">
+         <div class="swiper-slide slide">
              <p>এই বিদ্যালয়ের প্রত্যেকটি শিক্ষকদের পড়ানোর টেকনিক খুব চমৎকার। তাদের ক্লাসগুলো খুব ভালো।    <br>      </p>
              <img src="{% static 'assets/images/pic-2.png' %}" alt="">
              <h3>john deo</h3>
@@ -234,21 +264,70 @@
                 <i class="fas fa-star"></i>
                 <i class="fas fa-star-half-alt"></i>
              </div>
-          </div>
- 
- 
- 
- 
- 
- 
- 
- 
-       </div>
- 
+         </div>
+      </div>
     </div>
  
  </section>
  
+ <style>
+
+   .notice-board-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+  }
+
+  .notice-heading {
+      font-size: 32px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-align:center;
+  }
+
+  .notice-board {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Arial', sans-serif;
+  }
+
+  .notice-board th, .notice-board td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 14px;
+      font-size: 18px;
+  }
+
+  .notice-board th {
+      background-color: #2980b9;
+      color: white;
+      text-transform: uppercase;
+  }
+
+  .notice-board td {
+      background-color: #f9f9f9;
+      color: #2c3e50;
+  }
+
+  .notice-board tr:nth-child(even) td {
+      background-color: #ecf0f1;
+  }
+
+  .marquee {
+      width: 100%;
+      background-color: #2980b9;
+      color: white;
+      padding: 12px;
+      font-size: 18px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 
 
 {% endblock  %}

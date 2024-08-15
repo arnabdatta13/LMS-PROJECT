@@ -216,7 +216,7 @@
                         <input type="text" class="form-control" name='option4${questionCounter}' required>
                     </div>
                 </div>
-                <div class="col-sm-11 mb-5">
+                <div class="col-sm-11 mb-2">
                     <label>Answer</label>
                     <select class="form-control" name='answer${questionCounter}' required>
                         <option value="" disabled selected>Select Answer</option>
@@ -226,6 +226,14 @@
                         <option value="Option4">Option 4</option>
                     </select>
                 </div>
+                <br>
+                <div class="col-sm-11 mb-5">
+                    <div class="form-group">
+                        <label>Solution</label>
+                        <textarea class="form-control" name='solution'></textarea>
+                    </div>
+                </div>
+                
             `;
     
             questionFields.appendChild(questionFieldset);

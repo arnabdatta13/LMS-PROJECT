@@ -12,6 +12,7 @@ from itertools import chain
 from django.db.models import Sum, Max
 from operator import attrgetter
 from django.db.models import Count
+from django.http import JsonResponse
 
 
 @login_required(login_url='login')
@@ -559,7 +560,7 @@ def STUDENT_START_LIVE_EXAM(request,id):
     return render(request,'student/start_live_exam.html',context)
 
 
-
+ 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
@@ -567,14 +568,26 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id') 
         exam = Live_Exam.objects.get(id=exam_id)
-        questions = LiveExamMCQQuestion.objects.filter(exam=exam)
         student = request.user.student
 
+        # Check if the request is an AJAX call for time status
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            try:
+                exam_timer = LiveExamTimer.objects.get(exam=exam, user=request.user)
+                time_left = (exam_timer.end_time - timezone.now()).total_seconds()
+                if time_left <= 0:
+                    return JsonResponse({'status': 'time_up'})
+                return JsonResponse({'status': 'ongoing', 'time_left': time_left})
+            except LiveExamTimer.DoesNotExist:
+                return JsonResponse({'status': 'time_up'})
+
+        # Exam submission logic
+        questions = LiveExamMCQQuestion.objects.filter(exam=exam)
         total_obtained_marks = 0
         correct_answers = 0
 
         for i, question in enumerate(questions):
-            selected_answer = request.POST.get(str(i+1))  # Assuming the radio button names are the question IDs
+            selected_answer = request.POST.get(str(i + 1))  # Assuming radio button names are numbers starting from 1
             correct_answer = question.answer
 
             # Save the selected option
@@ -588,11 +601,12 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
                 total_obtained_marks += question.marks
                 correct_answers += 1
 
+        # Delete the exam timer for the user
         exam_timer = LiveExamTimer.objects.get(exam=exam, user=request.user)
         exam_timer.delete()
 
+        # Create or update the exam result
         mcq_exam_result = Live_Exam_MCQ_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
-
         exam_result, created = Live_Exam_Result.objects.get_or_create(
             student=student,
             exam=exam,
@@ -602,7 +616,8 @@ def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
             exam_result.marks += total_obtained_marks
             exam_result.save()
 
-        live_exam_mcq_report = Live_Exam_MCQ_Report.objects.create(exam=exam, user=request.user, is_taken=True)
+        # Mark the exam as taken in the report
+        Live_Exam_MCQ_Report.objects.create(exam=exam, user=request.user, is_taken=True)
 
         return redirect('student-live-exam-mark')
 
