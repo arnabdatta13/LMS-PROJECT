@@ -80,7 +80,7 @@
                             <tbody>
                                 {% for i in exam %}
                                 <tr>
-                                    <td>{{ i.id }}</td>
+                                    <td>{{ forloop.counter }}</td>
                                     <td>{{ i.exam_name }}</td>
                                     <td>{{ i.total_questions }}</td>
                                     <td>{{ i.total_marks }}</td>

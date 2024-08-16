@@ -17,6 +17,8 @@ import time
 from datetime import timedelta,datetime
 from django.db.models import Sum,Max
 from django.http import HttpResponseBadRequest
+from django.db.models import Case, When, Value, IntegerField
+
 
 
 
@@ -70,6 +72,8 @@ def Home(request):
         'notice':notice,
     }
     return render(request, 'admin/home.html',context)
+
+
 
 
 @login_required(login_url='login')
@@ -1026,6 +1030,8 @@ def VIEW_PRACTICE_EXAM_QUESTION_FILTER(request):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_PRACTICE_EXAM_QUESTION(request,id):
     exam = Practice_Exam.objects.get(id = id)
 
@@ -1158,8 +1164,6 @@ def LIVE_EXAM_SAVE(request):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
         duration = int(request.POST.get('duration'))
-        print(start_time)
-        print(end_time)
 
         class1= Class.objects.get(id=class_id)
         course = Course.objects.get(id=course_id)
@@ -1206,6 +1210,18 @@ def LIVE_EXAM_VIEW(request):
 
     if selected_course:
         exam = exam.filter(course=selected_course)
+
+
+    # Sort exams: ongoing/future exams first, then expired ones
+    exam = exam.annotate(
+        exam_status=Case(
+            When(start_time__lte=current_time, end_time__gte=current_time, then=Value(0)),  # Ongoing
+            When(start_time__gt=current_time, then=Value(1)),  # Upcoming
+            When(end_time__lt=current_time, then=Value(2)),  # Expired
+            output_field=IntegerField(),
+        )
+    ).order_by('exam_status', 'start_time')
+
 
     context= {
         'exam':exam,
@@ -1312,6 +1328,7 @@ def LIVE_EXAM_DELETE(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADD_LIVE_EXAM_MCQ_QUESTION(request):
+    current_time = timezone.now()
     class1 = Class.objects.all()
 
     action = request.GET.get('action')
@@ -1329,7 +1346,7 @@ def ADD_LIVE_EXAM_MCQ_QUESTION(request):
             get_class = Class.objects.get(id=class_id)
 
             class1 = Class.objects.filter(id= class_id)
-            exam = Live_Exam.objects.filter(class_id=class_id)
+            exam = Live_Exam.objects.filter(class_id=class_id,end_time__gt=current_time)
             
 
     context = {
@@ -1431,8 +1448,7 @@ def VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER(request):
     exam = Live_Exam.objects.all()
 
     context = {
-        'exam':exam,
-       
+        'exam':exam,   
     }
 
     return render(request,'admin/view_live_exam_mcq_question_filter.html',context)
@@ -2103,6 +2119,7 @@ def GIVE_STUDENT_WRITTEN_EXAM_MARK(request):
 
         return redirect('admin_home')
         
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')

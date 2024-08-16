@@ -132,8 +132,6 @@ urlpatterns = [
     path('admin-star-student-delete/<str:id>', admin_views.STAR_STUDENT_DELETE,name='admin-star-student-delete'),
 
 
-
-
     path('admin-student-activity-add', admin_views.STUDENT_ACTIVITY_ADD,name='admin-student-activity-add'),
     path('admin-student-activity-view', admin_views.STUDENT_ACTIVITY_VIEW,name='admin-student-activity-view'),
     path('admin-student-activity-edit/<str:id>', admin_views.STUDENT_ACTIVITY_EDIT,name='admin-student-activity-edit'),
@@ -186,6 +184,20 @@ urlpatterns = [
     path('teacher-student-save', teacher_views.STUDENT_FEEDBACK_SAVE,name='teacher-student-feedback-save'),
 
 
+    path('teacher-star-student-add', teacher_views.STAR_STUDENT_ADD,name='teacher-star-student-add'),
+    path('teacher-star-student-edit/<str:id>', teacher_views.STAR_STUDENT_EDIT,name='teacher-star-student-edit'),
+    path('teacher-star-student-update', teacher_views.STAR_STUDENT_UPDATE,name='teacher-star-student-update'),
+    path('teacher-star-student-delete/<str:id>', teacher_views.STAR_STUDENT_DELETE,name='teacher-star-student-delete'),
+
+
+    path('teacher-student-activity-add', teacher_views.STUDENT_ACTIVITY_ADD,name='teacher-student-activity-add'),
+    path('teacher-student-activity-view', teacher_views.STUDENT_ACTIVITY_VIEW,name='teacher-student-activity-view'),
+    path('teacher-student-activity-edit/<str:id>', teacher_views.STUDENT_ACTIVITY_EDIT,name='teacher-student-activity-edit'),
+    path('teacher-student-activity-update', teacher_views.STUDENT_ACTIVITY_UPDATE,name='teacher-student-activity-update'),
+    path('teacher-student-activity-delete/<str:id>', teacher_views.STUDENT_ACTIVITY_DELETE,name='teacher-student-activity-delete'),
+
+
+
     path('teacher-take-attendance', teacher_views.TEACHER_TAKE_ATTENDANCE,name='teacher-take-attendance'),
     path('teacher-save-attendance', teacher_views.TEACHER_SAVE_ATTENDANCE,name='teacher-save-attendance'),
     path('teacher-view-attendance', teacher_views.TEACHER_VIEW_ATTENDANCE,name='teacher-view-attendance'),
@@ -207,6 +219,8 @@ urlpatterns = [
     path('teacher-student-send-notification', teacher_views.STUDENT_SEND_NOTIFICATION,name='teacher-student-send-notification'),
     path('teacher-student-save-notification', teacher_views.STUDENT_SAVE_NOTIFICATION,name='teacher-student-save-notification'),
 
+    path('teacher-student-written-answer', teacher_views.TEACHER_STUDENT_WRITTEN_ANSWER_FILTER,name='teacher-student-written-answer'),
+    path('teacher-student-written-answer/<int:student_id>/<int:exam_id>', teacher_views.TEACHER_STUDENT_WRITTEN_ANSWER,name='teacher-student-written-answer'),
 
 
 

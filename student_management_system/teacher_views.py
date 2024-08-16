@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Teacher, Teacher_Notification,Teacher_Feedback,Student_Feedback,Session_Year,Course,Student,Attendance,Attendance_Report,Subject,SchoolExamStudentResult,Class,Add_Notice,Student_Notification,School_Official_Exam
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 
 
 
@@ -14,12 +15,33 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def HOME(request):
+    student_count = Student.objects.all().count()
+    teacher_count= Teacher.objects.all().count()
+    course_count = Course.objects.all().count()
+    exam_count = Practice_Exam.objects.all().count()
+
+
+    student_gender_male = Student.objects.filter(gender= 'Male').count()
+    student_gender_female = Student.objects.filter(gender= 'Female').count()
+
+    star_student = Star_student.objects.all()
+    student_activity= Student_activity.objects.all()
     notice = Add_Notice.objects.all()
 
-    context={
+    
+    context = {
+        'student_count':student_count,
+        'teacher_count':teacher_count,
+        'course_count':course_count,
+        'exam_count':exam_count,
+        'student_gender_male':student_gender_male,
+        'student_gender_female': student_gender_female,
+        'star_student':star_student,
+        'student_activity':student_activity,
         'notice':notice,
     }
-    return render(request,'teacher/home.html',context)
+    return render(request, 'teacher/home.html',context)
+
 
 
 
@@ -506,3 +528,282 @@ def STUDENT_SAVE_NOTIFICATION(request):
 
         messages.success(request,'Student Notification Are Successfully Sent')
         return redirect('admin-student-send-notification')
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STAR_STUDENT_ADD(request):
+    class1=Class.objects.all()
+    if request.method == "POST":
+        student_name=request.POST.get('name')
+         
+        user_class=request.POST.get('class')
+        roll=request.POST.get('roll')
+        mark=request.POST.get('marks')
+        persentage=request.POST.get('percentage')
+        year=request.POST.get('year')
+
+        star_student = Star_student(
+            student_name=student_name,
+            user_class=user_class,
+            roll=roll,
+            mark=mark,
+            persentage=persentage,
+            year=year,
+        )
+        star_student.save()
+        messages.success(request,'Star Student Are Successfully Created')
+        return redirect('teacher-star-student-add')
+    
+    context = {
+        'class':class1,
+    }
+    
+    return render(request,'admin/add_star_student.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STAR_STUDENT_EDIT(request,id):
+    star_student = Star_student.objects.filter(id = id)
+    class1 = Class.objects.all()
+    context= {
+        'star_student':star_student,
+        'class':class1,
+    }
+    
+    return render(request,'admin/edit_star_student.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STAR_STUDENT_UPDATE(request):
+    if request.method == "POST":
+        star_student_id = request.POST.get('star_student_id')
+        student_name=request.POST.get('name')
+         
+        user_class=request.POST.get('class')
+        roll=request.POST.get('roll')
+        mark=request.POST.get('marks')
+        persentage=request.POST.get('percentage')
+        year=request.POST.get('year')
+
+        try:
+            star_student = Star_student.objects.get(id=star_student_id)
+        except Star_student.DoesNotExist:
+            raise Http404("Star Student not found")
+
+        star_student.student_name = student_name
+        star_student.user_class = user_class
+        star_student.roll = roll
+        star_student.mark = mark
+        star_student.persentage = persentage
+        star_student.year = year
+        star_student.save()
+
+        messages.success(request, 'Star Student was successfully updated')
+        return redirect('teacher-home')    
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STAR_STUDENT_DELETE(request,id):
+    star_student = Star_student.objects.get(id= id)
+    star_student.delete()
+
+    messages.success(request,'Star Student Are Successfully Deleted')
+
+    return redirect('teacher-home')
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_ACTIVITY_ADD(request):
+    if request.method == "POST":
+        date = request.POST.get('date')
+        description = request.POST.get('description')
+
+        if not description:
+            # Handle the case where description is empty
+            messages.error(request, 'Description is required.')
+            return redirect('teacher-student-activity-add')
+
+        student_activity = Student_activity(
+            date=date,
+            description=description,
+        )
+        student_activity.save()
+        messages.success(request, 'Student Activity Are Successfully Created')
+        return redirect('teacher-student-activity-add')
+
+    
+    return render(request,'admin/add_student_activity.html')
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_ACTIVITY_VIEW(request):
+    student_activity= Student_activity.objects.all()
+
+    context = {
+        'student_activity':student_activity,
+    }
+
+    return render(request,'admin/view_student_activity.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_ACTIVITY_EDIT(request,id):
+    student_activity= Student_activity.objects.get(id = id)
+
+    context = {
+        'student_activity':student_activity,
+    }
+    return render(request,'admin/edit_student_activity.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_ACTIVITY_UPDATE(request):
+    if request.method == "POST":
+        date = request.POST.get('date')
+        description = request.POST.get('description')
+        student_activity_id = request.POST.get('student_activity_id')
+
+        student_activity = Student_activity.objects.get(id = student_activity_id)
+
+        student_activity.date = date
+        student_activity.description = description
+        student_activity.save()
+        messages.success(request,'Student Activity Are Successfully Updated')
+        return redirect('teacher-home')
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_ACTIVITY_DELETE(request,id):
+    student_activity = Student_activity.objects.get(id= id)
+    student_activity.delete()
+
+    messages.success(request,'Student Activity Are Successfully Deleted')
+
+    return redirect('teacher-student-activity-view')
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def TEACHER_STUDENT_WRITTEN_ANSWER_FILTER(request):
+    if request.method == 'POST':
+        action = request.GET.get('action')
+        if action == 'Show-Courses':
+            selected_class_id = request.POST.get('class_id')
+            courses = Course.objects.filter(class1=selected_class_id)
+            return render(request, "teacher/student_written_answer_filter.html", {"action": "Show-Courses", "courses": courses, "selected_class_id": selected_class_id})
+        
+        elif action == 'Show-Exams':
+            selected_class_id = request.POST.get('class_id')
+            selected_course_id = request.POST.get('course_id')
+            exams = Live_Exam.objects.filter(course_id=selected_course_id)
+            return render(request, "teacher/student_written_answer_filter.html", {"action": "Show-Exams", "exams": exams, "selected_course_id": selected_course_id, "selected_class_id": selected_class_id})
+        
+        elif action == 'Show-Students':
+            selected_class_id = request.POST.get('class_id')
+            selected_course_id = request.POST.get('course_id')
+            selected_exam_id = request.POST.get('exam_id')
+           
+            get_class = Class.objects.get(id=selected_class_id)
+            # Fetch students who do not have results for the selected exam
+            students = Student.objects.filter(class_id=get_class).exclude(
+                id__in=Live_Exam_Written_Result.objects.filter(exam_id=selected_exam_id).values_list('student_id', flat=True)
+            )
+
+            context = {
+                "action": "Show-Students", 
+                "students": students, 
+                "class":selected_class_id, 
+                "selected_course_id": selected_course_id,
+                "exam":selected_exam_id
+            }
+            return render(request, "teacher/student_written_answer_filter.html", context)
+    else:
+        classes = Class.objects.all()
+        return render(request, "teacher/student_written_answer_filter.html", {"classes": classes})
+   
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def TEACHER_STUDENT_WRITTEN_ANSWER(request, student_id, exam_id):
+    exam = Live_Exam.objects.get(id = exam_id)
+    # Get the questions for the exam
+    questions = LiveExamWrittenQuestion.objects.filter(exam=exam_id)
+    
+    # Get the student's written answers for the exam
+    student =Student.objects.get( id=student_id)
+    written_answers = LiveExamStudentWrittenAnswer.objects.filter(student=student, question__exam=exam_id).select_related('question').prefetch_related('images')
+    
+    context = {
+        "questions": questions,
+        "written_answers": written_answers,
+        "student": student,
+        "exam":exam,
+    }
+    
+    return render(request, 'admin/student_written_answer.html', context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def GIVE_STUDENT_WRITTEN_EXAM_MARK(request):
+    if request.method == "POST":
+        student = request.POST.get("student_id")
+        exam = request.POST.get("exam_id")
+
+        student = Student.objects.get(id = student)
+        exam = Live_Exam.objects.get(id = exam)
+
+        for question in LiveExamWrittenQuestion.objects.filter(exam=exam):
+            marks = request.POST.get(f'marks_{question.id}')
+            if marks is not None:
+                Live_Exam_Written_Result.objects.create(
+                    student=student,
+                    exam=exam,
+                    question=question,
+                    marks=int(marks)
+                )
+        
+        live_written_exam_mark = Live_Exam_Written_Result.objects.filter(exam=exam)
+        total_mark = 0
+        for i in live_written_exam_mark:
+            total_mark= total_mark + i.marks
+        
+        exam_result, created = Live_Exam_Result.objects.get_or_create(
+            student=student,
+            exam=exam,
+            defaults={'marks': total_mark}
+        )
+        if not created:
+            exam_result.marks += total_mark
+            exam_result.save()
+
+        return redirect('teacher-home')
+  

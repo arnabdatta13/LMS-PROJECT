@@ -31,7 +31,100 @@
         </div>
     </div>
 </div>
+  
+<script>
+    // Function to automatically submit the exam
+    function submitExamAutomatically() {
+        const examId = localStorage.getItem('exam_id');
+        if (examId) {
+            const formData = new FormData();
+            formData.append('exam_id', examId);
+    
+            // Loop through saved answers
+            for (let i = 1; i <= localStorage.getItem(`exam_${examId}_total_questions`); i++) {
+                const answer = localStorage.getItem(`exam_${examId}_question_${i}`);
+                if (answer) {
+                    formData.append(i, answer);
+                    console.log(`Appending question ${i} with answer: ${answer}`);
+                }
+            }
+            
+            console.log("Attempting AJAX request...");
 
+            $.ajax({
+                url: "{% url 'student-live-exam-calculate-marks' %}",
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRFToken': "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    console.log("AJAX success:", response);
+                    alert('Your exam has been submitted because the time is up.');
+                    localStorage.removeItem('exam_remaining_time');
+                    localStorage.removeItem('exam_id');
+                    window.location.href = "{% url 'student-live-exam-mark' %}";
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                    alert('There was an error submitting your exam. Please try again.');
+                }
+            });
+        }
+    }
+    
+
+    // Function to format time as HH:MM:SS
+    function formatTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Function to update the timer
+    function updateTimer() {
+        let remainingTime = parseInt(localStorage.getItem('exam_remaining_time'));
+        if (remainingTime !== null && remainingTime > 0) {
+            remainingTime--;
+            localStorage.setItem('exam_remaining_time', remainingTime);
+    
+            // Update the timer display in HH:MM:SS format
+            if (document.getElementById('timer')) {
+                document.getElementById('timer').innerText = ` ${formatTime(remainingTime)}`;
+            }
+        } else if (remainingTime === 0) {
+            submitExamAutomatically();
+        }
+    }
+    
+
+    // Periodically check the timer every second
+    setInterval(function() {
+        const examId = localStorage.getItem('exam_id');
+        if (examId) {
+            updateTimer();
+        }
+    }, 1000);
+
+    // When the user navigates away from the exam page, the timer should continue
+    window.addEventListener('beforeunload', function() {
+        localStorage.setItem('is_exam_running', true);
+    });
+
+    // When the user returns to the exam page, reinitialize the timer
+    window.addEventListener('load', function() {
+        const examId = localStorage.getItem('exam_id');
+        if (examId) {
+            const remainingTime = localStorage.getItem('exam_remaining_time');
+            if (remainingTime && remainingTime > 0) {
+                updateTimer();
+            }
+        }
+    });
+</script>
 
 <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'assets/js/popper.min.js' %}"></script>

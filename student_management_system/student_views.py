@@ -565,21 +565,12 @@ def STUDENT_START_LIVE_EXAM(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_LIVE_EXAM_CALCULATE_MARKS(request):
+    print("all ok")
     if request.method == "POST":
+        print(f"Received POST data: {request.POST}")
         exam_id = request.POST.get('exam_id') 
         exam = Live_Exam.objects.get(id=exam_id)
         student = request.user.student
-
-        # Check if the request is an AJAX call for time status
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            try:
-                exam_timer = LiveExamTimer.objects.get(exam=exam, user=request.user)
-                time_left = (exam_timer.end_time - timezone.now()).total_seconds()
-                if time_left <= 0:
-                    return JsonResponse({'status': 'time_up'})
-                return JsonResponse({'status': 'ongoing', 'time_left': time_left})
-            except LiveExamTimer.DoesNotExist:
-                return JsonResponse({'status': 'time_up'})
 
         # Exam submission logic
         questions = LiveExamMCQQuestion.objects.filter(exam=exam)
@@ -691,7 +682,15 @@ def STUDENT_VIEW_LIVE_EXAM_RESULT(request, id):
         user_scores[user] = user_total
 
     highest_mark = max(user_scores.values(), default=0)
-    merit_position = sorted(user_scores.values(), reverse=True).index(user_total_score) + 1
+    
+    # Ensure that the user's total score is included in the scores list
+    user_scores[request.user] = user_total_score
+
+    # Sort the scores in descending order
+    sorted_scores = sorted(user_scores.values(), reverse=True)
+
+    # Calculate the merit position based on the sorted list
+    merit_position = sorted_scores.index(user_total_score) + 1
 
     # Calculate written results
     written_marks = Live_Exam_Written_Result.objects.filter(student=student.student, exam=exam)
