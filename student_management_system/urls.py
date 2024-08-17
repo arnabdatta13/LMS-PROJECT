@@ -177,6 +177,15 @@ urlpatterns = [
     path('teacher-notification', teacher_views.NOTIFICATION,name='teacher-notification'),
     path('teacher/mark_as_done/<str:status>', teacher_views.TEACHER_NOTIFICATION_MARK_AS_DONE,name='teacher-mark-as-done'),
 
+
+    path('teacher-student-add', teacher_views.STUDENT_ADD,name='teacher-student-add'),
+    path('teacher-student-view', teacher_views.STUDENT_VIEW,name='teacher-student-view'),
+    path('teacher-student-edit/<str:id>', teacher_views.STUDENT_EDIT,name='teacher-student-edit'),
+    path('teacher-student-update', teacher_views.STUDENT_UPDATE,name='teacher-student-update'),
+    path('teacher-student-delete/<str:admin>', teacher_views.STUDENT_DELETE,name='teacher-student-delete'),
+
+
+
     path('teacher-feedback', teacher_views.TEACHER_FEEDBACK,name='teacher-feedback'),
     path('teacher-feedback-save', teacher_views.TEACHER_FEEDBACK_SAVE,name='teacher-feedback-save'),
 
@@ -270,6 +279,7 @@ urlpatterns = [
 
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
+    path('student-question',student_views.STUDENT_QUESTION,name='student-question'),
 
 
     

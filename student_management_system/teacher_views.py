@@ -47,6 +47,220 @@ def HOME(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_ADD (request):
+    class1= Class.objects.all()
+    session_year =Session_Year.objects.all()
+
+    if request.method == "POST":
+        profile_pic=request.FILES.get('profile_pic')
+        first_name =request.POST.get('first_name')
+        last_name =request.POST.get('last_name')
+        username =request.POST.get('username')
+        password =request.POST.get('password')
+        fathers_name =request.POST.get('fathers_name')
+        mathers_name =request.POST.get('mathers_name')
+        
+        roll_number =request.POST.get('roll')
+        class_id =request.POST.get('class_id')
+        session_year_id =request.POST.get('session_year_id')
+        gender =request.POST.get('gender')
+        phone_number =request.POST.get('phone_number')
+        address =request.POST.get('address')
+
+        
+        if CustomUser.objects.filter(username=username).exists():
+            messages.warning(request,'Username Is Already Taken')
+            return redirect('teacher-student-add')
+        else:
+            user= CustomUser(
+                first_name= first_name,
+                last_name =last_name,
+                username=username,
+                profile_pic=profile_pic,
+                user_type = 3,
+                
+
+
+            )
+            user.set_password(password)
+            user.save()
+
+            class1=Class.objects.get(id=class_id)
+            session_year = Session_Year.objects.get(id=session_year_id)
+
+            student = Student(
+                admin= user,
+                address =address,
+                fathers_name=fathers_name,
+                mothers_name=mathers_name,
+                session_year_id= session_year,
+                class_id=class1,
+                gender=gender,
+                
+                roll_number=roll_number,
+                phone_number=phone_number,
+            )
+            student.save()
+            messages.success(request, user.first_name + " " + user.last_name + " Are Successfully Added")
+            return redirect('teacher-student-add')
+            
+            
+    
+    context = {
+        'class': class1,
+        'session_year':session_year,
+    }
+    
+    return render(request, 'admin/add_student.html',context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_VIEW(request):
+    student = Student.objects.all()
+    classes = Class.objects.all()  # Fetch all classes from the database
+
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+    roll_number_query = request.GET.get('roll_number_filter', '') 
+
+    if search_query:
+        student = student.filter(
+            Q(admin__first_name__icontains=search_query) | 
+            Q(admin__last_name__icontains=search_query)
+        )
+    if class_filter:
+        student = student.filter(class_id=class_filter)
+    if roll_number_query:
+        student = student.filter(roll_number=roll_number_query)
+
+
+    context = {
+        'student':student,
+        'search_query': search_query,
+        'classes': classes,
+        'selected_class': class_filter,  # Pass selected class filter to template
+        'roll_number_query': roll_number_query,
+    }
+    return render(request,'admin/view_student.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_EDIT(request,id):
+    student = Student.objects.filter(id=id)
+    class1= Class.objects.all()
+    session_year = Session_Year.objects.all()
+    
+
+    context={
+        'student':student,
+        'class':class1,
+        'session_year':session_year,
+    }
+    return render(request, 'admin/edit_student.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_UPDATE(request):
+    if request.method == 'POST':
+        student_id =request.POST.get('student_id')
+        
+        profile_pic= request.FILES.get('profile_pic')
+        first_name =request.POST.get('first_name')
+        last_name =request.POST.get('last_name')
+        username =request.POST.get('username')
+        password =request.POST.get('password')
+        fathers_name =request.POST.get('fathers_name')
+        mathers_name =request.POST.get('mathers_name')
+        
+        roll_number =request.POST.get('roll')
+        class_id =request.POST.get('class_id')
+        
+        session_year_id =request.POST.get('session_year_id')
+        gender =request.POST.get('gender')
+        phone_number =request.POST.get('phone_number')
+        address =request.POST.get('address')
+
+        if class_id == 'Select Course':
+            messages.error(request, 'Please select a valid course.')
+            return redirect('teacher-student-edit', id=student_id)  # Redirect back to the edit page
+        if session_year_id == 'Select Session Year':
+            messages.error(request, 'Please select a valid Session Year.')
+            return redirect('teacher-student-edit', id=student_id)  # Redirect back to the edit page
+
+        user= CustomUser.objects.get(id=student_id)
+        
+        if first_name != None and first_name != "":
+            user.first_name=first_name
+            
+        if last_name != None and last_name != "":
+            user.last_name=last_name
+
+        if username != None and username != "":
+            user.username=username
+
+            
+        if profile_pic != None and profile_pic != "":
+            user.profile_pic=profile_pic
+
+            #customuser.username= username
+        if password != None and password != "":
+            user.set_password(password)
+        user.save()
+
+        student = Student.objects.get(admin= student_id)
+        
+        if fathers_name != None and fathers_name != "":
+            student.fathers_name=fathers_name
+        
+        if mathers_name != None and mathers_name != "":
+            student.mothers_name=mathers_name
+
+        
+
+        if roll_number != None and roll_number != "":
+            student.roll_number=roll_number
+        
+        if gender != None and gender != "":
+            student.gender=gender
+
+        if phone_number != None and phone_number != "":
+            student.phone_number=phone_number
+
+        if address != None and address != "":
+            student.address=address
+        
+        class1 = Class.objects.get(id=class_id)
+        
+        student.class_id=class1
+
+        session_year = Session_Year.objects.get(id=session_year_id)
+
+        student.session_year_id = session_year
+
+        student.save()
+        messages.success(request,'Record Are Successfully Updated')
+        return redirect('teacher-student-view')
+
+        
+        
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_DELETE(request,admin):
+    student = CustomUser.objects.get(id= admin)
+    student.delete()
+    messages.success(request,'Record Are Successfully Deleted')
+    return redirect('teacher-student-view')
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def NOTIFICATION(request):
     teacher = Teacher.objects.filter(admin=request.user.id)
     for i in teacher:

@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audio Recorder with Enhanced Wave and Add URL to Textarea</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-</head>
-<body>
+
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+
   <div class="container mt-4">
     <div class="card shadow">
       <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
@@ -37,12 +33,9 @@
           </div>
 
           <!-- New Container Above the Textarea -->
-          <div id="container-above-textarea" class="mb-3 p-3" style="background-color: #f5f5f5; border-radius: 8px; border: 1px solid #ccc;">
-            <h5>Uploaded File:</h5>
-            <div class="uploaded-file">
-              <img src="file-icon.png" alt="Uploaded file" style="width: 50px; height: 50px;" />
-              <p>File name or information about the uploaded file...</p>
-            </div>
+          <div id="container-above-textarea" class="mb-3 p-3 d-none" style="background-color: ##fff; border-radius: 8px; border: 1px solid #ccc;">
+            <h5>Uploaded Files:</h5>
+            <div id="uploaded-files" class="d-flex flex-wrap"></div>
           </div>
 
           <!-- Textarea -->
@@ -51,8 +44,8 @@
           </div>
           
           <div class="form-group d-flex justify-content-end">
-            <input type="file" id="file-input" style="display: none;" accept="image/*">
-            <button type="button" class="btn btn-purple mx-1"><i class="fas fa-paperclip"></i></button>
+            <input type="file" id="file-input" style="display: none;" accept="image/*" multiple>
+            <button type="button" class="btn btn-purple mx-1" id="file-upload-btn"><i class="fas fa-paperclip"></i></button>
             <button type="button" class="btn btn-teal mx-1" id="camera-button"><i class="fas fa-camera"></i></button>
             <button type="button" class="btn btn-green mx-1" id="mic-button"><i class="fas fa-microphone"></i></button>
             <button type="submit" class="btn btn-lightblue">Submit</button>
@@ -62,8 +55,45 @@
     </div>
   </div>
   
+  <!-- Modal for Microphone Recording -->
+  <div id="micModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h5>Recording Audio</h5>
+
+      <!-- Timer and Waveform -->
+      <div id="recording-view" class="d-flex flex-column justify-content-center align-items-center">
+        <div class="mic-icon-container d-flex justify-content-center align-items-center">
+          <i class="fas fa-microphone"></i>
+        </div>
+        <div class="timer mt-3" id="timer">00:00:00</div>
+        <div id="waveform-container" class="mt-4">
+          <canvas id="waveform" width="300" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- Finished Recording View -->
+      <div id="finished-view" class="d-none">
+        <audio id="audio-player" controls>
+          <source id="audio-source" type="audio/webm">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+      <!-- Buttons Placement -->
+      <div class="mt-4 gap-5">       <!-- Start and Stop Button -->
+        <button id="start-btn" class="btn-green start-btn">Start</button>
+        <!-- Delete and Add Buttons -->
+        <button id="delete-btn" class="btn btn-danger mt-2 d-none">Delete</button>
+        <button id="add-btn" class="btn btn-success mt-2 d-none">Add</button>
+      </div>
+    </div>
+  </div>
+
+
   <style>
     /* Modal and form styling */
+
     .bg-purple {
       background-color: #5e3260;
     }
@@ -127,12 +157,9 @@
       color: white;
       font-size: 40px;
       border-radius: 50%;
-      padding: 15px;
       width: 80px;
       height: 80px;
       display: flex;
-      align-items: center;
-      justify-content: center;
     }
     .timer {
       font-size: 24px;
@@ -181,6 +208,54 @@
       border-radius: 8px;
     }
 
+
+    /* Uploaded image styling */
+    .uploaded-image, .uploaded-audio {
+      position: relative;
+      margin-right: 10px;
+    }
+
+    .uploaded-image img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .uploaded-audio audio {
+      width: 200px;
+    }
+
+    .uploaded-image .overlay, .uploaded-audio .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .uploaded-image:hover .overlay,
+    .uploaded-audio:hover .overlay {
+      opacity: 1;
+    }
+
+    .uploaded-image .overlay i,
+    .uploaded-audio .overlay i {
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+
+
     /* Hidden view */
     .d-none {
       display: none;
@@ -192,7 +267,50 @@
       document.getElementById('file-input').click();
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('file-upload-btn').addEventListener('click', function() {
+      document.getElementById('file-input').click();
+    });
+
+    document.getElementById('file-input').addEventListener('change', function() {
+      if (this.files.length > 0) {
+          const containerAboveTextarea = document.getElementById('container-above-textarea');
+          const uploadedFilesContainer = document.getElementById('uploaded-files');
+  
+          // Show the container if hidden
+          containerAboveTextarea.classList.remove('d-none');
+  
+          // Iterate over each file and display them
+          Array.from(this.files).forEach(file => {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                  const div = document.createElement('div');
+                  div.classList.add('uploaded-image');
+  
+                  div.innerHTML = `
+                      <img src="${e.target.result}" alt="Uploaded image">
+                      <div class="overlay">
+                          <i class="fas fa-times"></i>
+                      </div>
+                  `;
+  
+                  // Add delete functionality
+                  div.querySelector('.overlay i').addEventListener('click', function () {
+                      div.remove();
+                      if (uploadedFilesContainer.children.length === 0) {
+                          containerAboveTextarea.classList.add('d-none');
+                      }
+                  });
+  
+                  uploadedFilesContainer.appendChild(div);
+              };
+              reader.readAsDataURL(file);
+          });
+      }
+  });
+  
+
+
+    document.addEventListener('DOMContentLoaded', function () {
       let mediaRecorder;
       let audioChunks = [];
       let audioBlobUrl;
@@ -217,188 +335,228 @@
       const deleteBtn = document.getElementById('delete-btn');
       const addBtn = document.getElementById('add-btn');
       const textarea = document.getElementById('question-textarea');
+      const containerAboveTextarea = document.getElementById('container-above-textarea');
+      const uploadedFilesContainer = document.getElementById('uploaded-files');
 
       // Show the modal when the mic button is clicked
-      micButton.addEventListener('click', function() {
-        modal.style.display = 'block';
-        resetToInitialView();
+      micButton.addEventListener('click', function () {
+          modal.style.display = 'block';
+          resetToInitialView();
       });
 
       // Close the modal when the close button is clicked
-      closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-        resetRecording();
+      closeModal.addEventListener('click', function () {
+          modal.style.display = 'none';
+          resetRecording();
       });
 
       // Close the modal if the user clicks outside the modal content
-      window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-          modal.style.display = 'none';
-          resetRecording();
-        }
+      window.addEventListener('click', function (event) {
+          if (event.target === modal) {
+              modal.style.display = 'none';
+              resetRecording();
+          }
       });
 
-      startButton.addEventListener('click', async function() {
-        if (!isRecording) {
-          // Start Recording
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          mediaRecorder = new MediaRecorder(stream);
-          mediaRecorder.start();
+      startButton.addEventListener('click', async function () {
+          if (!isRecording) {
+              // Start Recording
+              const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              mediaRecorder = new MediaRecorder(stream);
+              mediaRecorder.start();
 
-          // Set up Audio Context for waveform visualization
-          audioContext = new AudioContext();
-          source = audioContext.createMediaStreamSource(stream);
-          analyser = audioContext.createAnalyser();
-          analyser.fftSize = 1024; // Increased fftSize for smoother wave
-          source.connect(analyser);
+              // Set up Audio Context for waveform visualization
+              audioContext = new AudioContext();
+              source = audioContext.createMediaStreamSource(stream);
+              analyser = audioContext.createAnalyser();
+              analyser.fftSize = 1024; // Increased fftSize for smoother wave
+              source.connect(analyser);
 
-          mediaRecorder.ondataavailable = (event) => {
-            audioChunks.push(event.data);
-          };
+              mediaRecorder.ondataavailable = (event) => {
+                  audioChunks.push(event.data);
+              };
 
-          mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            audioBlobUrl = URL.createObjectURL(audioBlob);
-            audioSource.src = audioBlobUrl;
-            audioPlayer.load();
-          };
+              mediaRecorder.onstop = () => {
+                  const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                  audioBlobUrl = URL.createObjectURL(audioBlob);
+                  audioSource.src = audioBlobUrl;
+                  audioPlayer.load();
+              };
 
-          // Start Timer
-          startTime = Date.now();
-          timerInterval = setInterval(updateTimer, 1000);
+              // Start Timer
+              startTime = Date.now();
+              timerInterval = setInterval(updateTimer, 1000);
 
-          // Replace Start button with Stop button
-          startButton.textContent = "Stop";
-          startButton.classList.remove("btn-green");
-          startButton.classList.add("stop-btn");
+              // Replace Start button with Stop button
+              startButton.textContent = "Stop";
+              startButton.classList.remove("btn-green");
+              startButton.classList.add("stop-btn");
 
-          // Start drawing the waveform
-          isRecording = true;
-          drawWaveform();
-        } else {
-          // Stop Recording and show the finished view
-          stopRecording();
-          replaceWithFinishedView();
-        }
+              // Start drawing the waveform
+              isRecording = true;
+              drawWaveform();
+          } else {
+              // Stop Recording and show the finished view
+              stopRecording();
+              replaceWithFinishedView();
+          }
       });
 
       function updateTimer() {
-        const elapsedTime = Date.now() - startTime;
-        const seconds = Math.floor(elapsedTime / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
+          const elapsedTime = Date.now() - startTime;
+          const seconds = Math.floor(elapsedTime / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
 
-        const displaySeconds = String(seconds % 60).padStart(2, '0');
-        const displayMinutes = String(minutes % 60).padStart(2, '0');
-        const displayHours = String(hours).padStart(2, '0');
+          const displaySeconds = String(seconds % 60).padStart(2, '0');
+          const displayMinutes = String(minutes % 60).padStart(2, '0');
+          const displayHours = String(hours).padStart(2, '0');
 
-        timerElement.textContent = `${displayHours}:${displayMinutes}:${displaySeconds}`;
-      }
-
-      function drawWaveform() {
-        if (!isRecording) return;
-
-        requestAnimationFrame(drawWaveform);
-
-        let bufferLength = analyser.fftSize;
-        let dataArray = new Uint8Array(bufferLength);
-        analyser.getByteTimeDomainData(dataArray);
-
-        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Green color wave effect with smoother curves
-        canvasCtx.strokeStyle = '#4CAF50'; // Green color for the wave
-
-        canvasCtx.lineWidth = 2;
-        canvasCtx.shadowBlur = 5;
-        canvasCtx.shadowColor = "rgba(76, 175, 80, 0.6)"; // Soft green shadow
-
-        canvasCtx.beginPath();
-
-        let sliceWidth = canvas.width / bufferLength;
-        let x = 0;
-
-        for (let i = 0; i < bufferLength; i++) {
-          let v = dataArray[i] / 128.0;
-          let y = v * canvas.height / 2;
-
-          if (i === 0) {
-            canvasCtx.moveTo(x, y);
-          } else {
-            canvasCtx.quadraticCurveTo(x - sliceWidth / 2, y, x, y); // Smoother curves
-          }
-
-          x += sliceWidth;
+          timerElement.textContent = `${displayHours}:${displayMinutes}:${displaySeconds}`;
         }
 
-        canvasCtx.stroke();
+      function drawWaveform() {
+          if (!isRecording) return;
+
+          requestAnimationFrame(drawWaveform);
+
+          let bufferLength = analyser.fftSize;
+          let dataArray = new Uint8Array(bufferLength);
+          analyser.getByteTimeDomainData(dataArray);
+
+          canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Green color wave effect with smoother curves
+          canvasCtx.strokeStyle = '#4CAF50'; // Green color for the wave
+
+          canvasCtx.lineWidth = 2;
+          canvasCtx.shadowBlur = 5;
+          canvasCtx.shadowColor = "rgba(76, 175, 80, 0.6)"; // Soft green shadow
+
+          canvasCtx.beginPath();
+
+          let sliceWidth = canvas.width / bufferLength;
+          let x = 0;
+
+          for (let i = 0; i < bufferLength; i++) {
+              let v = dataArray[i] / 128.0;
+              let y = v * canvas.height / 2;
+
+              if (i === 0) {
+                  canvasCtx.moveTo(x, y);
+              } else {
+                  canvasCtx.quadraticCurveTo(x - sliceWidth / 2, y, x, y); // Smoother curves
+              }
+
+              x += sliceWidth;
+          }
+
+          canvasCtx.stroke();
       }
 
       function stopRecording() {
-        clearInterval(timerInterval);
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-          mediaRecorder.stop();
-        }
-        if (audioContext) {
-          audioContext.close();
-        }
-        isRecording = false;
+          clearInterval(timerInterval);
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+              mediaRecorder.stop();
+          }
+          if (audioContext) {
+              audioContext.close();
+          }
+          isRecording = false;
       }
 
       function resetRecording() {
-        recordingView.classList.remove('d-none');
-        finishedView.classList.add('d-none');
-        startButton.textContent = "Start";
-        startButton.classList.remove("stop-btn");
-        startButton.classList.add("btn-green");
-        timerElement.textContent = "00:00:00";
-        document.getElementById('waveform-container').style.display = 'block';
-        startButton.style.display = 'inline-block';
-        drawStartLine(); // Reset to start line
+          recordingView.classList.remove('d-none');
+          finishedView.classList.add('d-none');
+          startButton.textContent = "Start";
+          startButton.classList.remove("stop-btn");
+          startButton.classList.add("btn-green");
+          timerElement.textContent = "00:00:00";
+          document.getElementById('waveform-container').style.display = 'block';
+          startButton.style.display = 'inline-block';
+          drawStartLine(); // Reset to start line
       }
 
       function replaceWithFinishedView() {
-        // Hide the waveform and stop button
-        document.getElementById('waveform-container').style.display = 'none';
-        startButton.style.display = 'none';
+          // Hide the waveform and stop button
+          document.getElementById('waveform-container').style.display = 'none';
+          startButton.style.display = 'none';
 
-        // Show audio player and delete/add buttons
-        finishedView.classList.remove('d-none');
+          // Show audio player and delete/add buttons
+          finishedView.classList.remove('d-none');
+          deleteBtn.classList.remove('d-none');
+          addBtn.classList.remove('d-none');
       }
 
       function drawStartLine() {
-        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-        canvasCtx.strokeStyle = 'rgb(200, 200, 200)';
-        canvasCtx.lineWidth = 2;
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, canvas.height / 2);
-        canvasCtx.lineTo(canvas.width, canvas.height / 2);
-        canvasCtx.stroke();
+          canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+          canvasCtx.strokeStyle = 'rgb(200, 200, 200)';
+          canvasCtx.lineWidth = 2;
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(0, canvas.height / 2);
+          canvasCtx.lineTo(canvas.width, canvas.height / 2);
+          canvasCtx.stroke();
       }
 
       function resetToInitialView() {
-        resetRecording();
-        audioChunks = [];
+          resetRecording();
+          audioChunks = [];
+          deleteBtn.classList.add('d-none');
+          addBtn.classList.add('d-none');
       }
 
       // Delete action
-      deleteBtn.addEventListener('click', function() {
-        resetToInitialView();
+      deleteBtn.addEventListener('click', function () {
+          resetToInitialView();
       });
 
-      // Add action
-      addBtn.addEventListener('click', function() {
+      // Add action - shows the recorded voice in the container above the textarea
+      addBtn.addEventListener('click', function () {
         if (audioBlobUrl) {
-          textarea.value += `\nRecorded Audio: ${audioBlobUrl}`;
+            // Create an audio element
+            const audioElementDiv = document.createElement('div');
+            audioElementDiv.classList.add('uploaded-audio');
+    
+            const audioElement = document.createElement('audio');
+            audioElement.controls = true;
+            audioElement.src = audioBlobUrl;
+    
+            const overlayDiv = document.createElement('div');
+            overlayDiv.classList.add('overlay');
+    
+            const closeIcon = document.createElement('i');
+            closeIcon.classList.add('fas', 'fa-times');
+    
+            // Append close icon to overlay
+            overlayDiv.appendChild(closeIcon);
+    
+            // Add delete functionality for the audio
+            closeIcon.addEventListener('click', function () {
+                audioElementDiv.remove();
+                if (uploadedFilesContainer.children.length === 0) {
+                    containerAboveTextarea.classList.add('d-none');
+                }
+            });
+    
+            // Append the audio element and overlay to the main div
+            audioElementDiv.appendChild(audioElement);
+            audioElementDiv.appendChild(overlayDiv);
+    
+            // Append the new audio element to the uploaded files container
+            containerAboveTextarea.classList.remove('d-none');
+            uploadedFilesContainer.appendChild(audioElementDiv);
+    
+            // Close the modal and reset the recording view
+            modal.style.display = 'none';
+            resetRecording();
         }
-        modal.style.display = 'none';
-        resetRecording();
-      });
+    });
+    
     });
   </script>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+{% endblock %}

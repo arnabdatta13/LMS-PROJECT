@@ -3,7 +3,14 @@
 
       <div class="header">
          <div class="header-left">
-            <a href="index.html" class="logo">
+            {% if user.user_type == 1 %}
+               <a href="{% url 'admin_home' %}" class="logo">
+            {% elif user.user_type == 2 %}
+               <a href="{% url 'teacher-home' %}" class="logo">
+            {% else %}
+             <a href="{% url 'student-home' %}" class="logo">
+            {% endif %}
+
             <img src="{% static 'assets/img/logo.png' %}" alt="Logo">
             </a>
             {% if user.user_type == 1 %}

@@ -244,6 +244,10 @@ def STUDENT_VIEW_SCHOOL_EXAM_RESULT(request):
 def STUDENT_ASK_QUESTION(request):
     return render(request,'student/q&a.html')
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def STUDENT_QUESTION(request):
+    return render(request,'student/student_questions.html')
 
 
 @login_required(login_url='login')
