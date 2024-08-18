@@ -111,7 +111,7 @@ def STUDENT_ADD (request):
         'session_year':session_year,
     }
     
-    return render(request, 'admin/add_student.html',context)
+    return render(request, 'teacher/student/add_student.html',context)
 
 
 @login_required(login_url='login')
@@ -142,7 +142,7 @@ def STUDENT_VIEW(request):
         'selected_class': class_filter,  # Pass selected class filter to template
         'roll_number_query': roll_number_query,
     }
-    return render(request,'admin/view_student.html',context)
+    return render(request,'teacher/student/view_student.html',context)
 
 
 

@@ -142,7 +142,7 @@ def STUDENT_ADD (request):
         'session_year':session_year,
     }
     
-    return render(request, 'admin/add_student.html',context)
+    return render(request, 'admin/student/add_student.html',context)
 
 
 @login_required(login_url='login')
@@ -173,7 +173,7 @@ def STUDENT_VIEW(request):
         'selected_class': class_filter,  # Pass selected class filter to template
         'roll_number_query': roll_number_query,
     }
-    return render(request,'admin/view_student.html',context)
+    return render(request,'admin/student/view_student.html',context)
 
 
 @login_required(login_url='login')
@@ -182,14 +182,13 @@ def STUDENT_EDIT(request,id):
     student = Student.objects.filter(id=id)
     class1= Class.objects.all()
     session_year = Session_Year.objects.all()
-    
 
     context={
         'student':student,
         'class':class1,
         'session_year':session_year,
     }
-    return render(request, 'admin/edit_student.html',context)
+    return render(request, 'admin/student/edit_student.html',context)
 
 
 @login_required(login_url='login')
@@ -299,7 +298,7 @@ def CLASS_ADD(request):
         messages.success(request,'Class Are Successfully Created')
         return redirect('admin-class-add')
     
-    return render(request,'admin/add_class.html')
+    return render(request,'admin/class/add_class.html')
 
 
 @login_required(login_url='login')
@@ -312,7 +311,7 @@ def CLASS_VIEW(request):
         'class': class1,
 
     }
-    return render(request,'admin/view_class.html',context)
+    return render(request,'admin/class/view_class.html',context)
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
@@ -322,7 +321,7 @@ def CLASS_EDIT(request,id):
     context = {
         'class':class1,
     }
-    return render(request,'admin/edit_class.html',context)
+    return render(request,'admin/class/edit_class.html',context)
 
 
 @login_required(login_url='login')
@@ -375,7 +374,7 @@ def COURSE_ADD(request):
     context = {
         'class':class1,
     }
-    return render(request,'admin/add_course.html',context)
+    return render(request,'admin/course/add_course.html',context)
 
 
 
@@ -397,7 +396,7 @@ def COURSE_VIEW(request):
         'classes': classes,
         'selected_class': class_filter,
     }
-    return render(request,'admin/view_course.html',context)
+    return render(request,'admin/course/view_course.html',context)
 
 
 
@@ -410,7 +409,7 @@ def COURSE_EDIT(request,id):
         'course':course,
         'class':class1,
     }
-    return render(request,'admin/edit_course.html',context)
+    return render(request,'admin/course/edit_course.html',context)
 
 def COURSE_UPDATE(request):
     if request.method == "POST":
@@ -474,7 +473,7 @@ def TEACHER_ADD(request):
             teacher.save()
             messages.success(request,"Teacher Are Successfully Added")
             return redirect('admin-teacher-add')
-    return render(request,'admin/add_teacher.html')
+    return render(request,'admin/teacher/add_teacher.html')
 
 
 
@@ -485,7 +484,7 @@ def TEACHER_VIEW(request):
     context ={
         'teacher':teacher,
     }
-    return render(request,'admin/view_teacher.html',context)
+    return render(request,'admin/teacher/view_teacher.html',context)
 
 
 
@@ -497,7 +496,7 @@ def TEACHER_EDIT(request,id):
     context = {
         'teacher':teacher,
     }
-    return render(request,'admin/edit_teacher.html',context)
+    return render(request,'admin/teacher/edit_teacher.html',context)
 
 
 
@@ -539,7 +538,6 @@ def TEACHER_UPDATE(request):
         return redirect('admin-teacher-view')
         
         
-    return render(request,'admin/edit_teacher.html')
 
 
 
@@ -557,8 +555,6 @@ def TEACHER_DELETE(request,admin):
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def SUBJECT_ADD(request):
     class1 = Class.objects.all()
-
-
     if request.method == "POST":
         subject_name= request.POST.get('subject_name')
         class_id= request.POST.get('class_id')
@@ -576,7 +572,7 @@ def SUBJECT_ADD(request):
     context = {
         'class':class1,
     }
-    return render(request,'admin/add_subject.html',context)
+    return render(request,'admin/subject/add_subject.html',context)
 
 
 @login_required(login_url='login')
@@ -598,7 +594,7 @@ def SUBJECT_VIEW(request):
         'selected_class': class_filter,
         
     }
-    return render(request,'admin/view_subject.html',context)
+    return render(request,'admin/subject/view_subject.html',context)
 
 
 @login_required(login_url='login')
@@ -612,7 +608,7 @@ def SUBJECT_EDIT(request,id):
         'subject':subject,
         'class':class1,
     }
-    return render(request,'admin/edit_subject.html',context)
+    return render(request,'admin/subject/edit_subject.html',context)
 
 
 
@@ -673,7 +669,7 @@ def SESSION_ADD(request):
         messages.success(request,'Session Are Successfully Created')
         return redirect('admin-session-add')
 
-    return render(request,'admin/add_session.html')
+    return render(request,'admin/session/add_session.html')
 
 
 
@@ -685,7 +681,7 @@ def SESSION_VIEW(request):
     context= {
         'session':session,
     }
-    return render(request,'admin/view_session.html',context)
+    return render(request,'admin/session/view_session.html',context)
 
 
 def SESSION_EDIT(request,id):
@@ -695,7 +691,7 @@ def SESSION_EDIT(request,id):
         'session':session,
     }
     
-    return render(request,'admin/edit_session.html',context)
+    return render(request,'admin/session/edit_session.html',context)
 
 
 
@@ -766,7 +762,7 @@ def PRACTICE_EXAM_ADD(request):
         'course':course,
 
     }
-    return render(request,'admin/add_practice_exam.html',context)
+    return render(request,'admin/practice_exam/add_practice_exam.html',context)
 
 
 
@@ -805,6 +801,33 @@ def PRACTICE_EXAM_SAVE(request):
         return redirect('admin-practice-exam-add')
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def PRACTICE_EXAM_VIEW(request):
+    exam = Practice_Exam.objects.all()
+    course= Course.objects.all()
+    classes = Class.objects.all()
+    selected_course = request.GET.get('course_filter', '')
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+
+    if class_filter:
+        exam = exam.filter(class_id=class_filter)
+
+    if selected_course:
+        exam = exam.filter(course=selected_course)
+
+    context= {
+        'exam':exam,
+        'classes':classes,
+        'search_query':search_query,
+        'selected_class':class_filter,
+        'course':course,
+        'selected_course': selected_course,
+    }
+    return render(request,'admin/practice_exam/view_practice_exam.html',context)
+
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
@@ -823,7 +846,7 @@ def PRACTICE_EXAM_EDIT(request,id):
         'subject':subject,
     }
     
-    return render(request,'admin/edit_practice_exam.html',context)
+    return render(request,'admin/practice_exam/edit_practice_exam.html',context)
 
 
 
@@ -876,37 +899,6 @@ def PRACTICE_EXAM_DELETE(request,id):
 
 
 
-
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def PRACTICE_EXAM_VIEW(request):
-    exam = Practice_Exam.objects.all()
-    course= Course.objects.all()
-    classes = Class.objects.all()
-    selected_course = request.GET.get('course_filter', '')
-    search_query = request.GET.get('search_query', '')  
-    class_filter = request.GET.get('class_filter', '')
-
-    if class_filter:
-        exam = exam.filter(class_id=class_filter)
-
-    if selected_course:
-        exam = exam.filter(course=selected_course)
-
-    context= {
-        'exam':exam,
-        'classes':classes,
-        'search_query':search_query,
-        'selected_class':class_filter,
-        'course':course,
-        'selected_course': selected_course,
-    }
-    return render(request,'admin/view_practice_exam.html',context)
-
-
-
-
-
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADD_PRACTICE_EXAM_QUESTION(request):
@@ -941,7 +933,7 @@ def ADD_PRACTICE_EXAM_QUESTION(request):
         'exam':exam,
 
     }
-    return render(request,'admin/add_practice_exam_question.html',context)
+    return render(request,'admin/practice_exam/add_practice_exam_question.html',context)
 
 
 
@@ -1026,7 +1018,7 @@ def VIEW_PRACTICE_EXAM_QUESTION_FILTER(request):
         'question':exam,
        
     }
-    return render(request,'admin/view_practice_exam_question_filter.html',context)
+    return render(request,'admin/practice_exam/view_practice_exam_question_filter.html',context)
 
 
 
@@ -1041,7 +1033,7 @@ def VIEW_PRACTICE_EXAM_QUESTION(request,id):
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/view_practice_exam_question.html',context)
+    return render(request,'admin/practice_exam/view_practice_exam_question.html',context)
 
 
 
@@ -1055,7 +1047,7 @@ def EDIT_PRACTICE_EXAM_QUESTION(request,id):
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/edit_practice_exam_question.html',context)
+    return render(request,'admin/practice_exam/edit_practice_exam_question.html',context)
 
 
 
@@ -1144,7 +1136,7 @@ def LIVE_EXAM_ADD(request):
         'course':course,
 
     }
-    return render(request,'admin/add_live_exam.html',context)
+    return render(request,'admin/live_exam/add_live_exam.html',context)
 
 
 
@@ -1232,7 +1224,7 @@ def LIVE_EXAM_VIEW(request):
         'selected_course': selected_course,
         'current_time': current_time, 
     }
-    return render(request,'admin/view_live_exam.html',context)
+    return render(request,'admin/live_exam/view_live_exam.html',context)
 
 
 
@@ -1258,7 +1250,7 @@ def LIVE_EXAM_EDIT(request, id):
         'end_time_formatted': end_time_formatted,
     }
     
-    return render(request, 'admin/edit_live_exam.html', context)
+    return render(request, 'admin/live_exam/edit_live_exam.html', context)
 
 
 
@@ -1361,7 +1353,7 @@ def ADD_LIVE_EXAM_MCQ_QUESTION(request):
         'exam':exam,
 
     }
-    return render(request,'admin/add_live_exam_mcq_question.html',context)
+    return render(request,'admin/live_exam/add_live_exam_mcq_question.html',context)
 
 
 
@@ -1451,7 +1443,7 @@ def VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER(request):
         'exam':exam,   
     }
 
-    return render(request,'admin/view_live_exam_mcq_question_filter.html',context)
+    return render(request,'admin/live_exam/view_live_exam_mcq_question_filter.html',context)
 
 
 
@@ -1465,7 +1457,7 @@ def VIEW_LIVE_EXAM_MCQ_QUESTION(request,id):
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/view_live_exam_mcq_question.html',context)
+    return render(request,'admin/live_exam/view_live_exam_mcq_question.html',context)
 
 
 
@@ -1480,7 +1472,7 @@ def EDIT_LIVE_EXAM_MCQ_QUESTION(request,id):
         'exam':exam,
         'question':question,
     }
-    return render(request,'admin/edit_live_exam_mcq_question.html',context)
+    return render(request,'admin/live_exam/edit_live_exam_mcq_question.html',context)
 
 
 
@@ -1536,14 +1528,14 @@ def DELETE_LIVE_EXAM_MCQ_QUESTION(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADD_LIVE_EXAM_WRITTEN_QUESTION(request):
-    return render(request,"admin/add_live_exam_written_question.html")
+    return render(request,"admin/live_exam/add_live_exam_written_question.html")
 
 
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_LIVE_EXAM_WRITTEN_QUESTION_FILTER(request):
-    return render(request,"admin/view_live_exam_written_question.html")
+    return render(request,"admin/live_exam/view_live_exam_written_question.html")
 
 
 
@@ -1576,7 +1568,7 @@ def STAR_STUDENT_ADD(request):
         'class':class1,
     }
     
-    return render(request,'admin/add_star_student.html',context)
+    return render(request,'admin/star_student/add_star_student.html',context)
 
 
 
@@ -1590,7 +1582,7 @@ def STAR_STUDENT_EDIT(request,id):
         'class':class1,
     }
     
-    return render(request,'admin/edit_star_student.html',context)
+    return render(request,'admin/start_student/edit_star_student.html',context)
 
 
 
@@ -1660,7 +1652,7 @@ def STUDENT_ACTIVITY_ADD(request):
         return redirect('admin-student-activity-add')
 
     
-    return render(request,'admin/add_student_activity.html')
+    return render(request,'admin/student_activity/add_student_activity.html')
 
 
 
@@ -1674,7 +1666,7 @@ def STUDENT_ACTIVITY_VIEW(request):
         'student_activity':student_activity,
     }
 
-    return render(request,'admin/view_student_activity.html',context)
+    return render(request,'admin/student_activity/view_student_activity.html',context)
 
 
 
@@ -1687,7 +1679,7 @@ def STUDENT_ACTIVITY_EDIT(request,id):
     context = {
         'student_activity':student_activity,
     }
-    return render(request,'admin/edit_student_activity.html',context)
+    return render(request,'admin/student_activity/edit_student_activity.html',context)
 
 
 
@@ -1731,7 +1723,7 @@ def TEACHER_SEND_NOTIFICATION(request):
         'teacher': teacher,
         'see_notification': see_notification,
     }
-    return render(request,'admin/teacher_notification.html',context)
+    return render(request,'admin/notification/teacher_notification.html',context)
 
 
 
@@ -1770,8 +1762,7 @@ def TEACHER_Feedback(request):
     context = {
         'teacher_feedback':teacher_feedback,
     }
-    return render(request,"admin/teacher_feedback.html",context)
-
+    return render(request,"admin/feedback/teacher_feedback.html",context)
 
 
 
@@ -1825,7 +1816,7 @@ def STUDENT_SEND_NOTIFICATION(request):
         'selected_class': class_filter,  # Pass selected class filter to template
         'roll_number_query': roll_number_query
     }
-    return render(request,'admin/student_notification.html',context)
+    return render(request,'admin/notification/student_notification.html',context)
 
 
 
@@ -1858,7 +1849,7 @@ def VIEW_STUDENT_PERFORMANCE_COURSE(request):
     context = {
         'course':course,
     }
-    return render(request,'admin/view_student_performance_course.html',context)
+    return render(request,'admin/performance/view_student_performance_course.html',context)
 
 
 @login_required(login_url='login')
@@ -1874,7 +1865,7 @@ def VIEW_STUDENT_PERFORMANCE_STUDENT(request,id):
         "course":course,
         'student':student,
     }
-    return render(request,'admin/view_student_performance_student.html',context)
+    return render(request,'admin/performance/view_student_performance_student.html',context)
 
 
 
@@ -1961,7 +1952,7 @@ def VIEW_STUDENT_PERFORMANCE(request,course_id, student_id):
         'course_name': course.name,
         'highest_total_marks': highest_total_marks  # This is for merit calculation table
     }
-    return render(request, 'admin/view_student_performance.html', context)
+    return render(request, 'admin/performance/view_student_performance.html', context)
 
 
 
@@ -2027,13 +2018,13 @@ def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
         if action == 'Show-Courses':
             selected_class_id = request.POST.get('class_id')
             courses = Course.objects.filter(class1=selected_class_id)
-            return render(request, "admin/student_written_answer_filter.html", {"action": "Show-Courses", "courses": courses, "selected_class_id": selected_class_id})
+            return render(request, "admin/live_exam_student_written_answer/student_written_answer_filter.html", {"action": "Show-Courses", "courses": courses, "selected_class_id": selected_class_id})
         
         elif action == 'Show-Exams':
             selected_class_id = request.POST.get('class_id')
             selected_course_id = request.POST.get('course_id')
             exams = Live_Exam.objects.filter(course_id=selected_course_id)
-            return render(request, "admin/student_written_answer_filter.html", {"action": "Show-Exams", "exams": exams, "selected_course_id": selected_course_id, "selected_class_id": selected_class_id})
+            return render(request, "admin/live_exam_student_written_answer/student_written_answer_filter.html", {"action": "Show-Exams", "exams": exams, "selected_course_id": selected_course_id, "selected_class_id": selected_class_id})
         
         elif action == 'Show-Students':
             selected_class_id = request.POST.get('class_id')
@@ -2053,10 +2044,10 @@ def ADMIN_STUDENT_WRITTEN_ANSWER_FILTER(request):
                 "selected_course_id": selected_course_id,
                 "exam":selected_exam_id
             }
-            return render(request, "admin/student_written_answer_filter.html", context)
+            return render(request, "admin/live_exam_student_written_answer/student_written_answer_filter.html", context)
     else:
         classes = Class.objects.all()
-        return render(request, "admin/student_written_answer_filter.html", {"classes": classes})
+        return render(request, "admin/live_exam_student_written_answer/student_written_answer_filter.html", {"classes": classes})
    
 
 
@@ -2078,7 +2069,7 @@ def ADMIN_STUDENT_WRITTEN_ANSWER(request, student_id, exam_id):
         "exam":exam,
     }
     
-    return render(request, 'admin/student_written_answer.html', context)
+    return render(request, 'admin/live_exam_student_written_answer/student_written_answer.html', context)
 
 
 
@@ -2290,7 +2281,7 @@ def ADD_ONLINE_LIVE_CLASS(request):
         'class':class1,
         'course':course
     }
-    return render(request,"admin/add_online_live_class.html",context)
+    return render(request,"admin/online_live_class/add_online_live_class.html",context)
 
 
 def VIEW_ONLINE_LIVE_CLASS(request):
@@ -2316,7 +2307,7 @@ def VIEW_ONLINE_LIVE_CLASS(request):
         "class":all_online_live_class,
     }
 
-    return render(request,"admin/view_online_live_class.html",context)
+    return render(request,"admin/online_live_class/view_online_live_class.html",context)
 
 
 def START_ONLINE_LIVE_CLASS(request, id):
@@ -2346,7 +2337,7 @@ def START_ONLINE_LIVE_CLASS(request, id):
     # Debug print to check context values
     print(context)
 
-    return render(request, "admin/start_online_live_class.html", context)
+    return render(request, "admin/online_live_class/start_online_live_class.html", context)
 
 
 
