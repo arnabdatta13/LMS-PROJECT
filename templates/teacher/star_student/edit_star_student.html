@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">Star Student</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">Star Student</li>
+           </ul>
+       </div>
+       
+   </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action='{% url "teacher-star-student-update" %}' >
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Edit Star Student</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Name</label>
+                         <input type="text" class="form-control" name="star_student_id" value= '{% for i in star_student %}{{i.id}}{% endfor %}' hidden required>
+                         <input type="text" class="form-control" name='name' required  value= '{% for i in star_student %}{{i.student_name}}{% endfor %}'>
+                      </div>
+                  </div>
+                  
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id'required>
+                        <option value="" disabled selected>Select Class</option>
+                        {% for i in class %}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Roll</label>
+                        <input type="number" class="form-control " name='roll'required  value= '{% for i in star_student %}{{i.roll}}{% endfor %}'>
+                     </div>
+                  </div>
+
+                  
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Marks</label>
+                        <input type="text" class="form-control " name='marks'  required  value= '{% for i in star_student %}{{i.mark}}{% endfor %}'>
+                     </div>
+                  </div>
+
+                  <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Percentage</label>
+                       <input type="text" class="form-control " name='percentage'  required  value= '{% for i in star_student %}{{i.persentage}}{% endfor %}'>
+                    </div>
+                 </div>
+                 <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Year</label>
+                       <input type="text" class="form-control " name='year'  required  value= '{% for i in star_student %}{{i.year}}{% endfor %}'>
+                    </div>
+                 </div>
+                  
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Update Star Student</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock %}

@@ -230,6 +230,7 @@ urlpatterns = [
 
     path('teacher-student-written-answer', teacher_views.TEACHER_STUDENT_WRITTEN_ANSWER_FILTER,name='teacher-student-written-answer'),
     path('teacher-student-written-answer/<int:student_id>/<int:exam_id>', teacher_views.TEACHER_STUDENT_WRITTEN_ANSWER,name='teacher-student-written-answer'),
+    path('teacher-give-student-live-exam-written-question-mark', teacher_views.GIVE_STUDENT_WRITTEN_EXAM_MARK,name='teacher-give-student-live-exam-written-question-mark'),
 
 
 

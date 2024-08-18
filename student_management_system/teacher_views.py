@@ -387,7 +387,7 @@ def TEACHER_TAKE_ATTENDANCE(request):
     }
 
 
-    return render(request,'teacher/take_attendance.html',context)
+    return render(request,'teacher/attendance/take_attendance.html',context)
 
 
 
@@ -474,7 +474,7 @@ def TEACHER_VIEW_ATTENDANCE(request):
         'students': students,  # Pass students to the template
         'student_attendance_report':student_attendance_report
     }
-    return render(request, 'teacher/view_attendance.html', context)
+    return render(request, 'teacher/attendance/view_attendance.html', context)
 
 
 
@@ -525,7 +525,7 @@ def TEACHER_ADD_RESULT(request):
         'result':result,
 
     }
-    return render(request,'teacher/add_result.html',context)
+    return render(request,'teacher/school_result/add_result.html',context)
 
 
 
@@ -601,7 +601,7 @@ def TEACHER_VIEW_RESULT(request):
         'students': students,
         'action': action,
     }
-    return render(request, 'teacher/view_result.html', context)
+    return render(request, 'teacher/school_result/view_result.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
@@ -616,7 +616,7 @@ def TEACHER_SHOW_RESULT(request, id, exam_id):
     context = {
         'result': results,
     }
-    return render(request, 'teacher/show_result.html', context)
+    return render(request, 'teacher/school_result/show_result.html', context)
 
 
 
@@ -628,7 +628,7 @@ def TEACHER_EDIT_RESULT(request,id):
     context = {
         'result':result,
     }
-    return render(request,'teacher/edit_result.html',context)
+    return render(request,'teacher/school_result/edit_result.html',context)
 
 
 
@@ -776,7 +776,7 @@ def STAR_STUDENT_ADD(request):
         'class':class1,
     }
     
-    return render(request,'admin/add_star_student.html',context)
+    return render(request,'teacher/star_student/add_star_student.html',context)
 
 
 
@@ -790,7 +790,7 @@ def STAR_STUDENT_EDIT(request,id):
         'class':class1,
     }
     
-    return render(request,'admin/edit_star_student.html',context)
+    return render(request,'teacher/star_student/edit_star_student.html',context)
 
 
 
@@ -860,7 +860,7 @@ def STUDENT_ACTIVITY_ADD(request):
         return redirect('teacher-student-activity-add')
 
     
-    return render(request,'admin/add_student_activity.html')
+    return render(request,'teacher/student_activity/add_student_activity.html')
 
 
 
@@ -874,7 +874,7 @@ def STUDENT_ACTIVITY_VIEW(request):
         'student_activity':student_activity,
     }
 
-    return render(request,'admin/view_student_activity.html',context)
+    return render(request,'teacher/student_activity/view_student_activity.html',context)
 
 
 
@@ -887,7 +887,7 @@ def STUDENT_ACTIVITY_EDIT(request,id):
     context = {
         'student_activity':student_activity,
     }
-    return render(request,'admin/edit_student_activity.html',context)
+    return render(request,'student/student_activity/edit_student_activity.html',context)
 
 
 
@@ -929,13 +929,13 @@ def TEACHER_STUDENT_WRITTEN_ANSWER_FILTER(request):
         if action == 'Show-Courses':
             selected_class_id = request.POST.get('class_id')
             courses = Course.objects.filter(class1=selected_class_id)
-            return render(request, "teacher/student_written_answer_filter.html", {"action": "Show-Courses", "courses": courses, "selected_class_id": selected_class_id})
+            return render(request, "teacher/live_exam_student_written_answer/student_written_answer_filter.html", {"action": "Show-Courses", "courses": courses, "selected_class_id": selected_class_id})
         
         elif action == 'Show-Exams':
             selected_class_id = request.POST.get('class_id')
             selected_course_id = request.POST.get('course_id')
             exams = Live_Exam.objects.filter(course_id=selected_course_id)
-            return render(request, "teacher/student_written_answer_filter.html", {"action": "Show-Exams", "exams": exams, "selected_course_id": selected_course_id, "selected_class_id": selected_class_id})
+            return render(request, "teacher/live_exam_student_written_answer/student_written_answer_filter.html", {"action": "Show-Exams", "exams": exams, "selected_course_id": selected_course_id, "selected_class_id": selected_class_id})
         
         elif action == 'Show-Students':
             selected_class_id = request.POST.get('class_id')
@@ -955,10 +955,10 @@ def TEACHER_STUDENT_WRITTEN_ANSWER_FILTER(request):
                 "selected_course_id": selected_course_id,
                 "exam":selected_exam_id
             }
-            return render(request, "teacher/student_written_answer_filter.html", context)
+            return render(request, "teacher/live_exam_student_written_answer/student_written_answer_filter.html", context)
     else:
         classes = Class.objects.all()
-        return render(request, "teacher/student_written_answer_filter.html", {"classes": classes})
+        return render(request, "teacher/live_exam_student_written_answer/student_written_answer_filter.html", {"classes": classes})
    
 
 
@@ -980,7 +980,7 @@ def TEACHER_STUDENT_WRITTEN_ANSWER(request, student_id, exam_id):
         "exam":exam,
     }
     
-    return render(request, 'admin/student_written_answer.html', context)
+    return render(request, 'teacher/live_exam_student_written_answer/student_written_answer.html', context)
 
 
 
