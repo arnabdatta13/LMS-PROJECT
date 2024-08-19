@@ -153,6 +153,8 @@ urlpatterns = [
     path('admin-view-student-performance',admin_views.VIEW_STUDENT_PERFORMANCE_COURSE,name='admin-view-student-performance'),
     path('admin-view-student-performance/student/<int:id>',admin_views.VIEW_STUDENT_PERFORMANCE_STUDENT,name='admin-view-student-performance/student'),
     path('admin-view-student-performance/<int:course_id>/<int:student_id>',admin_views.VIEW_STUDENT_PERFORMANCE,name='admin-view-student-performance'),
+    path('admin-student-performance-view-question/<int:id>',admin_views.STUDENT_PERFORMANCE_VIEW_QUESTION,name='admin-student-performance-view-question'),
+
 
     path('admin-view-attendance', admin_views.ADMIN_VIEW_ATTENDANCE,name='admin-view-attendance'),
     path('admin-student-written-answer', admin_views.ADMIN_STUDENT_WRITTEN_ANSWER_FILTER,name='admin-student-written-answer'),
@@ -193,6 +195,26 @@ urlpatterns = [
     path('teacher-student-save', teacher_views.STUDENT_FEEDBACK_SAVE,name='teacher-student-feedback-save'),
 
 
+
+    path('teacher-practice-exam-add', teacher_views.PRACTICE_EXAM_ADD,name='teacher-practice-exam-add'),
+    path('teacher-practice-exam-view', teacher_views.PRACTICE_EXAM_VIEW,name='teacher-practice-exam-view'),
+    path('teacher-practice-exam-save', teacher_views.PRACTICE_EXAM_SAVE,name='teacher-practice-exam-save'),
+    path('teacher-practice-exam-delete/<str:id>', teacher_views.PRACTICE_EXAM_DELETE,name='teacher-practice-exam-delete'),
+    path('teacher-practice-exam-edit/<str:id>', teacher_views.PRACTICE_EXAM_EDIT,name='teacher-practice-exam-edit'),
+    path('teacher-practice-exam-update', teacher_views.PRACTICE_EXAM_UPDATE,name='teacher-practice-exam-update'),
+
+
+    path('teacher-add-practice-exam-question', teacher_views.ADD_PRACTICE_EXAM_QUESTION,name='teacher-add-practice-exam-question'),
+    path('teacher-save-practice-exam-question', teacher_views.SAVE_PRACTICE_EXAM_QUESTION,name='teacher-save-practice-exam-question'),
+    path('teacher-view-practice-exam-question',teacher_views.VIEW_PRACTICE_EXAM_QUESTION_FILTER,name='teacher-view-practice-exam-question'),
+    path('teacher-view-practice-exam-question/<str:id>', teacher_views.VIEW_PRACTICE_EXAM_QUESTION,name='teacher-view-practice-exam-question'),
+    path('teacher-edit-practice-exam-question/<str:id>', teacher_views.EDIT_PRACTICE_EXAM_QUESTION,name='teacher-edit-practice-exam-question'),
+    path('teacher-update-practice-exam-question', teacher_views.UPDATE_PRACTICE_EXAM_QUESTION,name='teacher-update-practice-exam-question'),
+    path('teacher-delete-peactice-exam-question/<str:id>', teacher_views.DELETE_PRACTICE_EXAM_QUESTION,name='teacher-delete-practice-exam-question'),
+
+
+
+
     path('teacher-star-student-add', teacher_views.STAR_STUDENT_ADD,name='teacher-star-student-add'),
     path('teacher-star-student-edit/<str:id>', teacher_views.STAR_STUDENT_EDIT,name='teacher-star-student-edit'),
     path('teacher-star-student-update', teacher_views.STAR_STUDENT_UPDATE,name='teacher-star-student-update'),
@@ -224,6 +246,12 @@ urlpatterns = [
     path('teacher-delete-result/<str:id>', teacher_views.TEACHER_DELETE_RESULT,name='teacher-delete-result'),
 
 
+    path('teacher-view-student-performance',teacher_views.VIEW_STUDENT_PERFORMANCE_COURSE,name='teacher-view-student-performance'),
+    path('teacher-view-student-performance/student/<int:id>',teacher_views.VIEW_STUDENT_PERFORMANCE_STUDENT,name='teacher-view-student-performance/student'),
+    path('teacher-view-student-performance/<int:course_id>/<int:student_id>',teacher_views.VIEW_STUDENT_PERFORMANCE,name='teacher-view-student-performance'),
+    path('teacher-student-performance-view-question/<int:id>',teacher_views.STUDENT_PERFORMANCE_VIEW_QUESTION,name='teacher-student-performance-view-question'),
+
+
 
     path('teacher-student-send-notification', teacher_views.STUDENT_SEND_NOTIFICATION,name='teacher-student-send-notification'),
     path('teacher-student-save-notification', teacher_views.STUDENT_SAVE_NOTIFICATION,name='teacher-student-save-notification'),
@@ -232,6 +260,11 @@ urlpatterns = [
     path('teacher-student-written-answer/<int:student_id>/<int:exam_id>', teacher_views.TEACHER_STUDENT_WRITTEN_ANSWER,name='teacher-student-written-answer'),
     path('teacher-give-student-live-exam-written-question-mark', teacher_views.GIVE_STUDENT_WRITTEN_EXAM_MARK,name='teacher-give-student-live-exam-written-question-mark'),
 
+
+    path('teacher-add-online-live-class', teacher_views.ADD_ONLINE_LIVE_CLASS, name='teacher-add-online-live-class'),
+    path('teacher-view-online-live-class', teacher_views.VIEW_ONLINE_LIVE_CLASS, name='teacher-view-online-live-class'),
+    path('teacher-start-online-live-class/<int:id>', teacher_views.START_ONLINE_LIVE_CLASS, name='teacher-start-online-live-class'),
+    path('teacher-online-class-delete/<int:id>', teacher_views.DELETE_ONLINE_CLASS, name='teacher-online-class-delete'),
 
 
     #this is student panel url

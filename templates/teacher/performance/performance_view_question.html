@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="container">
+    <div class="exam-details">
+        <h1>{{exam.exam_name}}</h1>
+        <h2>Course: <strong>{{exam.course.name}}</strong></h2>
+        <h2>Subject:  <strong>{{exam.subject.name}}</strong></h2>
+        <h2>MCQ Master Set: 1 (Only Question)</h2>
+    </div>
+    <hr>
+    <br>
+    {% for q in question%}
+    <div class="question-container">
+        <h2 class="question-title text-info">{{ forloop.counter }}. {{ q.question }}</h3>
+        <h4 class="question-marks" style="text-align: right;">[Marks {{ q.marks }}]</h4>
+
+        <div class="options-container">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option1 }}" value="Option1">
+            <label class="form-check-label" for="{{ q.option1 }}">
+              {{ q.option1 }}
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option2 }}" value="Option2">
+            <label class="form-check-label" for="{{ q.option2 }}">
+              {{ q.option2 }}
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option3 }}" value="Option3">
+            <label class="form-check-label" for="{{ q.option3 }}">
+              {{ q.option3 }}
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option4 }}" value="Option4">
+            <label class="form-check-label" for="{{ q.option4 }}">
+              {{ q.option4 }}
+            </label>
+          </div>
+        </div>
+      </div>
+    {% endfor%}
+</div>
+
+<style>
+    body {
+        background-color: #e6e6fa; /* Light lavender background */
+    }
+    .container {
+        width: 100%;
+        margin: 20px auto;
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        transition: all 0.3s ease;
+    }
+    .container:hover {
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    }
+    .exam-details {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .exam-details h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #333;
+    }
+    .exam-details h2 {
+        margin: 5px 0;
+        font-size: 18px;
+        color: #666;
+    }
+    .question-container {
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 5px;
+      }
+    
+      .question-title {
+        margin-bottom: 10px;
+      }
+    
+      .question-marks {
+        margin-top: -5px;
+        margin-bottom: 15px;
+      }
+    
+      .options-container {
+        padding-left: 20px;
+      }
+    
+      .form-check-input {
+        margin-right: 10px;
+        width: 16px; /* Adjust width */
+        height: 16px; 
+      }
+      .form-check-label {
+        font-size: 18px; /* Adjust as needed */
+      }
+</style>
+
+{% endblock %}

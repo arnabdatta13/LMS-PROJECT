@@ -8,7 +8,16 @@ from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
-
+from django.db.models import Sum,Max
+import requests
+import json
+from django.http import JsonResponse
+import base64
+import hmac
+import hashlib
+import time
+from datetime import timedelta,datetime
+from django.utils import timezone
 
 
 
@@ -674,6 +683,509 @@ def TEACHER_DELETE_RESULT(request,id):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def PRACTICE_EXAM_ADD(request):
+    class1 = Class.objects.all()
+    action = request.GET.get('action')
+
+    get_class = None
+  
+    subject = None
+    course = None
+
+    if action is not None:
+        if request.method=="POST":
+            class_id = request.POST.get('class_id')
+
+            get_class = Class.objects.get(id=class_id)
+
+            class1 = Class.objects.filter(id= class_id)
+            subject = Subject.objects.filter(class1=get_class)
+
+            course = Course.objects.filter(class1=get_class)
+
+    context = {
+        
+        'class':class1,
+        'action':action,
+        'get_class':get_class,
+      
+        'subject': subject,
+        
+        'course':course,
+
+    }
+    return render(request,'teacher/practice_exam/add_practice_exam.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def PRACTICE_EXAM_SAVE(request):
+    if request.method == "POST":
+
+        class_id= request.POST.get('class_id')
+        exam_name= request.POST.get('exam_name')
+        total_questions= request.POST.get('total_question')
+        total_marks= request.POST.get('total_number')
+        
+        course_id= request.POST.get('course_id')
+        subject_id= request.POST.get('subject_id')
+        duration = int(request.POST.get('duration'))
+
+        print(class_id)
+        class1= Class.objects.get(id=class_id)
+        course = Course.objects.get(id=course_id)
+        subject = Subject.objects.get(id=subject_id)
+
+
+        duration = timedelta(minutes=duration)
+        exam = Practice_Exam(
+            exam_name= exam_name,
+            total_questions=total_questions,
+            total_marks=total_marks,
+            class_id=class1,
+            course = course,
+            subject= subject,
+            duration=duration,
+        )
+        exam.save()
+        messages.success(request,'Exam Are Successfully Added')
+        return redirect('teacher-practice-exam-add')
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def PRACTICE_EXAM_VIEW(request):
+    exam = Practice_Exam.objects.all()
+    course= Course.objects.all()
+    classes = Class.objects.all()
+    selected_course = request.GET.get('course_filter', '')
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+
+    if class_filter:
+        exam = exam.filter(class_id=class_filter)
+
+    if selected_course:
+        exam = exam.filter(course=selected_course)
+
+    context= {
+        'exam':exam,
+        'classes':classes,
+        'search_query':search_query,
+        'selected_class':class_filter,
+        'course':course,
+        'selected_course': selected_course,
+    }
+    return render(request,'teacher/practice_exam/view_practice_exam.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def PRACTICE_EXAM_EDIT(request,id):
+    exam = Practice_Exam.objects.filter(id = id)
+
+    exam_id = Practice_Exam.objects.get(id=id)
+    class_id = exam_id.class_id
+    course = Course.objects.filter(class1=class_id)
+    subject = Subject.objects.filter(class1=class_id)
+
+    context= {
+        'exam':exam,
+        'class':class_id,
+        'course':course,
+        'subject':subject,
+    }
+    
+    return render(request,'teacher/practice_exam/edit_practice_exam.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def PRACTICE_EXAM_UPDATE(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        class_id= request.POST.get('class_id')
+        exam_name= request.POST.get('exam_name')
+        total_questions= request.POST.get('total_question')
+        total_marks= request.POST.get('total_number')
+        
+        course_id= request.POST.get('course_id')
+        subject_id= request.POST.get('subject_id')
+
+        duration_str = request.POST.get('duration') 
+
+        hours, minutes, seconds = map(int, duration_str.strip().split(':'))
+        duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        
+        exam = Practice_Exam.objects.get(id = exam_id)
+        class1= Class.objects.get(id=class_id)
+        course = Course.objects.get(id=course_id)
+        subject = Subject.objects.get(id=subject_id)
+
+        exam.exam_name=exam_name
+        exam.total_questions=total_questions
+        exam.total_marks=total_marks
+        exam.class_id=class1
+        exam.course=course
+        exam.subject=subject
+        exam.duration=duration
+        exam.save()
+        messages.success(request,'Practice Exam Are Successfully Updated')
+        return redirect('teacher-practice-exam-view')
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def PRACTICE_EXAM_DELETE(request,id):
+    exam = Practice_Exam.objects.get(id = id)
+    exam.delete()
+
+    messages.success(request,'Exam Are Successfully Deleted')
+
+    return redirect('teacher-practice-exam-view')
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def ADD_PRACTICE_EXAM_QUESTION(request):
+    class1 = Class.objects.all()
+
+    action = request.GET.get('action')
+
+    get_class = None
+ 
+    subject = None
+    course = None
+    exam = None
+
+    if action is not None:
+        if request.method=="POST":
+            class_id = request.POST.get('class_id')
+
+            get_class = Class.objects.get(id=class_id)
+
+            class1 = Class.objects.filter(id= class_id)
+            exam = Practice_Exam.objects.filter(class_id=class_id)
+            
+    context = {
+        
+        'class':class1,
+        'action':action,
+        'get_class':get_class,
+        
+        'subject': subject,
+        
+        'course':course,
+        'exam':exam,
+
+    }
+    return render(request,'teacher/practice_exam/add_practice_exam_question.html',context)
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def SAVE_PRACTICE_EXAM_QUESTION(request):
+    if request.method == 'POST':
+        exam_id = request.POST.get('exam_id')
+        exam = Practice_Exam.objects.get(id=exam_id)
+        existing_questions_count = PracticeExamQuestion.objects.filter(exam=exam).count()
+        total_questions_allowed = exam.total_questions
+
+        # Calculate the sum of marks for existing questions
+        existing_total_marks = PracticeExamQuestion.objects.filter(exam=exam).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        total_marks_allowed = exam.total_marks
+
+        question_counter = 1
+        added_questions_count = 0
+        added_marks = 0
+
+        while True:
+            question_key = f'question{question_counter}' if question_counter > 1 else 'question'
+            mark_key = f'mark{question_counter}' if question_counter > 1 else 'mark'
+            option1_key = f'option1{question_counter}' if question_counter > 1 else 'option1'
+            option2_key = f'option2{question_counter}' if question_counter > 1 else 'option2'
+            option3_key = f'option3{question_counter}' if question_counter > 1 else 'option3'
+            option4_key = f'option4{question_counter}' if question_counter > 1 else 'option4'
+            answer_key = f'answer{question_counter}' if question_counter > 1 else 'answer'
+            solution_key = f'solution{question_counter}' if question_counter > 1 else 'solution'
+
+            
+            question_text = request.POST.get(question_key)
+            marks = request.POST.get(mark_key)
+            option1 = request.POST.get(option1_key)
+            option2 = request.POST.get(option2_key)
+            option3 = request.POST.get(option3_key)
+            option4 = request.POST.get(option4_key)
+            answer = request.POST.get(answer_key)
+            solution = request.POST.get(solution_key)
+
+            if not question_text:
+                break
+
+            if existing_questions_count + added_questions_count > total_questions_allowed:
+                messages.error(request, 'You cannot add more questions than the total number allowed for this exam.')
+                return redirect('teacher-add-practice-exam-question')
+
+            if existing_total_marks + added_marks + int(marks) > total_marks_allowed:
+                messages.error(request, 'You cannot add more marks than the total marks allowed for this exam.')
+                return redirect('teacher-add-practice-exam-question')
+
+            # Create and save the question object
+            PracticeExamQuestion.objects.create(
+                exam=exam,
+                marks=marks,
+                question=question_text,
+                option1=option1,
+                option2=option2,
+                option3=option3,
+                option4=option4,
+                answer=answer,
+                solution_details = solution
+            )
+            
+            added_questions_count += 1
+            added_marks += int(marks)
+            question_counter += 1
+        
+        messages.success(request, 'Questions are added successfully')
+        return redirect('teacher-add-practice-exam-question')
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_PRACTICE_EXAM_QUESTION_FILTER(request):
+    exam = Practice_Exam.objects.all()
+
+    context = {
+        'question':exam,
+       
+    }
+    return render(request,'teacher/practice_exam/view_practice_exam_question_filter.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_PRACTICE_EXAM_QUESTION(request,id):
+    exam = Practice_Exam.objects.get(id = id)
+
+    question = PracticeExamQuestion.objects.filter(exam=exam)
+
+    context = {
+        'exam':exam,
+        'question':question,
+    }
+    return render(request,'teacher/practice_exam/view_practice_exam_question.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def EDIT_PRACTICE_EXAM_QUESTION(request,id):
+    exam = Practice_Exam.objects.all()
+    question = PracticeExamQuestion.objects.filter(id = id)
+
+    context = {
+        'exam':exam,
+        'question':question,
+    }
+    return render(request,'teacher/practice_exam/edit_practice_exam_question.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def UPDATE_PRACTICE_EXAM_QUESTION(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        question_text = request.POST.get('question')
+        question_id = request.POST.get('question_id')
+        marks = request.POST.get('mark')
+        option1 = request.POST.get('option1')
+        option2 = request.POST.get('option2')
+        option3 = request.POST.get('option3')
+        option4 = request.POST.get('option4')
+        answer = request.POST.get('answer')
+        solution = request.POST.get('solution')
+
+        exam= Practice_Exam.objects.get(id = exam_id)
+        question = PracticeExamQuestion.objects.get(id = question_id)
+
+        question.exam=exam
+        question.marks=marks
+        question.question=question_text
+        question.option1=option1
+        question.option2=option2
+        question.option3=option3
+        question.option4=option4
+        question.answer=answer
+        question.solution_details=solution
+
+        question.save()
+
+        messages.success(request,'Queation Are Successfully Updated')
+        return redirect('teacher-view-practice-exam-question')
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def DELETE_PRACTICE_EXAM_QUESTION(request,id):
+
+    question = PracticeExamQuestion.objects.get(id = id)
+    question.delete()
+
+    messages.success(request,'Question are successfully deleted.')
+
+    return redirect('teacher-view-practice-exam-question')
+
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_STUDENT_PERFORMANCE_COURSE(request):
+    course = Course.objects.all()
+
+    context = {
+        'course':course,
+    }
+    return render(request,'teacher/performance/view_student_performance_course.html',context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_STUDENT_PERFORMANCE_STUDENT(request,id):
+    course = Course.objects.get(id = id)
+    class1 = course.class1
+
+    student = Student.objects.filter(class_id=class1)
+
+
+    context = {
+        "course":course,
+        'student':student,
+    }
+    return render(request,'teacher/performance/view_student_performance_student.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_STUDENT_PERFORMANCE(request,course_id, student_id):
+    course = Course.objects.get(id=course_id)
+    student_id= Student.objects.get(id = student_id)
+    subject = Subject.objects.filter(class1=student_id.class_id)
+
+    # Get all exams for the course
+    all_exams = Live_Exam.objects.filter(course=course)
+
+    # Get the results for live exams
+    live_exam_results = Live_Exam_Result.objects.filter(exam__course=course, student=student_id)
+
+    # Create a dictionary to map exams to results
+    exam_results_dict = {result.exam.id: result for result in live_exam_results}
+
+    # Calculate the highest marks in the course for live exams
+    highest_live_marks = Live_Exam_Result.objects.filter(exam__course=course).aggregate(max_marks=Max('marks'))['max_marks'] or 0
+
+    # Function to get the sum of obtained marks for a student
+    def get_total_obtained_marks(student):
+        live_exam_sum = Live_Exam_Result.objects.filter(exam__course=course, student=student).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        return live_exam_sum
+
+    # Calculate the student's total obtained marks
+    student_total_obtained_marks = get_total_obtained_marks(student_id)
+
+    # Calculate merit position based on total obtained marks for all students in the course
+    all_students = Student.objects.filter(class_id=student_id.class_id)
+    all_students_results = [
+        {'student': student, 'total_marks': get_total_obtained_marks(student)}
+        for student in all_students
+    ]
+    sorted_results = sorted(all_students_results, key=lambda x: x['total_marks'], reverse=True)
+    overall_merit_position = next((index + 1 for index, result in enumerate(sorted_results) if result['student'] == student_id), None)
+
+    # Find the highest mark obtained by any student in the course for merit calculation
+    highest_total_marks = max(result['total_marks'] for result in sorted_results) if sorted_results else 0
+
+    # Prepare results with details and merit position for each result
+    results_with_details = []
+    for exam in all_exams:
+        result = exam_results_dict.get(exam.id)
+        model_name = result.exam._meta.model_name if result else 'N/A'
+        highest_marks = highest_live_marks
+
+        # Calculate merit position for this specific exam
+        if result:
+            all_exam_results = Live_Exam_Result.objects.filter(exam=exam).order_by('-marks')
+            exam_merit_position = next((index + 1 for index, r in enumerate(all_exam_results) if r.student == student_id), None)
+            obtained_marks = result.marks
+        else:
+            exam_merit_position = 0
+            obtained_marks = 0
+
+        results_with_details.append({
+            'exam': exam,
+            'result': result,
+            'model_name': model_name,
+            'highest_marks': highest_marks,
+            'merit_position': exam_merit_position,
+            'obtained_marks': obtained_marks,
+            'total_marks': exam.total_marks,
+        })
+
+    # Total exam marks for all results
+    total_exam_mark = sum(exam.total_marks for exam in all_exams)
+
+    # Determine overall merit position, set to 0 if highest_total_marks is 0
+    overall_merit_position = overall_merit_position if highest_total_marks > 0 else 0
+
+    context = {
+        "student":student_id,
+        'course': course,
+        'subject': subject,
+        'all_results': results_with_details,
+        'total_exam_mark': total_exam_mark,
+        'total_obtain_mark': student_total_obtained_marks,
+        'merit_position': overall_merit_position,
+        'course_name': course.name,
+        'highest_total_marks': highest_total_marks  # This is for merit calculation table
+    }
+    return render(request, 'teacher/performance/view_student_performance.html', context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
+    exam = Live_Exam.objects.get(id = id)
+    questions = LiveExamMCQQuestion.objects.filter(exam=exam)
+    context={
+        'question':questions,
+        'exam':exam
+    }
+    return render(request,'teacher/performance/performance_view_question.html',context)
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def TEACHER_ADD_NOTICE(request):
 
     if request.method== "POST":
@@ -1021,3 +1533,184 @@ def GIVE_STUDENT_WRITTEN_EXAM_MARK(request):
 
         return redirect('teacher-home')
   
+
+
+
+
+
+
+
+#online class implement
+
+def get_zoom_access_token():
+    url = "https://zoom.us/oauth/token"
+    payload = {
+        'account_id': 'lU13tpFVSwO_zEhMMXAO_w',
+        'client_id': '6ptiKZuYSjyb2pHzJyHTA',
+        'client_secret': '4acUTxYAd94H1krPFhtlmVkaKQNVKo4m',
+        'grant_type': 'account_credentials'
+    }
+    response = requests.post(url, data=payload)
+    access_token = json.loads(response.text).get('access_token')
+    return access_token
+
+
+def get_zak_token(access_token):
+    zak_url = "https://api.zoom.us/v2/users/me/token?type=zak"
+    headers = {'Authorization': f'Bearer {access_token}'}
+    response = requests.get(zak_url, headers=headers)
+    response_data = response.json()
+    
+    # Check if response contains the token
+    if 'token' in response_data:
+        return response_data['token']
+    else:
+        # If token is not present, raise an error or return None
+        raise ValueError("ZAK token not found in response")
+
+
+
+def schedule_zoom_meeting(access_token,topic,start_time,duration):
+    url = "https://api.zoom.us/v2/users/me/meetings"
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    meeting_details = {
+        "topic": topic,
+        "type": 2,
+        "start_time": start_time,
+        "duration": duration,  # Duration in minutes
+        "schedule_for": "arnabdatta83@gmail.com",
+        "timezone": "Asia/Dhaka",
+        "agenda": "Discussion on the project.",
+        "settings": {
+            "join_before_host": False,  # Prevent participants from joining before the host
+            "jbh_time": 0,  # Disable the option to join before host by any minutes
+            "waiting_room": False,  # Enable waiting room, optional but recommended for better control
+            "auto_admit_participants": True
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=meeting_details)
+    return json.loads(response.text)
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def ADD_ONLINE_LIVE_CLASS(request):
+    class1 = Class.objects.all()
+    course = Course.objects.all()
+    if request.method == "POST":
+
+        access_token = get_zoom_access_token()
+
+        topic = request.POST.get('topic')
+        start_time = request.POST.get('start_time')
+        duration = request.POST.get('duration')
+        class_id = request.POST.get('class_id')
+        course = request.POST.get("course")
+        start_time = timezone.make_aware(datetime.strptime(start_time, '%Y-%m-%dT%H:%M'))
+        start_time = start_time.strftime('%Y-%m-%dT%H:%M:%S')
+        class1 = Class.objects.get(id = class_id)
+        course = Course.objects.get(id = course)
+        meeting_data = schedule_zoom_meeting(access_token,topic,start_time,duration)
+        print(meeting_data)
+        OnlineLiveClass.objects.create(
+            topic=meeting_data['topic'],
+            start_time=meeting_data['start_time'],
+            duration=meeting_data['duration'],
+            class1=class1,
+            course = course,
+            zoom_meeting_id=meeting_data['id'],
+            #host_email=meeting_data['host_email'],
+            start_url=meeting_data['start_url'],
+            join_url=meeting_data['join_url'],
+            password=meeting_data['password'],
+            agenda=meeting_data['agenda'] if 'agenda' in meeting_data else ''
+        )
+        
+        messages.success(request, 'Online Live Class has been Ccreated')
+        return redirect("teacher-view-online-live-class")
+    context = {
+        'class':class1,
+        'course':course
+    }
+    return render(request,"teacher/online_live_class/add_online_live_class.html",context)
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_ONLINE_LIVE_CLASS(request):
+    all_online_live_class= OnlineLiveClass.objects.all().order_by('-start_time')
+    class1 = Class.objects.all()
+    course = Course.objects.all()
+    subject = Subject.objects.all()
+
+    search_query = request.GET.get('search_query', '')  
+    class_filter = request.GET.get('class_filter', '')
+    course_filter = request.GET.get('course_filter', '')
+    subject_filter = request.GET.get('subject_filter', '')
+
+    if class_filter:
+        all_online_live_class = all_online_live_class.filter(class1=class_filter)
+    elif class_filter:
+        all_online_live_class = all_online_live_class.filter(course=course_filter)
+
+    context = {
+        "classes":class1,
+        "course":course,
+        "subject":subject,
+        "class":all_online_live_class,
+    }
+
+    return render(request,"teacher/online_live_class/view_online_live_class.html",context)
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def START_ONLINE_LIVE_CLASS(request, id):
+    online_class = OnlineLiveClass.objects.get(id=id)
+
+    # Generate the signature and other necessary data
+    sdk_key = "QSLLcCXOTLmVDToDsr4itA"  # Replace with your SDK Key
+    sdk_secret = "1fWY3gcWHJ7L4LRCqkQEMb5EmbXdhqWc"  # Replace with your SDK Secret
+    # Step 1: Get OAuth access token
+    access_token = get_zoom_access_token()
+    print(access_token)
+    # Step 2: Get ZAK token
+    zak_token = get_zak_token(access_token)
+
+    signature = generate_signature(sdk_key, sdk_secret, online_class.zoom_meeting_id, 1)
+
+    context = {
+        'class_id': id,
+        'username': "Arnab",
+        "password": online_class.password,
+        "meeting_id": online_class.zoom_meeting_id,
+        'signature': signature,
+        'sdk_key': sdk_key,
+        'zak_token': zak_token,
+    }
+
+    # Debug print to check context values
+    print(context)
+
+    return render(request, "teacher/online_live_class/start_online_live_class.html", context)
+
+
+
+def generate_signature(api_key, api_secret, meeting_number, role):
+    timestamp = int(round(time.time() * 1000)) - 30000
+    msg = f"{api_key}{meeting_number}{timestamp}{role}"
+    message = base64.b64encode(bytes(msg, 'utf-8'))
+    secret = bytes(api_secret, 'utf-8')
+    hash = hmac.new(secret, message, hashlib.sha256)
+    hash = base64.b64encode(hash.digest())
+    return f"{api_key}.{meeting_number}.{timestamp}.{role}.{hash.decode('utf-8')}"
+
+
+def DELETE_ONLINE_CLASS(request,id):
+    online_class = OnlineLiveClass.objects.get(id = id)
+    online_class.delete()
+    messages.success(request,"Online Class Delete Successfully")
+    return redirect("teacher-view-online-live-class")
+
+

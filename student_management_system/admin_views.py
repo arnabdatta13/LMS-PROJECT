@@ -1955,6 +1955,16 @@ def VIEW_STUDENT_PERFORMANCE(request,course_id, student_id):
     return render(request, 'admin/performance/view_student_performance.html', context)
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def STUDENT_PERFORMANCE_VIEW_QUESTION(request,id):
+    exam = Live_Exam.objects.get(id = id)
+    questions = LiveExamMCQQuestion.objects.filter(exam=exam)
+    context={
+        'question':questions,
+        'exam':exam
+    }
+    return render(request,'admin/performance/performance_view_question.html',context)
 
 
 @login_required(login_url='login')
@@ -2242,7 +2252,8 @@ def schedule_zoom_meeting(access_token,topic,start_time,duration):
     response = requests.post(url, headers=headers, json=meeting_details)
     return json.loads(response.text)
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADD_ONLINE_LIVE_CLASS(request):
     class1 = Class.objects.all()
     course = Course.objects.all()
@@ -2283,7 +2294,8 @@ def ADD_ONLINE_LIVE_CLASS(request):
     }
     return render(request,"admin/online_live_class/add_online_live_class.html",context)
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_ONLINE_LIVE_CLASS(request):
     all_online_live_class= OnlineLiveClass.objects.all().order_by('-start_time')
     class1 = Class.objects.all()
@@ -2309,7 +2321,8 @@ def VIEW_ONLINE_LIVE_CLASS(request):
 
     return render(request,"admin/online_live_class/view_online_live_class.html",context)
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def START_ONLINE_LIVE_CLASS(request, id):
     online_class = OnlineLiveClass.objects.get(id=id)
 

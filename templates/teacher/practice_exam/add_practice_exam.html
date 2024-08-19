@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+               <div class="page-header">
+                  <div class="row align-items-center">
+                     <div class="col">
+                        <h3 class="page-title">Add Practice Exam</h3>
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+                           <li class="breadcrumb-item active">Add Practice Exam</li>
+                        </ul>
+                     </div>
+                     <div class="col-auto text-right float-right ml-auto">
+        
+                        <a href="{% url 'teacher-practice-exam-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                    </div>
+                  </div>
+               </div>
+         {% include "base_desine/massages.html" %}
+      {% if action is None %}
+      <form method="post" action="?action=add-practice-exam">
+          {% csrf_token %}
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="card">
+                        <div class="card-body">
+                              <div class="row">
+                                 <div class="col-12">
+                                     <h5 class="form-title"><span>Add Practice Exam</span></h5>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                    <label>Class</label>
+                                          <select class="form-control" name="class_id" id="courseSelect" required>
+                                             <option value="" disabled selected>-- Select Class--</option>
+                                             {% for i in class %}
+                                             <option value="{{i.id}}">{{i.name}}</option>
+                                             {% endfor %}
+                                       </select>
+                                    </div>
+                                 </div>
+                                 
+                                 
+
+                                  
+
+
+                                 <br>
+                                <div class="col-10 mr-3">
+                                    <button type="submit" class="btn btn-primary">Create Exam</button>
+                                 </div>
+                              </div>
+                            <hr>
+                          </div>
+                        </div>
+                     </div>
+               </div>
+
+               
+                  
+                  
+      </form>
+      {% else %}
+      <form method="post" action="{% url 'teacher-practice-exam-save' %}">
+          {% csrf_token %}
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="card">
+                        <div class="card-body">
+                              
+                                 <div class="col-12">
+                                     <h5 class="form-title"><span>Add Exam</span></h5>
+                                 </div>
+
+
+                                 <div class="col-sm-11 ">
+                                    <label>Class</label>
+                                       <select class="form-control" name='class_id' required disabled>
+                                    
+                                      
+                                       <option value = '{{get_class.id}}'>{{get_class}}</option>
+                                      
+                                       </select>
+                                       <input type="hidden" name="class_id" value="{{ get_class.id }}">
+                                 </div>
+                                 <br>
+
+                                 
+
+                                 <hr>
+                                 
+                                 <div class="col-sm-11">
+                                    <div class="form-group">
+                                       <label>Exam Name</label>
+                                       <input type="text" class="form-control" name='exam_name' required >
+                                    </div>
+                                </div>
+                                 
+
+                                <div class="col-sm-11">
+                                 <div class="form-group">
+                                    <label>Total Question</label>
+                                    <input type="number" class="form-control" name='total_question'required >
+                                 </div>
+                                </div>
+                                
+                                <div class="col-sm-11">
+                                 <div class="form-group">
+                                    <label>Total Number</label>
+                                    <input type="number" class="form-control" name='total_number'required >
+                                 </div>
+                                 </div>
+
+                                <div class="col-sm-11">
+                                 <label>Course</label>
+                                    <select class="form-control" name='course_id'required>
+                                    <option value="" disabled selected >Select Course</option>
+                                    {% for i in course%}
+                                    <option value = '{{i.id}}'>{{i.name}}</option>
+                                    {% endfor%}
+                                    </select>
+                                </div>
+                                <br>
+
+                                <div class="col-sm-11">
+                                 <label>Subject</label>
+                                    <select class="form-control" name='subject_id'required>
+                                    <option value="" disabled selected>Select Subject</option>
+                                    {% for i in subject %}
+                                    <option value = '{{i.id}}'>{{i.name}}</option>
+                                    {% endfor%}
+                                    </select>
+                              </div>
+                              <br>
+                                  
+
+                              <div class="col-sm-11">
+                                 <div class="form-group">
+                                    <label>Duration In Minutes</label>
+                                    <input type="number" class="form-control" name='duration'required >
+                                 </div>
+                              </div>
+
+                                  
+                                 
+                                <div class="col-10 mr-3 ">
+                                    <button type="submit" class="btn btn-primary">Add Exam</button>
+                                 </div>
+                              
+                            <hr>
+                          </div>
+                        </div>
+                     </div>
+               </div>
+      </form>
+      {% endif %}
+</div>
+
+{% endblock %}
+

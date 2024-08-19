@@ -52,7 +52,7 @@
                     <td>{{ item.obtained_marks }} / {{ item.total_marks }}</td>
                     <td>{{ item.highest_marks }}</td>
                     <td>{{ item.merit_position }}</td> <!-- Merit position for this exam -->
-                    <td><a href="{% url "admin-student-performance-view-question" item.exam.id %}"><button class="btn btn-success">View Question</button></a></td>
+                    <td><a href="{% url "teacher-student-performance-view-question" item.exam.id %}"><button class="btn btn-success">View Question</button></a></td>
                 </tr>
                 {% endfor %}
             </tbody>
