@@ -1528,8 +1528,95 @@ def DELETE_LIVE_EXAM_MCQ_QUESTION(request,id):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def ADD_LIVE_EXAM_WRITTEN_QUESTION(request):
-    return render(request,"admin/live_exam/add_live_exam_written_question.html")
+    current_time = timezone.now()
+    class1 = Class.objects.all()
 
+    action = request.GET.get('action')
+
+    get_class = None
+ 
+    subject = None
+    course = None
+    exam = None
+
+    if action is not None:
+        if request.method=="POST":
+            class_id = request.POST.get('class_id')
+            get_class = Class.objects.get(id=class_id)
+            class1 = Class.objects.filter(id= class_id)
+            exam = Live_Exam.objects.filter(class_id=class_id,end_time__gt=current_time)
+            
+    context = {
+        'class':class1,
+        'action':action,
+        'get_class':get_class,
+        'subject': subject,
+        'course':course,
+        'exam':exam,
+
+    }
+    return render(request,"admin/live_exam/add_live_exam_written_question.html",context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def SAVE_LIVE_EXAM_WRITTEN_QUESTION(request):
+    if request.method == 'POST':
+        exam_id = request.POST.get('exam_id')
+        exam = Live_Exam.objects.get(id=exam_id)
+        existing_questions_count = LiveExamWrittenQuestion.objects.filter(exam=exam).count()
+        total_questions_allowed = exam.total_questions
+
+        # Calculate the sum of marks for existing questions
+        existing_total_marks = LiveExamWrittenQuestion.objects.filter(exam=exam).aggregate(total_marks=Sum('marks'))['total_marks'] or 0
+        total_marks_allowed = exam.total_marks
+
+        question_counter = 1
+        added_questions_count = 0
+        added_marks = 0
+
+        while True:
+            question_key = f'question{question_counter}' if question_counter > 1 else 'question'
+            mark_key = f'mark{question_counter}' if question_counter > 1 else 'mark'
+            solution_key = f'solution{question_counter}' if question_counter > 1 else 'solution'
+
+            question_text = request.POST.get(question_key)
+            marks_str = request.POST.get(mark_key)
+            solution = request.POST.get(solution_key)
+
+            if not question_text:
+                break
+
+            try:
+                marks = int(marks_str)
+            except (ValueError, TypeError):
+                messages.error(request, f'Invalid marks value: {marks_str}')
+                return redirect('admin-add-live-exam-written-question')
+
+            if existing_questions_count + added_questions_count >= total_questions_allowed:
+                messages.error(request, 'You cannot add more questions than the total number allowed for this exam.')
+                return redirect('admin-add-live-exam-written-question')
+
+            new_total_marks = existing_total_marks + added_marks + marks
+            if new_total_marks > total_marks_allowed:
+                messages.error(request, 'You cannot add more marks than the total marks allowed for this exam.')
+                return redirect('admin-add-live-exam-written-question')
+
+            # Create and save the question object
+            LiveExamWrittenQuestion.objects.create(
+                exam=exam,
+                marks=marks,
+                question=question_text,
+                solution_details=solution
+            )
+            
+            added_questions_count += 1
+            added_marks += marks
+            question_counter += 1
+
+        messages.success(request, 'Questions are added successfully')
+        return redirect('admin-add-live-exam-written-question')
 
 
 @login_required(login_url='login')

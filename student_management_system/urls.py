@@ -122,6 +122,7 @@ urlpatterns = [
 
 
     path('admin-add-live-exam-written-question', admin_views.ADD_LIVE_EXAM_WRITTEN_QUESTION,name='admin-add-live-exam-written-question'),
+    path('admin-save-live-exam-written-question', admin_views.SAVE_LIVE_EXAM_WRITTEN_QUESTION,name='admin-save-live-exam-written-question'),
     path('admin-view-live-exam-written-question', admin_views.VIEW_LIVE_EXAM_WRITTEN_QUESTION_FILTER,name='admin-view-live-exam-written-question'),
     path('admin-give-student-live-exam-written-question-mark', admin_views.GIVE_STUDENT_WRITTEN_EXAM_MARK,name='admin-give-student-live-exam-written-question-mark'),
 
