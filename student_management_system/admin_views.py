@@ -1622,8 +1622,28 @@ def SAVE_LIVE_EXAM_WRITTEN_QUESTION(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_LIVE_EXAM_WRITTEN_QUESTION_FILTER(request):
-    return render(request,"admin/live_exam/view_live_exam_written_question.html")
+    exam = Live_Exam.objects.all()
 
+    context = {
+        'exam':exam,   
+    }
+
+    return render(request,'admin/live_exam/view_live_exam_written_question_filter.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_LIVE_EXAM_WRITTEN_QUESTION(request,id):
+    exam = Live_Exam.objects.get(id = id)
+
+    question = LiveExamWrittenQuestion.objects.filter(exam=exam)
+
+    context = {
+        'exam':exam,
+        'question':question,
+    }
+    return render(request,'admin/live_exam/view_live_exam_written_question.html',context)
 
 
 @login_required(login_url='login')
