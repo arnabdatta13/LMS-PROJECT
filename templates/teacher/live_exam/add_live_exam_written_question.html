@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+       <div class="row align-items-center">
+          <div class="col">
+             <h3 class="page-title">Add Written Question</h3>
+             <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Add Written Question</li>
+             </ul>
+          </div>
+       </div>
+    </div>
+{% include "base_desine/massages.html" %}
+{% if action is None %}
+      <form method="post" action="?action=Show-Students">
+          {% csrf_token %}
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="card">
+                        <div class="card-body">
+                              <div class="row">
+                                 <div class="col-12">
+                                     <h5 class="form-title"><span>Add Written Question</span></h5>
+                                 </div>
+                                 <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                    <label>Class</label>
+                                          <select class="form-control" name="class_id" id="courseSelect" required>
+                                             <option value="" disabled selected>-- Select Class--</option>
+                                             {% for i in class %}
+                                             <option value="{{i.id}}">{{i.name}}</option>
+                                             {% endfor %}
+                                       </select>
+                                    </div>
+                                 </div>
+                                 
+                                 <br>
+                                <div class="col-10 mr-3">
+                                    <button type="submit" class="btn btn-primary">Create Question</button>
+                                 </div>
+                              </div>
+                            <hr>
+                          </div>
+                        </div>
+                     </div>
+               </div>
+
+               
+                  
+                  
+      </form>
+      {% else %}
+      <form method="post" action="{% url 'teacher-save-live-exam-written-question' %}">
+          {% csrf_token %}
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="card">
+                        <div class="card-body">
+                                 <div class="col-12">
+                                     <h5 class="form-title"><span>Add Written Question</span></h5>
+                                 </div>
+
+                                 <div class="col-sm-11 ">
+                                    <label>Class</label>
+                                       <select class="form-control" name='class_id' required disabled>
+                                    
+                                      
+                                       <option value = '{{get_class.id}}'>{{get_class}}</option>
+                                      
+                                       </select>
+                                 </div>
+                                 <br>
+
+                                 
+
+                                 <hr>
+                                 
+                                 <div class="col-sm-11">
+                                    <label>Exam</label>
+                                       <select class="form-control" name='exam_id'required>
+                                       <option value="" disabled selected >Select Exam</option>
+                                       {% for i in exam %}
+                                       <option value = '{{i.id}}'>{{i.exam_name}}</option>
+                                       {% endfor%}
+                                       </select>
+                                 </div>
+                                 <br>
+                                 <div class="col-sm-11">
+                                    <div class="form-group">
+                                        <label>Question 1</label>
+                                        <textarea class="form-control" name='question'required></textarea>
+                                    </div>
+                                </div>
+                               <div class="col-sm-11">
+                                 <div class="form-group">
+                                    <label>Marks</label>
+                                    <input type="number" class="form-control " name='mark'required>
+                                 </div>
+                               </div>
+            
+                                 <div class="col-sm-11">
+                                    <div class="form-group">
+                                        <label>Solution</label>
+                                        <textarea class="form-control" name='solution'></textarea>
+                                    </div>
+                                </div>
+                                <br>
+                                
+                                <div id="questionFields">
+                                    <!-- Question fields will be added dynamically here -->
+                                    
+                                </div>
+                                <br>
+                                <div class="col-10 mr-3 ">
+                                    <button type="button" class="btn btn-primary" id="addQuestionBtn">Add Another Question</button>
+                                    <button type="submit" class="btn btn-primary">Add Question</button>
+                                 </div>
+                              
+                            <hr>
+                          </div>
+                        </div>
+                     </div>
+               </div>
+      </form>
+      {% endif %}
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var addQuestionBtn = document.getElementById('addQuestionBtn');
+        var questionFields = document.getElementById('questionFields');
+        var questionCounter = 2; // Initialize the question counter
+    
+        addQuestionBtn.addEventListener('click', function () {
+            var questionFieldset = document.createElement('div');
+            questionFieldset.classList.add('row');
+    
+            questionFieldset.innerHTML = `
+                <div class="col-sm-11">
+                    <div class="form-group">
+                        <label>Question ${questionCounter}</label>
+                        <textarea class="form-control" name='question${questionCounter}' required></textarea>
+                    </div>
+                </div>
+                <div class="col-sm-11">
+                    <div class="form-group">
+                        <label>Marks</label>
+                        <input type="number" class="form-control" name='mark${questionCounter}' required>
+                    </div>
+                </div>
+                
+                <br>
+                <div class="col-sm-11 mb-5">
+                    <div class="form-group">
+                        <label>Solution</label>
+                        <textarea class="form-control" name='solution'></textarea>
+                    </div>
+                </div>
+                
+            `;
+    
+            questionFields.appendChild(questionFieldset);
+            questionCounter++; // Increment the question counter for the next question
+        });
+    });
+    
+    
+    </script>
+{% endblock %}

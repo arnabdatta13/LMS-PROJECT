@@ -9,13 +9,13 @@
             <div class="col">
                 <h3 class="page-title">View Questions</h3>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'teacher-home' %}">Dashboard</a></li>
                     <li class="breadcrumb-item active">View Questions</li>
                 </ul>
             </div>
 
             <div class="col-auto text-right float-right ml-auto">
-                <a href="{% url 'admin-add-live-exam-written-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                <a href="{% url 'teacher-add-live-exam-written-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
             </div>
         </div>
     </div>
@@ -68,7 +68,7 @@
                                     
                                     <td class="text-right">
                                         <div class="actions">
-                                            <a href="{% url 'admin-view-live-exam-written-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
+                                            <a href="{% url 'teacher-view-live-exam-written-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
                                                 <i class="fa fa-eye"></i>
                                             </a>
                                         </div>

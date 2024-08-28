@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notice,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage,Live_Exam_Written_Result,Live_Exam_MCQ_Result,Live_Exam_WRITTEN_Report
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notification,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage,Live_Exam_Written_Result,Live_Exam_MCQ_Result,Live_Exam_WRITTEN_Report
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -18,7 +18,6 @@ from django.http import JsonResponse
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def HOME(request):
-    notice = Add_Notice.objects.all()
     user = request.user
     student = Student.objects.get(admin=user)
     student_class = student.class_id
@@ -81,7 +80,6 @@ def HOME(request):
     attendance_dates = [record.attendance_id.attendance_date.strftime("%Y-%m-%d") for record in attendance_reports]
     
     context = {
-        'notice': notice,
         'student': student,
         'live_class_count': len(live_classes),
         'upcoming_class_count': len(upcoming_classes),

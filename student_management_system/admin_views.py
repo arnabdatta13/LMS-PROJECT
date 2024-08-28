@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notice,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Notice
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -57,7 +57,6 @@ def Home(request):
 
     star_student = Star_student.objects.all()
     student_activity= Student_activity.objects.all()
-    notice = Add_Notice.objects.all()
 
     
     context = {
@@ -69,7 +68,6 @@ def Home(request):
         'student_gender_female': student_gender_female,
         'star_student':star_student,
         'student_activity':student_activity,
-        'notice':notice,
     }
     return render(request, 'admin/home.html',context)
 
@@ -1447,7 +1445,8 @@ def VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER(request):
 
 
 
-
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def VIEW_LIVE_EXAM_MCQ_QUESTION(request,id):
     exam = Live_Exam.objects.get(id = id)
 
@@ -1521,7 +1520,7 @@ def DELETE_LIVE_EXAM_MCQ_QUESTION(request,id):
 
     messages.success(request,'Question are successfully deleted.')
 
-    return redirect('admin-view-live-exam-question')
+    return redirect('admin-view-live-exam-mcq-question')
 
 
 
@@ -1644,6 +1643,62 @@ def VIEW_LIVE_EXAM_WRITTEN_QUESTION(request,id):
         'question':question,
     }
     return render(request,'admin/live_exam/view_live_exam_written_question.html',context)
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def EDIT_LIVE_EXAM_WRITTEN_QUESTION(request,id):
+    exam = Live_Exam.objects.all()
+    question = LiveExamWrittenQuestion.objects.filter(id = id)
+
+    context = {
+        'exam':exam,
+        'question':question,
+    }
+    return render(request,'admin/live_exam/edit_live_exam_written_question.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def UPDATE_LIVE_EXAM_WRITTEN_QUESTION(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        question_text = request.POST.get('question')
+        question_id = request.POST.get('question_id')
+        marks = request.POST.get('mark')
+        solution = request.POST.get('solution')
+        exam= Live_Exam.objects.get(id = exam_id)
+        question = LiveExamWrittenQuestion.objects.get(id = question_id)
+
+        question.exam=exam
+        question.marks=marks
+        question.question=question_text
+        question.solution_details=solution
+
+        question.save()
+
+        messages.success(request,'Queation Are Successfully Updated')
+        return redirect('admin-view-live-exam-written-question')
+
+
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def DELETE_LIVE_EXAM_WRITTEN_QUESTION(request,id):
+
+    question = LiveExamWrittenQuestion.objects.get(id = id)
+    question.delete()
+
+    messages.success(request,'Question are successfully deleted.')
+
+    return redirect('admin-view-live-exam-written-question')
+
 
 
 @login_required(login_url='login')
@@ -2471,6 +2526,8 @@ def generate_signature(api_key, api_secret, meeting_number, role):
     return f"{api_key}.{meeting_number}.{timestamp}.{role}.{hash.decode('utf-8')}"
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def DELETE_ONLINE_CLASS(request,id):
     online_class = OnlineLiveClass.objects.get(id = id)
     online_class.delete()
@@ -2478,3 +2535,19 @@ def DELETE_ONLINE_CLASS(request,id):
     return redirect("admin-view-online-live-class")
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def ADD_NOTICE(request):
+    if request.method == 'POST':
+        title = request.POST.get("title")
+        pdf = request.FILES.get("pdf")  # Use request.FILES to get the uploaded file
+        print(pdf)
+        notice = Notice(
+            title = title,
+            pdf = pdf
+        )
+        notice.save()
+        messages.success(request,"Notices Are Deleted Successfully")
+
+    return render(request,"admin/notice/add_notice.html")

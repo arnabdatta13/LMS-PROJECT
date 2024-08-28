@@ -124,7 +124,10 @@ urlpatterns = [
     path('admin-add-live-exam-written-question', admin_views.ADD_LIVE_EXAM_WRITTEN_QUESTION,name='admin-add-live-exam-written-question'),
     path('admin-save-live-exam-written-question', admin_views.SAVE_LIVE_EXAM_WRITTEN_QUESTION,name='admin-save-live-exam-written-question'),
     path('admin-view-live-exam-written-question', admin_views.VIEW_LIVE_EXAM_WRITTEN_QUESTION_FILTER,name='admin-view-live-exam-written-question'),
-    path('admin-view-live-exam-written-question/<str:id>', admin_views.VIEW_LIVE_EXAM_WRITTEN_QUESTION,name='admin-view-live-exam-mcq-question'),
+    path('admin-view-live-exam-written-question/<int:id>', admin_views.VIEW_LIVE_EXAM_WRITTEN_QUESTION,name='admin-view-live-exam-written-question'),
+    path('admin-edit-live-exam-written-question/<str:id>', admin_views.EDIT_LIVE_EXAM_WRITTEN_QUESTION,name='admin-edit-live-exam-written-question'),
+    path('admin-update-live-exam-written-question', admin_views.UPDATE_LIVE_EXAM_WRITTEN_QUESTION,name='admin-update-live-exam-written-question'),
+    path('admin-delete-live-exam-written-question/<str:id>', admin_views.DELETE_LIVE_EXAM_WRITTEN_QUESTION,name='admin-delete-live-exam-written-question'),
     path('admin-give-student-live-exam-written-question-mark', admin_views.GIVE_STUDENT_WRITTEN_EXAM_MARK,name='admin-give-student-live-exam-written-question-mark'),
 
 
@@ -167,13 +170,13 @@ urlpatterns = [
     
     path('admin-upgrade-student-class', admin_views.UPGRADE_CLASS,name='admin-upgrade-student-class'),
 
-
     
     path('admin-add-online-live-class', admin_views.ADD_ONLINE_LIVE_CLASS, name='admin-add-online-live-class'),
     path('admin-view-online-live-class', admin_views.VIEW_ONLINE_LIVE_CLASS, name='admin-view-online-live-class'),
     path('admin-start-online-live-class/<int:id>', admin_views.START_ONLINE_LIVE_CLASS, name='admin-start-online-live-class'),
     path('admin-online-class-delete/<int:id>', admin_views.DELETE_ONLINE_CLASS, name='admin-online-class-delete'),
 
+    path('admin-add-notice', admin_views.ADD_NOTICE, name='admin-add-notice'),
 
 
     #this is teacher panel url
@@ -196,6 +199,31 @@ urlpatterns = [
     path('teacher-student-feedback', teacher_views.STUDENT_FEEDBACK,name='teacher-student-feedback'),
     path('teacher-student-save', teacher_views.STUDENT_FEEDBACK_SAVE,name='teacher-student-feedback-save'),
 
+
+    path('teacher-live-exam-add', teacher_views.LIVE_EXAM_ADD,name='teacher-live-exam-add'),
+    path('teacher-live-exam-save', teacher_views.LIVE_EXAM_SAVE,name='teacher-live-exam-save'),
+    path('teacher-live-exam-view', teacher_views.LIVE_EXAM_VIEW,name='teacher-live-exam-view'),
+    path('teacher-live-exam-edit/<str:id>', teacher_views.LIVE_EXAM_EDIT,name='teacher-live-exam-edit'),
+    path('teacher-live-exam-update', teacher_views.LIVE_EXAM_UPDATE,name='teacher-live-exam-update'),
+    path('teacher-live-exam-delete/<str:id>', teacher_views.LIVE_EXAM_DELETE,name='teacher-live-exam-delete'),
+
+
+    path('teacher-add-live-exam-mcq-question', teacher_views.ADD_LIVE_EXAM_MCQ_QUESTION,name='teacher-add-live-exam-mcq-question'),
+    path('teacher-save-live-exam-mcq-question', teacher_views.SAVE_LIVE_EXAM_MCQ_QUESTION,name='teacher-save-live-exam-mcq-question'),
+    path('teacher-view-live-exam-mcq-question', teacher_views.VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER,name='teacher-view-live-exam-mcq-question'),
+    path('teacher-view-live-exam-mcq-question/<str:id>', teacher_views.VIEW_LIVE_EXAM_MCQ_QUESTION,name='teacher-view-live-exam-mcq-question'),
+    path('teacher-edit-live-exam-mcq-question/<str:id>',teacher_views.EDIT_LIVE_EXAM_MCQ_QUESTION,name='teacher-edit-live-exam-mcq-question'),
+    path('teacher-update-live-exam-mcq-question', teacher_views.UPDATE_LIVE_EXAM_MCQ_QUESTION,name='teacher-update-live-exam-mcq-question'),
+    path('teacher-delete-live-exam-mcq-question/<str:id>', teacher_views.DELETE_LIVE_EXAM_MCQ_QUESTION,name='teacher-delete-live-exam-mcq-question'),
+
+
+    path('teacher-add-live-exam-written-question',teacher_views.ADD_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-add-live-exam-written-question'),
+    path('teacher-save-live-exam-written-question', teacher_views.SAVE_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-save-live-exam-written-question'),
+    path('teacher-view-live-exam-written-question', teacher_views.VIEW_LIVE_EXAM_WRITTEN_QUESTION_FILTER,name='teacher-view-live-exam-written-question'),
+    path('teacher-view-live-exam-written-question/<int:id>', teacher_views.VIEW_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-view-live-exam-written-question'),
+    path('teacher-edit-live-exam-written-question/<str:id>', teacher_views.EDIT_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-edit-live-exam-written-question'),
+    path('teacher-update-live-exam-written-question', teacher_views.UPDATE_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-update-live-exam-written-question'),
+    path('teacher-delete-live-exam-written-question/<str:id>',teacher_views.DELETE_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-delete-live-exam-written-question'),
 
 
     path('teacher-practice-exam-add', teacher_views.PRACTICE_EXAM_ADD,name='teacher-practice-exam-add'),
@@ -235,7 +263,7 @@ urlpatterns = [
     path('teacher-save-attendance', teacher_views.TEACHER_SAVE_ATTENDANCE,name='teacher-save-attendance'),
     path('teacher-view-attendance', teacher_views.TEACHER_VIEW_ATTENDANCE,name='teacher-view-attendance'),
     
-    path('teacher-add-notice', teacher_views.TEACHER_ADD_NOTICE,name='teacher-add-notice'),
+    path('teacher-add-notification', teacher_views.TEACHER_ADD_NOTIFICATION,name='teacher-add-notification'),
   
 
 

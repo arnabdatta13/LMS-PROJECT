@@ -9,14 +9,14 @@
             <div class="col">
                 <h3 class="page-title">View Questions</h3>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'teacher-home' %}">Dashboard</a></li>
                     <li class="breadcrumb-item active">View Questions</li>
                 </ul>
             </div>
 
             <div class="col-auto text-right float-right ml-auto">
                 <a id = "question-list-download" class="btn btn-outline-primary mr-2"><i class="fas fa-download"></i> Download</a>
-                <a href="{% url 'admin-add-live-exam-written-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
+                <a href="{% url 'teacher-add-live-exam-mcq-question' %}" class="btn btn-primary"><i class="fas fa-plus"></i></a>
             </div>
         </div>
     </div>
@@ -43,6 +43,11 @@
                                     <th>ID</th>
                                     <th>Question</th>
                                     <th>Marks</th>
+                                    <th>Option 1</th>
+                                    <th>Option 2</th>
+                                    <th>Option 3</th>
+                                    <th>Option 4</th>
+                                    <th>Answer</th>
                                     <th>Solution</th>
                                     
                                     <th class="text-right">Action</th>
@@ -54,13 +59,18 @@
                                     <td>{{ i.id }}</td>
                                     <td>{{ i.question }}</td>
                                     <td>{{ i.marks }}</td>
+                                    <td>{{ i.option1 }}</td>
+                                    <td>{{ i.option2 }}</td>
+                                    <td>{{ i.option3 }}</td>
+                                    <td>{{ i.option4 }}</td>
+                                    <td>{{ i.answer}}</td>
                                     <td>{{ i.solution_details}}</td>
                                     <td class="text-right">
                                         <div class="actions">
-                                            <a href="{% url 'admin-edit-live-exam-written-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
+                                            <a href="{% url 'teacher-edit-live-exam-mcq-question' i.id%}" class="btn btn-sm bg-success-light mr-2">
                                                 <i class="fas fa-pen"></i>
                                             </a>
-                                            <a href="{% url 'admin-delete-live-exam-written-question' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
+                                            <a href="{% url 'teacher-delete-live-exam-mcq-question' i.id%}" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -80,7 +90,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                <a href="{% url 'admin-delete-live-exam-written-question' i.id%}" class="btn btn-danger">Delete</a>
+                                                <a href="{% url 'teacher-delete-live-exam-mcq-question' i.id%}" class="btn btn-danger">Delete</a>
                                             </div>
                                         </div>
                                     </div>
@@ -118,6 +128,11 @@
                 { header: 'ID', dataKey: 'id' },
                 { header: 'Question', dataKey: 'question' },
                 { header: 'marks', dataKey: 'marks' },
+                { header: 'Option1', dataKey: 'option1' },
+                { header: 'Option2', dataKey: 'option2' },
+                { header: 'Option3', dataKey: 'option3' },
+                { header: 'Option4', dataKey: 'option4' },
+                { header: 'Answer', dataKey: 'Answer' },
                 ],
             body: [
                 

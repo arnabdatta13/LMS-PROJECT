@@ -4,17 +4,25 @@ from django.contrib.auth import authenticate,logout,login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from app.models import CustomUser
-from app.models import Teacher,Add_Notice,Message
+from app.models import Teacher,Add_Notification,Message,Notice
 from django.http import JsonResponse
 import face_recognition as fr
 import base64
 import numpy as np
 import io
+from deepface import DeepFace
+import cv2
+
 
 
 
 def HOME(request):
-    return render(request,'home.html')
+    notice = Notice.objects.all()
+    context = {
+        "notice":notice
+    }
+    return render(request,'home.html',context)
+
 
 def CONTRACT(request):
     if request.method == "POST":
@@ -50,10 +58,18 @@ def ABOUT(request):
 
 def clear_notifications(request):
    
-    notifications = Add_Notice.objects.all()
+    notifications = Add_Notification.objects.all()
     notifications.delete()  
     
-    return redirect('login')
+    user_type= request.user.user_type
+    if user_type == 1:
+        return redirect('admin_home')
+        
+    elif user_type == 2:
+        return redirect('teacher-home')
+    elif user_type == 3:
+        return redirect('student-home')
+        
 
 
 def BASE(request):
@@ -154,10 +170,8 @@ def PROFILE_UPDATE(request):
     return render(request,'profile.html')
 
 
-
 def is_ajax(request):
-  return request.headers.get('x-requested-with') == 'XMLHttpRequest'
-
+    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 def get_encoded_faces():
     users = CustomUser.objects.all()
@@ -166,64 +180,42 @@ def get_encoded_faces():
 
     for user in users:
         if user.profile_pic:
-            face = fr.load_image_file(user.profile_pic.path)
-            face_encodings = fr.face_encodings(face)
-
-            if len(face_encodings) > 0:
-                encoding = face_encodings[0]
+            try:
+                encoding = DeepFace.represent(img_path=user.profile_pic.path, model_name='Facenet', enforce_detection=False)[0]["embedding"]
                 encoded[user.username] = encoding
-            else:
-                print(f"No face found in the profile picture of user: {user.username}")
+            except Exception as e:
+                print(f"Error encoding face for user {user.username}: {e}")
         else:
             print(f"No profile picture found for user: {user.username}")
 
     return encoded
 
-
-
-def classify_face(img):
+def classify_face(img_file):
     """
-    This function takes an image as input and returns the name of the face it contains
+    This function takes an image file-like object as input and returns the name of the face it contains.
     """
+    # Convert the file-like object to a numpy array
+    file_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+    # Resize image if needed
+    img = cv2.resize(img, (224, 224))
+
     # Load all the known faces and their encodings
     faces = get_encoded_faces()
     faces_encoded = list(faces.values())
     known_face_names = list(faces.keys())
 
-    # Load the input image
-    img = fr.load_image_file(img)
- 
     try:
-        # Find the locations of all faces in the input image
-        face_locations = fr.face_locations(img)
-
-        # Encode the faces in the input image
-        unknown_face_encodings = fr.face_encodings(img, face_locations)
-
-        # Identify the faces in the input image
-        face_names = []
-        for face_encoding in unknown_face_encodings:
-            # Compare the encoding of the current face to the encodings of all known faces
-            matches = fr.compare_faces(faces_encoded, face_encoding)
-
-            # Find the known face with the closest encoding to the current face
-            face_distances = fr.face_distance(faces_encoded, face_encoding)
-            best_match_index = np.argmin(face_distances)
-
-            # If the closest known face is a match for the current face, label the face with the known name
-            if matches[best_match_index]:
-                name = known_face_names[best_match_index]
-            else:
-                name = "Unknown"
-
-            face_names.append(name)
-
-        # Return the name of the first face in the input image
-        return face_names[0]
-    except:
-        # If no faces are found in the input image or an error occurs, return False
+        # Use DeepFace to verify the face against known encodings
+        for name, encoding in zip(known_face_names, faces_encoded):
+            result = DeepFace.verify(img1_path=img, img2_representation=encoding, model_name='Facenet', enforce_detection=False)
+            if result["verified"]:
+                return name
+        return "Unknown"
+    except Exception as e:
+        print(f"Error in face classification: {e}")
         return False
-
 
 def FACE_ID_DOLOGIN(request):
     if is_ajax(request):
@@ -236,13 +228,13 @@ def FACE_ID_DOLOGIN(request):
 
         # Pass the file-like object to the classify_face function
         res = classify_face(img_file)
-        
+
         if res:  # Check if face classification was successful
             user_exists = CustomUser.objects.filter(username=res).exists()
             if user_exists:
                 user = CustomUser.objects.get(username=res)
                 login(request, user)
-                user_type= user.user_type
+                user_type = user.user_type
 
                 if user_type == 1:
                     redirect_url = 'admin-home'
@@ -255,8 +247,6 @@ def FACE_ID_DOLOGIN(request):
 
                 if redirect_url:
                     return JsonResponse({'redirect_url': redirect_url})
-                
+
     error_msg = "Face Not Found. Please Take The Photo Again."
     return JsonResponse({'error': error_msg}, status=400)
-
-

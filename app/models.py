@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
 
 
 class CustomUserManager(BaseUserManager):
@@ -281,13 +282,6 @@ class SchoolExamStudentResult(models.Model):
 
 
 
-class Add_Notice(models.Model):
-      notice = models.TextField()
-      created_at = models.DateTimeField(auto_now_add=True)
-      updated_at= models.DateTimeField(auto_now=True)
-      def __str__(self):
-        return self.notice
-
 
 
 class OnlineLiveClass(models.Model):
@@ -437,3 +431,18 @@ class Message(models.Model):
     
 
 
+class Add_Notification(models.Model):
+      notification = models.TextField()
+      created_at = models.DateTimeField(auto_now_add=True)
+      updated_at= models.DateTimeField(auto_now=True)
+      def __str__(self):
+        return self.notification
+
+
+class Notice(models.Model):
+    title = models.CharField(max_length=255)
+    pdf = models.FileField(upload_to='notices/', validators=[FileExtensionValidator(allowed_extensions=['pdf'])])
+    created_at = models.DateTimeField(default=timezone.now, editable=False)  # Provide default for existing rows
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.title

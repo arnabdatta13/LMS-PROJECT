@@ -84,7 +84,7 @@
                      </ul>
                   </li>
 
-                  <li class="submenu {% active_link 'admin-live-exam-add' 'active' %} {% active_link 'admin-live-exam-view' 'active' %} {% active_link 'admin-add-live-exam-mcq-question' 'active' %} {% active_link 'admin-view-live-exam-mcq-question' 'active' %}">
+                  <li class="submenu {% active_link 'admin-live-exam-add' 'active' %} {% active_link 'admin-live-exam-view' 'active' %} {% active_link 'admin-add-live-exam-mcq-question' 'active' %} {% active_link 'admin-view-live-exam-mcq-question' 'active' %} {% active_link 'admin-add-live-exam-written-question' 'active' %} {% active_link 'admin-view-live-exam-written-question' 'active' %}">
                      <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span>Live Exam</span> <span class="menu-arrow"></span></a>
                      <ul>
                         <hr>
@@ -170,18 +170,18 @@
                      </ul>
                   </li>
 
-                  <li class="submenu {% active_link 'admin-live-exam-add' 'active' %} {% active_link 'admin-live-exam-view' 'active' %} {% active_link 'admin-add-live-exam-mcq-question' 'active' %} {% active_link 'admin-view-live-exam-mcq-question' 'active' %}">
+                  <li class="submenu {% active_link 'teacher-live-exam-add' 'active' %} {% active_link 'teacher-live-exam-view' 'active' %} {% active_link 'teacher-add-live-exam-mcq-question' 'active' %} {% active_link 'teacher-view-live-exam-mcq-question' 'active' %} {% active_link 'teacher-add-live-exam-written-question' 'active' %}{% active_link 'teacher-view-live-exam-written-question' 'active' %}">
                      <a href="#"><i class="fas fa-chalkboard-teacher"></i> <span>Live Exam</span> <span class="menu-arrow"></span></a>
                      <ul>
                         <hr>
-                        <li><a href="{% url 'admin-live-exam-add'%}">Add Exam </a></li>
-                        <li><a href="{% url 'admin-live-exam-view'%}">View Exam</a></li>
+                        <li><a href="{% url 'teacher-live-exam-add'%}">Add Exam </a></li>
+                        <li><a href="{% url 'teacher-live-exam-view'%}">View Exam</a></li>
                         <hr>
-                        <li><a href="{% url 'admin-add-live-exam-mcq-question'%}">Add MCQ Question </a></li>
-                        <li><a href="{% url 'admin-view-live-exam-mcq-question'%}">View MCQ Question</a></li>
+                        <li><a href="{% url 'teacher-add-live-exam-mcq-question'%}">Add MCQ Question </a></li>
+                        <li><a href="{% url 'teacher-view-live-exam-mcq-question'%}">View MCQ Question</a></li>
                         <hr>
-                        <li><a href="{% url "admin-add-live-exam-written-question"%}">Add Written Question </a></li>
-                        <li><a href="{% url "admin-view-live-exam-written-question"%}">View Written Question</a></li>
+                        <li><a href="{% url "teacher-add-live-exam-written-question"%}">Add Written Question </a></li>
+                        <li><a href="{% url "teacher-view-live-exam-written-question"%}">View Written Question</a></li>
                         <hr>
                      </ul>
                   </li>
@@ -211,8 +211,8 @@
                   </li>
                   
                   
-                  <li class="{% active_link 'teacher-add-notice' 'active' %}">
-                     <a href="{% url 'teacher-add-notice'%}"><i class="fas fa-sticky-note"></i> <span>Add Notice</span></a>
+                  <li class="{% active_link 'teacher-add-notification' 'active' %}">
+                     <a href="{% url 'teacher-add-notification'%}"><i class="fas fa-sticky-note"></i> <span>Add Notification</span></a>
                   </li>
 
                   <li class="{% active_link 'admin-student-send-notification' 'active' %}">

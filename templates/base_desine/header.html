@@ -42,20 +42,20 @@
                </a>
                <div class="dropdown-menu notifications">
                   <div class="topnav-dropdown-header">
-                     <span class="notification-title">Notices</span>
+                     <span class="notification-title">Notification</span>
                      <a href="{% url 'clear_notifications' %}" class="clear-noti"> Clear All </a>
                   </div>
                   <div class="noti-content">
                  
                      <ul class="notification-list">
-                        {% for i in notice %}
+                        {% for i in notification %}
                             <li class="notification-message">
                            
                                 <a href="#">
                                     <div class="media">
                                        
                                         <div class="media-body">
-                                            <p class="noti-details"><span class="noti-title">{{ i.notice }}</span></p>
+                                            <p class="noti-details"><span class="noti-title">{{ i.notification }}</span></p>
                                             <p class="noti-time"><span class="notification-time">{{ i.created_at }}</span></p>
                                         </div>
                                     </div>

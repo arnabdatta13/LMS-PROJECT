@@ -58,12 +58,14 @@
 
  
  <br><br><br>
- 
- <!-- subjects section starts  -->
  <section class="notice-board-container">
    <h1 class="notice-heading">Notice</h1>
    <div class="marquee">
-      <marquee>2023 সালের অনার্স ২য় বর্ষ পরীক্ষার ফলাফলের সময় বৃদ্ধি সংক্রান্ত নোটিশ</marquee>
+      <marquee onmouseover="this.stop();" onmouseout="this.start();">
+         {% for i in notice %}
+         <a href="{{ i.pdf.url }}" download>{{ i.title }}</a>{% if not forloop.last %} | {% endif %}
+         {% endfor %}
+      </marquee>
    </div>
    <table class="notice-board">
       <thead>
@@ -73,32 +75,17 @@
               <th>Views</th>
           </tr>
       </thead>
-      <tbody>
+      <tbody>            
+         {% for i in notice %}
           <tr>
-              <td>01-08-2024</td>
-              <td>২০২৩ সালের অনার্স ২য় বর্ষ পরীক্ষার ফলাফলের সময় বৃদ্ধি সংক্রান্ত নোটিশ</td>
-              <td>3</td>
-          </tr>
-          <tr>
-              <td>17-07-2024</td>
-              <td>ঢাকা সিটি কলেজ প্রশাসনের পক্ষ থেকে অধ্যক্ষের বিদায়</td>
-              <td>0</td>
-          </tr>
-          <tr>
-              <td>16-07-2024</td>
-              <td>Notice for Hons. and Masters All Students</td>
-              <td>13</td>
-          </tr>
-          <tr>
-              <td>16-07-2024</td>
-              <td>Notice for Masters Regular Students (Session: 2021-2022)</td>
-              <td>0</td>
-          </tr>
-          
+              <td>{{ i.updated_at }}</td>
+              <td><a href="{{ i.pdf.url }}" download>{{ i.title }}</a></td>
+              <td><a href="{{ i.pdf.url }}" target="_blank" class = "btn">View</a></td>
+            </tr>
+         {% endfor %}
       </tbody>
    </table>
 </section>
-
 
 
  <section class="subjects">
@@ -281,7 +268,6 @@
     </div>
  
  </section>
- 
  <style>
 
    .notice-board-container {
@@ -335,11 +321,35 @@
       background-color: #2980b9;
       color: white;
       padding: 12px;
-      font-size: 18px;
+      font-size: 22px;
       margin-bottom: 20px;
       border-radius: 5px;
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
+  .marquee a {
+   color: inherit; /* Inherit the color from the parent element */
+   text-decoration: none; /* Remove the underline from the link */
+   }
 
+   .marquee a:hover {
+      color: inherit; /* Keep the color the same on hover */
+      text-decoration: underline; /* Optionally add underline on hover */
+   }
+
+  .notice-board a {
+   color: inherit; /* Inherit color from the parent element */
+   text-decoration: none; /* Remove underline */
+   font-weight: normal; /* Ensure normal font weight */
+   text-shadow: none; /* Remove any text shadow */
+   transform: none; /* Reset any transform applied */
+   opacity: 1; /* Ensure full opacity */
+}
+
+.notice-board a:hover {
+   text-decoration: underline; /* Optionally add underline on hover */
+   color: #000; /* Optionally change color on hover */
+}
+
+</style>
 {% endblock  %}
