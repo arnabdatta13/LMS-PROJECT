@@ -3,6 +3,7 @@
 {% block content %}
 {% include "base_desine/loader.html" %}
 
+
 <div class="page-header">
     <div class="row">
         <div class="col-sm-12">
@@ -183,8 +184,12 @@
 
 </div>
 <br><br>
+<div class="row">
+    
+</div>
 
-    <h2 style="text-align: center;">Attendance Report</h2>
+<br><br>
+<h2 style="text-align: center;">Attendance Report</h2>
 
 
 <div class="calendar-container">
@@ -210,6 +215,9 @@
         </div>
     </div>
 </div>
+
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
 
 <script>
 function toggleClasses(element) {
@@ -280,6 +288,8 @@ prevNextIcon.forEach(icon => {
         renderCalendar();
     });
 });
+
+
 
 
 </script>
@@ -538,5 +548,6 @@ prevNextIcon.forEach(icon => {
     
 
 </style>
+{% include 'base_desine/chart.html' %}
 
 {% endblock %}

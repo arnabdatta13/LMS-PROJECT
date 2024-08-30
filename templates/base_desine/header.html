@@ -43,7 +43,9 @@
                <div class="dropdown-menu notifications">
                   <div class="topnav-dropdown-header">
                      <span class="notification-title">Notification</span>
+                     {% if user.user_type == 1 or user.user_type == 2%}
                      <a href="{% url 'clear_notifications' %}" class="clear-noti"> Clear All </a>
+                     {% endif %}
                   </div>
                   <div class="noti-content">
                  

@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Notice
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Notice
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -18,6 +18,7 @@ from datetime import timedelta,datetime
 from django.db.models import Sum,Max
 from django.http import HttpResponseBadRequest
 from django.db.models import Case, When, Value, IntegerField
+from collections import defaultdict
 
 
 
@@ -43,33 +44,56 @@ def SESSION_UPDATE(request):
         return redirect('admin-session-view')
 
 
+
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def Home(request):
     student_count = Student.objects.all().count()
-    teacher_count= Teacher.objects.all().count()
+    teacher_count = Teacher.objects.all().count()
     course_count = Course.objects.all().count()
     exam_count = Practice_Exam.objects.all().count()
 
+    student_gender_male = Student.objects.filter(gender='Male').count()
+    student_gender_female = Student.objects.filter(gender='Female').count()
 
-    student_gender_male = Student.objects.filter(gender= 'Male').count()
-    student_gender_female = Student.objects.filter(gender= 'Female').count()
+    # Calculate attendance percentages
+    attendance_data = Attendance.objects.all()
+    attendance_report = defaultdict(lambda: {'present': 0, 'absent': 0})
+
+    for attendance in attendance_data:
+        year = attendance.attendance_date.year
+        total_students = Student.objects.filter(class_id=attendance.class_id).count()
+        present_students = Attendance_Report.objects.filter(attendance_id=attendance).count()
+        absent_students = total_students - present_students
+
+        attendance_report[year]['present'] += present_students
+        attendance_report[year]['absent'] += absent_students
+
+    # Calculate percentages
+    attendance_percentages = {}
+    for year, data in attendance_report.items():
+        total = data['present'] + data['absent']
+        if total > 0:
+            attendance_percentages[year] = {
+                'present': (data['present'] / total) * 100,
+                'absent': (data['absent'] / total) * 100,
+            }
 
     star_student = Star_student.objects.all()
-    student_activity= Student_activity.objects.all()
+    student_activity = Student_activity.objects.all()
 
-    
     context = {
-        'student_count':student_count,
-        'teacher_count':teacher_count,
-        'course_count':course_count,
-        'exam_count':exam_count,
-        'student_gender_male':student_gender_male,
+        'student_count': student_count,
+        'teacher_count': teacher_count,
+        'course_count': course_count,
+        'exam_count': exam_count,
+        'student_gender_male': student_gender_male,
         'student_gender_female': student_gender_female,
-        'star_student':star_student,
-        'student_activity':student_activity,
+        'star_student': star_student,
+        'student_activity': student_activity,
+        'attendance_percentages': attendance_percentages,  # Pass attendance data to template
     }
-    return render(request, 'admin/home.html',context)
+    return render(request, 'admin/home.html', context)
 
 
 
@@ -1653,7 +1677,6 @@ def VIEW_LIVE_EXAM_WRITTEN_QUESTION(request,id):
 def EDIT_LIVE_EXAM_WRITTEN_QUESTION(request,id):
     exam = Live_Exam.objects.all()
     question = LiveExamWrittenQuestion.objects.filter(id = id)
-
     context = {
         'exam':exam,
         'question':question,
@@ -1873,46 +1896,6 @@ def STUDENT_ACTIVITY_DELETE(request,id):
     return redirect('admin-student-activity-view')
 
 
-
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def TEACHER_SEND_NOTIFICATION(request):
-    teacher = Teacher.objects.all()
-
-    see_notification =  Teacher_Notification.objects.all().order_by('-id')[0:8]
-
-    context= {
-        'teacher': teacher,
-        'see_notification': see_notification,
-    }
-    return render(request,'admin/notification/teacher_notification.html',context)
-
-
-
-
-
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 1, login_url='login')
-def TEACHER_SAVE_NOTIFICATION(request):
-    if request.method=="POST":
-
-        teacher_id= request.POST.get('teacher_id')
-        message= request.POST.get('message')
-
-        #print(teacher_id,message)
-
-
-        teacher = Teacher.objects.get(admin=teacher_id)
-
-        notification = Teacher_Notification(
-            teacher_id=teacher,
-            message=message,
-        )
-        notification.save()
-        messages.success(request,'Notification Are Successfully Send')
-
-    
-    return redirect('admin-teacher-send-notification')
 
 
 
@@ -2548,6 +2531,31 @@ def ADD_NOTICE(request):
             pdf = pdf
         )
         notice.save()
-        messages.success(request,"Notices Are Deleted Successfully")
+        messages.success(request,"Notices Are Added Successfully")
+        return redirect("admin-add-notice")
 
     return render(request,"admin/notice/add_notice.html")
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def VIEW_NOTICE(request):
+    notice = Notice.objects.all()
+
+    context = {
+        "notice":notice,
+    }
+    return render(request,"admin/notice/view_notice.html",context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def DELETE_NOTICE(request,id):
+
+    notice = Notice.objects.get(id = id)
+    notice.delete()
+    messages.success(request,"Notices Are Deleted Successfully")
+
+    return redirect("admin-view-notice")

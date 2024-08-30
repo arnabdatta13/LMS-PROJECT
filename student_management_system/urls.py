@@ -144,8 +144,6 @@ urlpatterns = [
     path('admin-student-activity-delete/<str:id>', admin_views.STUDENT_ACTIVITY_DELETE,name='admin-student-activity-delete'),
 
 
-    path('admin-teacher-send-notification', admin_views.TEACHER_SEND_NOTIFICATION,name='admin-teacher-send-notification'),
-    path('admin-teacher-save-notification', admin_views.TEACHER_SAVE_NOTIFICATION,name='admin-teacher-save-notification'),
 
 
     path('admin-teacher-feedback', admin_views.TEACHER_Feedback,name='admin-teacher-feedback'),
@@ -177,20 +175,18 @@ urlpatterns = [
     path('admin-online-class-delete/<int:id>', admin_views.DELETE_ONLINE_CLASS, name='admin-online-class-delete'),
 
     path('admin-add-notice', admin_views.ADD_NOTICE, name='admin-add-notice'),
+    path('admin-view-notice', admin_views.VIEW_NOTICE, name='admin-view-notice'),
+    path('admin-delete-notice/<int:id>', admin_views.DELETE_NOTICE, name='admin-delete-notice'),
 
 
     #this is teacher panel url
     path('teacher-home', teacher_views.HOME,name='teacher-home'),
-    path('teacher-notification', teacher_views.NOTIFICATION,name='teacher-notification'),
-    path('teacher/mark_as_done/<str:status>', teacher_views.TEACHER_NOTIFICATION_MARK_AS_DONE,name='teacher-mark-as-done'),
-
 
     path('teacher-student-add', teacher_views.STUDENT_ADD,name='teacher-student-add'),
     path('teacher-student-view', teacher_views.STUDENT_VIEW,name='teacher-student-view'),
     path('teacher-student-edit/<str:id>', teacher_views.STUDENT_EDIT,name='teacher-student-edit'),
     path('teacher-student-update', teacher_views.STUDENT_UPDATE,name='teacher-student-update'),
     path('teacher-student-delete/<str:admin>', teacher_views.STUDENT_DELETE,name='teacher-student-delete'),
-
 
 
     path('teacher-feedback', teacher_views.TEACHER_FEEDBACK,name='teacher-feedback'),
@@ -264,7 +260,9 @@ urlpatterns = [
     path('teacher-view-attendance', teacher_views.TEACHER_VIEW_ATTENDANCE,name='teacher-view-attendance'),
     
     path('teacher-add-notification', teacher_views.TEACHER_ADD_NOTIFICATION,name='teacher-add-notification'),
-  
+    path('teacher-view-notification', teacher_views.TEACHER_VIEW_NOTIFICATION,name='teacher-view-notification'),
+    path('teacher-delete-notification/<int:id>', teacher_views.TEACHER_DELETE_NOTIFICATION,name='teacher-delete-notification'),
+
 
 
     path('teacher-add-result', teacher_views.TEACHER_ADD_RESULT,name='teacher-add-result'),

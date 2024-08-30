@@ -191,16 +191,7 @@ class Student_activity(models.Model):
 
 
 
-class Teacher_Notification(models.Model):
-    teacher_id= models.ForeignKey(Teacher,on_delete=models.CASCADE)
-    message= models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True,null=True)
-    updated_at= models.DateTimeField(auto_now=True)
-    status = models.IntegerField(null=True,default=0)
-
-    def __str__(self):
-        return self.teacher_id.admin.first_name
-    
+ 
 
 class Teacher_Feedback(models.Model):
     teacher_id= models.ForeignKey(Teacher,on_delete=models.CASCADE)

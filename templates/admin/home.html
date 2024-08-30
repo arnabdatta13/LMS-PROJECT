@@ -121,7 +121,27 @@
          </div>
       </div>
    </div>
+
+   <div class="col-md-12 col-lg-6">
+      <div class="card card-chart">
+         <div class="card-header">
+            <div class="row align-items-center">
+               <div class="col-6">
+                  <h5 class="card-title">Attendance Report</h5>
+               </div>
+               
+            </div>
+         </div>
+         <div class="card-body">
+            <div id="admin_attendance_report"></div>
+         </div>
+      </div>
+   </div>
+
+  
+
  </div>
+
  <div class="row">
     <div class="col-md-6 d-flex">
        <div class="card flex-fill">
@@ -171,7 +191,7 @@
                       
                                
                                             </a>
-                                            <a href="{% url 'admin-star-student-delete' i.id %}" class="btn btn-primary" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}"><i class="fas fa-trash"></i></a>
+                        <a href="{% url 'admin-star-student-delete' i.id %}" class="btn btn-primary" class="btn btn-sm bg-danger-light" data-toggle="modal" data-target="#deleteConfirmationModal{{ i.id }}"><i class="fas fa-trash"></i></a>
                            
                          </td>
                       </tr>

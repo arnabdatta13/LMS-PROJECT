@@ -13,6 +13,10 @@ from django.db.models import Sum, Max
 from operator import attrgetter
 from django.db.models import Count
 from django.http import JsonResponse
+from collections import defaultdict
+
+
+
 
 
 @login_required(login_url='login')
@@ -79,6 +83,7 @@ def HOME(request):
     attendance_reports = Attendance_Report.objects.filter(student_id=student)
     attendance_dates = [record.attendance_id.attendance_date.strftime("%Y-%m-%d") for record in attendance_reports]
     
+
     context = {
         'student': student,
         'live_class_count': len(live_classes),
@@ -96,6 +101,9 @@ def HOME(request):
     }
 
     return render(request, 'student/home.html', context)
+
+
+
 
 
 @login_required(login_url='login')

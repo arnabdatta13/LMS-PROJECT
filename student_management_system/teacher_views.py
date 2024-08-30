@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Notification,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -266,32 +266,6 @@ def STUDENT_DELETE(request,admin):
     return redirect('teacher-student-view')
 
 
-
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 2, login_url='login')
-def NOTIFICATION(request):
-    teacher = Teacher.objects.filter(admin=request.user.id)
-    for i in teacher:
-        teacher_id =i.id
-
-        notification = Teacher_Notification.objects.filter(teacher_id=teacher_id)
-
-        context = {
-            'notification':notification,
-        }
-        return render(request,'teacher/notification.html',context)
-    
-
-
-@login_required(login_url='login')
-@user_passes_test(lambda user: user.user_type == 2, login_url='login')
-def TEACHER_NOTIFICATION_MARK_AS_DONE(request,status):
-    notification = Teacher_Notification.objects.get(id= status)
-    notification.status=1
-    notification.save()
-
-
-    return redirect('teacher-notification')
 
 
 
@@ -1800,10 +1774,25 @@ def TEACHER_ADD_NOTIFICATION(request):
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def TEACHER_VIEW_NOTIFICATION(request):
+    notification  = Add_Notification.objects.all()
+    context = {
+        "notification":notification,
+    }
+    return render(request,"teacher/view_notification.html",context)
 
 
 
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def TEACHER_DELETE_NOTIFICATION(request,id):
+    notification = Add_Notification.objects.get(id = id)
 
+    notification.delete()
+    messages.success(request, "Notification is deleted successfully")
+    return redirect('teacher-view-notification')
 
 
 

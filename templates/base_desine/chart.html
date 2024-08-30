@@ -3,108 +3,100 @@
 <script>
     $(document).ready(function() {
 
-        // Area chart
-        
+        // Pie Chart
         var options = {
-            series: [{{student_count}}, {{teacher_count}},{{course_count}},{{exam_count}} ],
+            series: [{{student_count}}, {{teacher_count}}, {{course_count}}, {{exam_count}}],
             chart: {
-            height: 311,
-            width: '100%',
-            type: 'pie',
-          },
-          labels: ['Student', 'Teacher', 'Course','Exam'],
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 200
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }]
-          };
-  
-          var chart = new ApexCharts(document.querySelector("#all_details"), options);
-          chart.render();
-        
-        
-      
-    
-        // Bar chart
-        
-        if ($('#student_gender').length > 0) {
-        var optionsBar = {
-            chart: {
-                type: 'bar',
-                height: 300,
+                height: 311,
                 width: '100%',
-                stacked: true,
-                toolbar: {
-                    show: false
-                },
+                type: 'pie',
             },
-            dataLabels: {
-                enabled: false
-            },
-            plotOptions: {
-                bar: {
-                    columnWidth: '45%',
-                }
-            },
-            series: [{
-                name: "Boys",
-                color: '#fdbb38',
-                data: [{{student_gender_male}}],
-            }, {
-                name: "Girls",
-                color: '#19affb',
-                data: [{{student_gender_female}}],
-            }],
-            labels: [2023],
-            xaxis: {
-                labels: {
-                    show: false
-                },
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    show: false
-                },
-            },
-            yaxis: {
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    show: false
-                },
-                labels: {
-                    style: {
-                        colors: '#777'
+            labels: ['Student', 'Teacher', 'Course', 'Exam'],
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
                     }
                 }
-            },
-            title: {
-                text: '',
-                align: 'left',
-                style: {
-                    fontSize: '18px'
+            }]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#all_details"), options);
+        chart.render();
+
+        // Bar Chart for Gender Distribution
+        if ($('#student_gender').length > 0) {
+            var optionsBar = {
+                chart: {
+                    type: 'bar',
+                    height: 300,
+                    width: '100%',
+                    stacked: true,
+                    toolbar: {
+                        show: false
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                plotOptions: {
+                    bar: {
+                        columnWidth: '45%',
+                    }
+                },
+                series: [{
+                    name: "Boys",
+                    color: '#fdbb38',
+                    data: [{{student_gender_male}}],
+                }, {
+                    name: "Girls",
+                    color: '#19affb',
+                    data: [{{student_gender_female}}],
+                }],
+                labels: [2023],
+                xaxis: {
+                    labels: {
+                        show: false
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                },
+                yaxis: {
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    labels: {
+                        style: {
+                            colors: '#777'
+                        }
+                    }
+                },
+                title: {
+                    text: '',
+                    align: 'left',
+                    style: {
+                        fontSize: '18px'
+                    }
                 }
+
             }
-    
-        }
-      
-        var chartBar = new ApexCharts(document.querySelector('#student_gender'), optionsBar);
-        chartBar.render();
+
+            var chartBar = new ApexCharts(document.querySelector('#student_gender'), optionsBar);
+            chartBar.render();
         }
 
-
-       
-        
-        
+        // Historical Data Bar Chart
         if ($('#student_history').length > 0) {
             var optionsBar = {
                 chart: {
@@ -135,10 +127,10 @@
                 }],
                 labels: [2009, 2010, 2011, 2012, 2013, 2014, 2015],
                 xaxis: {
-                    type: 'category', // Set the x-axis type to 'category'
-                    categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015], // Provide the categories (years)
+                    type: 'category',
+                    categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015],
                     labels: {
-                        rotate: -45, // Rotate the labels for better readability
+                        rotate: -45,
                     },
                     axisBorder: {
                         show: false
@@ -167,15 +159,98 @@
                         fontSize: '18px'
                     }
                 }
-        
+
             }
-        
+
             var chartBar = new ApexCharts(document.querySelector('#student_history'), optionsBar);
             chartBar.render();
         }
-        
-        
-      
+
+        // Attendance Report Chart
+        if ($('#admin_attendance_report').length > 0) {
+            var attendanceData = {
+                series: [
+                    {
+                        name: 'Present',
+                        color: '#28a745',
+                        data: [ 
+                            {% for year, data in attendance_percentages.items %}
+                                {{ data.present }},
+                            {% endfor %}
+                        ]
+                    }, 
+                    {
+                        name: 'Absent',
+                        color: '#dc3545',
+                        data: [ 
+                            {% for year, data in attendance_percentages.items %}
+                                {{ data.absent }},
+                            {% endfor %}
+                        ]
+                    }
+                ],
+                labels: [
+                    {% for year in attendance_percentages.keys %}
+                        '{{ year }}',
+                    {% endfor %}
+                ]
+            };
+
+            var optionsAttendance = {
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    width: '100%',
+                    stacked: true,
+                    toolbar: {
+                        show: false
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                plotOptions: {
+                    bar: {
+                        columnWidth: '45%',
+                    }
+                },
+                series: attendanceData.series,
+                labels: attendanceData.labels,
+                xaxis: {
+                    type: 'category',
+                    categories: attendanceData.labels,
+                    labels: {
+                        rotate: -45,
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                },
+                yaxis: {
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    },
+                    labels: {
+                        style: {
+                            colors: '#777'
+                        }
+                    }
+                },
+                
+            };
+
+            var chartAttendance = new ApexCharts(document.querySelector('#admin_attendance_report'), optionsAttendance);
+            chartAttendance.render();
+        }
+
+
     });
+    
 
 </script>
