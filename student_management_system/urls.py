@@ -176,6 +176,8 @@ urlpatterns = [
 
     path('admin-add-notice', admin_views.ADD_NOTICE, name='admin-add-notice'),
     path('admin-view-notice', admin_views.VIEW_NOTICE, name='admin-view-notice'),
+    path('admin-edit-notice/<int:id>', admin_views.EDIT_NOTICE, name='admin-edit-notice'),
+    path('admin-update-notice', admin_views.UPDATE_NOTICE, name='admin-update-notice'),
     path('admin-delete-notice/<int:id>', admin_views.DELETE_NOTICE, name='admin-delete-notice'),
 
 
@@ -293,6 +295,13 @@ urlpatterns = [
     path('teacher-view-online-live-class', teacher_views.VIEW_ONLINE_LIVE_CLASS, name='teacher-view-online-live-class'),
     path('teacher-start-online-live-class/<int:id>', teacher_views.START_ONLINE_LIVE_CLASS, name='teacher-start-online-live-class'),
     path('teacher-online-class-delete/<int:id>', teacher_views.DELETE_ONLINE_CLASS, name='teacher-online-class-delete'),
+
+
+    path('teacher-add-notice', teacher_views.ADD_NOTICE, name='teacher-add-notice'),
+    path('teacher-view-notice', teacher_views.VIEW_NOTICE, name='teacher-view-notice'),
+    path('teacher-edit-notice/<int:id>', teacher_views.EDIT_NOTICE, name='teacher-edit-notice'),
+    path('teacher-update-notice', teacher_views.UPDATE_NOTICE, name='teacher-update-notice'),
+    path('teacher-delete-notice/<int:id>', teacher_views.DELETE_NOTICE, name='teacher-delete-notice'),
 
 
     #this is student panel url

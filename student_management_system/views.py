@@ -12,7 +12,7 @@ import numpy as np
 import io
 from deepface import DeepFace
 import cv2
-
+import face_recognition
 
 
 
@@ -170,19 +170,23 @@ def PROFILE_UPDATE(request):
     return render(request,'profile.html')
 
 
+
+
 def is_ajax(request):
     return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 def get_encoded_faces():
     users = CustomUser.objects.all()
-
     encoded = {}
 
     for user in users:
         if user.profile_pic:
             try:
-                encoding = DeepFace.represent(img_path=user.profile_pic.path, model_name='Facenet', enforce_detection=False)[0]["embedding"]
-                encoded[user.username] = encoding
+                # Load the user's profile picture and encode the face
+                img = face_recognition.load_image_file(user.profile_pic.path)
+                encoding = face_recognition.face_encodings(img)
+                if encoding:  # Make sure at least one face encoding is found
+                    encoded[user.username] = encoding[0]
             except Exception as e:
                 print(f"Error encoding face for user {user.username}: {e}")
         else:
@@ -194,24 +198,32 @@ def classify_face(img_file):
     """
     This function takes an image file-like object as input and returns the name of the face it contains.
     """
-    # Convert the file-like object to a numpy array
-    file_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-
-    # Resize image if needed
-    img = cv2.resize(img, (224, 224))
-
-    # Load all the known faces and their encodings
-    faces = get_encoded_faces()
-    faces_encoded = list(faces.values())
-    known_face_names = list(faces.keys())
-
     try:
-        # Use DeepFace to verify the face against known encodings
-        for name, encoding in zip(known_face_names, faces_encoded):
-            result = DeepFace.verify(img1_path=img, img2_representation=encoding, model_name='Facenet', enforce_detection=False)
-            if result["verified"]:
-                return name
+        # Convert the file-like object to a numpy array
+        file_bytes = np.asarray(bytearray(img_file.read()), dtype=np.uint8)
+        img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+        # Convert image to RGB (face_recognition expects RGB)
+        rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # Load all the known faces and their encodings
+        faces = get_encoded_faces()
+        known_face_names = list(faces.keys())
+        known_face_encodings = list(faces.values())
+
+        # Get face encodings for the uploaded image
+        face_encodings = face_recognition.face_encodings(rgb_img)
+
+        for face_encoding in face_encodings:
+            # Compare the uploaded face with known faces
+            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+
+            # Find the best match
+            best_match_index = np.argmin(face_distances)
+            if matches[best_match_index]:
+                return known_face_names[best_match_index]
+
         return "Unknown"
     except Exception as e:
         print(f"Error in face classification: {e}")

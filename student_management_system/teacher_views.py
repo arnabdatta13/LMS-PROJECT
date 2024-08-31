@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam,Notice
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -2302,3 +2302,80 @@ def DELETE_ONLINE_CLASS(request,id):
     return redirect("teacher-view-online-live-class")
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def ADD_NOTICE(request):
+    if request.method == 'POST':
+        title = request.POST.get("title")
+        pdf = request.FILES.get("pdf")  # Use request.FILES to get the uploaded file
+        print(pdf)
+        notice = Notice(
+            title = title,
+            pdf = pdf
+        )
+        notice.save()
+        messages.success(request,"Notices Are Added Successfully")
+        return redirect("teacher-add-notice")
+
+    return render(request,"teacher/notice/add_notice.html")
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def VIEW_NOTICE(request):
+    notice = Notice.objects.all()
+
+    context = {
+        "notice":notice,
+    }
+    return render(request,"teacher/notice/view_notice.html",context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def EDIT_NOTICE(request,id):
+    notice = Notice.objects.get(id = id)
+
+    context = {
+        "notice":notice,
+    }
+
+    return render(request,"teacher/notice/edit_notice.html",context)
+
+
+login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def UPDATE_NOTICE(request):
+    if request.method == "POST":
+        notice_id = request.POST.get('notice_id')
+        title = request.POST.get('title')
+        pdf = request.POST.get('pdf')
+
+        try:
+            notice = Notice.objects.get(id=notice_id)
+        except Session_Year.DoesNotExist:
+            raise Http404("Session not found")
+        
+        if pdf is None or pdf == "":
+            pdf = notice.pdf
+        print(pdf)
+        notice.title = title
+        notice.pdf = pdf
+        notice.save()
+
+        messages.success(request, 'Notice was successfully updated')
+        return redirect('teacher-view-notice')
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def DELETE_NOTICE(request,id):
+
+    notice = Notice.objects.get(id = id)
+    notice.delete()
+    messages.success(request,"Notices Are Deleted Successfully")
+
+    return redirect("teacher-view-notice")

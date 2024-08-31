@@ -2552,6 +2552,42 @@ def VIEW_NOTICE(request):
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def EDIT_NOTICE(request,id):
+    notice = Notice.objects.get(id = id)
+
+    context = {
+        "notice":notice,
+    }
+
+    return render(request,"admin/notice/edit_notice.html",context)
+
+
+login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
+def UPDATE_NOTICE(request):
+    if request.method == "POST":
+        notice_id = request.POST.get('notice_id')
+        title = request.POST.get('title')
+        pdf = request.POST.get('pdf')
+
+        try:
+            notice = Notice.objects.get(id=notice_id)
+        except Session_Year.DoesNotExist:
+            raise Http404("Session not found")
+        
+        if pdf is None or pdf == "":
+            pdf = notice.pdf
+        print(pdf)
+        notice.title = title
+        notice.pdf = pdf
+        notice.save()
+
+        messages.success(request, 'Notice was successfully updated')
+        return redirect('admin-view-notice')
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 1, login_url='login')
 def DELETE_NOTICE(request,id):
 
     notice = Notice.objects.get(id = id)
