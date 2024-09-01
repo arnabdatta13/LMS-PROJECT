@@ -25,12 +25,13 @@ SECRET_KEY = 'django-insecure--%3nosy1(1_l9dhyom^x8bn^tq%1kl$6atjxsbc0(-jp2=syng
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 #192.168.48.224:8000
 #CSRF_TRUSTED_ORIGINS = ['https://7f49-43-224-108-169.ngrok-free.app']
 # Application definition
 
 INSTALLED_APPS = [
+    'active_link',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
-    'active_link',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'student_management_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

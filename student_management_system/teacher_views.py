@@ -19,6 +19,7 @@ import time
 from datetime import timedelta,datetime
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
+from collections import defaultdict
 
 
 
@@ -37,7 +38,29 @@ def HOME(request):
     star_student = Star_student.objects.all()
     student_activity= Student_activity.objects.all()
 
-    
+    # Calculate attendance percentages
+    attendance_data = Attendance.objects.all()
+    attendance_report = defaultdict(lambda: {'present': 0, 'absent': 0})
+
+    for attendance in attendance_data:
+        year = attendance.attendance_date.year
+        total_students = Student.objects.filter(class_id=attendance.class_id).count()
+        present_students = Attendance_Report.objects.filter(attendance_id=attendance).count()
+        absent_students = total_students - present_students
+
+        attendance_report[year]['present'] += present_students
+        attendance_report[year]['absent'] += absent_students
+
+    # Calculate percentages
+    attendance_percentages = {}
+    for year, data in attendance_report.items():
+        total = data['present'] + data['absent']
+        if total > 0:
+            attendance_percentages[year] = {
+                'present': (data['present'] / total) * 100,
+                'absent': (data['absent'] / total) * 100,
+            }
+
     context = {
         'student_count':student_count,
         'teacher_count':teacher_count,
@@ -47,6 +70,8 @@ def HOME(request):
         'student_gender_female': student_gender_female,
         'star_student':star_student,
         'student_activity':student_activity,
+        'attendance_percentages': attendance_percentages,  # Pass attendance data to template
+
     }
     return render(request, 'teacher/home.html',context)
 

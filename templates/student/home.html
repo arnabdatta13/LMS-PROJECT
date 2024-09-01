@@ -185,8 +185,34 @@
 </div>
 <br><br>
 <div class="row">
+    <div class="col-md-12 col-lg-6">
+        
+        <div class="card card-chart">
+            <br>
+            <div class="col-md-12">
+                <label for="yearSelector">Select Year:</label>
+                <select id="yearSelector" class="form-control">
+                    {% for year in years_with_data %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <hr>
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <h5 class="card-title">Monthly Attendance Report</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="student_attendance_report"></div>
+            </div>
+        </div>
+    </div>
     
 </div>
+
 
 <br><br>
 <h2 style="text-align: center;">Attendance Report</h2>

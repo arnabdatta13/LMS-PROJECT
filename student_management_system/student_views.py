@@ -14,8 +14,7 @@ from operator import attrgetter
 from django.db.models import Count
 from django.http import JsonResponse
 from collections import defaultdict
-
-
+import json
 
 
 
@@ -84,6 +83,33 @@ def HOME(request):
     attendance_dates = [record.attendance_id.attendance_date.strftime("%Y-%m-%d") for record in attendance_reports]
     
 
+
+    #attendance chart
+    student_user = request.user.student
+    attendance_data = Attendance.objects.filter(attendance_report__student_id=student_user)
+
+    # Calculate available years and monthly attendance data
+    years_with_data = set()
+    monthly_attendance = defaultdict(lambda: {'present': 0, 'absent': 0})
+
+    for attendance in attendance_data:
+        year = attendance.attendance_date.year
+        month = attendance.attendance_date.month
+        years_with_data.add(year)
+
+        present_days = Attendance_Report.objects.filter(attendance_id=attendance, student_id=student_user).count()
+
+        # Get total days in the month
+        total_days_in_month = monthrange(year, month)[1]
+
+        # Update the monthly data with present and absent days
+        monthly_attendance[(year, month)]['present'] += present_days
+        monthly_attendance[(year, month)]['absent'] += total_days_in_month - present_days
+
+    # Convert the defaultdict to a normal dict
+    monthly_attendance = {f"{year},{month}": data for (year, month), data in monthly_attendance.items()}
+
+
     context = {
         'student': student,
         'live_class_count': len(live_classes),
@@ -98,11 +124,11 @@ def HOME(request):
         'total_live_exams':total_live_exams,
         'total_live_classes':total_live_class_count,
         'attendance_dates': attendance_dates,
+        'years_with_data': sorted(years_with_data),
+        'monthly_attendance_json': json.dumps(monthly_attendance),
     }
 
     return render(request, 'student/home.html', context)
-
-
 
 
 

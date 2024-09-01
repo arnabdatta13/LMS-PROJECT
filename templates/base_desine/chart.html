@@ -249,7 +249,117 @@
             chartAttendance.render();
         }
 
-
+        if ($('#student_attendance_report').length > 0) {
+            var monthlyAttendanceData = JSON.parse('{{ monthly_attendance_json|escapejs }}');
+            console.log("Monthly Attendance Data (JS):", monthlyAttendanceData);
+    
+            function renderMonthlyChart(year) {
+                var presentPercentageData = [];
+                var absentPercentageData = [];
+                var months = [];
+    
+                for (var key in monthlyAttendanceData) {
+                    if (monthlyAttendanceData.hasOwnProperty(key)) {
+                        var yearMonth = key.split(',');
+                        var dataYear = parseInt(yearMonth[0]);
+                        var month = parseInt(yearMonth[1]);
+    
+                        if (dataYear === parseInt(year)) {
+                            months.push(month);
+    
+                            var presentDays = monthlyAttendanceData[key]['present'];
+                            var absentDays = monthlyAttendanceData[key]['absent'];
+                            var totalDays = presentDays + absentDays;
+    
+                            var presentPercentage = (presentDays / totalDays) * 100;
+                            var absentPercentage = (absentDays / totalDays) * 100;
+    
+                            presentPercentageData.push(presentPercentage);
+                            absentPercentageData.push(absentPercentage);
+                        }
+                    }
+                }
+    
+                console.log("Months:", months);
+                console.log("Present Percentage Data:", presentPercentageData);
+                console.log("Absent Percentage Data:", absentPercentageData);
+    
+                var optionsMonthlyAttendance = {
+                    chart: {
+                        type: 'bar',
+                        height: 300,
+                        width: '100%',
+                        stacked: true,
+                        toolbar: {
+                            show: false
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: '45%',
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'Present',
+                            color: '#28a745',
+                            data: presentPercentageData
+                        },
+                        {
+                            name: 'Absent',
+                            color: '#dc3545',
+                            data: absentPercentageData
+                        }
+                    ],
+                    xaxis: {
+                        type: 'category',
+                        categories: months.map(function(month) {
+                            return new Date(0, month - 1).toLocaleString('default', { month: 'short' });
+                        }),
+                        labels: {
+                            rotate: -45,
+                        },
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                    },
+                    yaxis: {
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return value.toFixed(2) + "%";  // Display percentage
+                            },
+                            style: {
+                                colors: '#777'
+                            }
+                        }
+                    },
+                   
+                };
+    
+                var chartMonthlyAttendance = new ApexCharts(document.querySelector('#student_attendance_report'), optionsMonthlyAttendance);
+                chartMonthlyAttendance.render();
+            }
+    
+            var initialYear = $('#yearSelector').val();
+            renderMonthlyChart(initialYear);
+    
+            $('#yearSelector').on('change', function() {
+                var selectedYear = $(this).val();
+                renderMonthlyChart(selectedYear);
+            });
+        }
     });
     
 
