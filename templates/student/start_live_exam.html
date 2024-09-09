@@ -3,6 +3,18 @@
 {% load static %}
 {% include "base_desine/loader.html" %}
 
+<div class="page-header">
+  <div class="row align-items-center">
+      <div class="col">
+          <h3 class="page-title">Exams</h3>
+          <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+              <li class="breadcrumb-item active">Exams</li>
+          </ul>
+      </div>
+  </div>
+</div>
+
 <div class="timer-container">
   <div id="timer" class="timer"></div>
 </div>

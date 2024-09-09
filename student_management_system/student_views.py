@@ -412,7 +412,6 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
                 correct_answers += 1
         exam_timer = PracticeExamTimer.objects.get(exam=exam,user = request.user)
         exam_timer.delete()
-        exam_result = Practice_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
 
 
         return redirect('student-practice-exam-mark')

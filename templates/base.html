@@ -35,7 +35,7 @@
   
 <script>
     // Function to automatically submit the exam
-    function submitExamAutomatically() {
+    function submitExamAutomatically(examType) {
         const examId = localStorage.getItem('exam_id');
         if (examId) {
             const formData = new FormData();
@@ -49,11 +49,19 @@
                     console.log(`Appending question ${i} with answer: ${answer}`);
                 }
             }
+
+            // Determine the correct URL based on exam type
+            let url;
+            if (examType === 'live') {
+                url = "{% url 'student-live-exam-calculate-marks' %}";
+            } else  {
+                url = "{% url 'student-practice-exam-calculate-marks' %}";
+            }
             
-            console.log("Attempting AJAX request...");
+            console.log("Attempting AJAX request to:", url);
 
             $.ajax({
-                url: "{% url 'student-live-exam-calculate-marks' %}",
+                url: url,
                 method: "POST",
                 data: formData,
                 processData: false,
@@ -66,7 +74,11 @@
                     alert('Your exam has been submitted because the time is up.');
                     localStorage.removeItem('exam_remaining_time');
                     localStorage.removeItem('exam_id');
-                    window.location.href = "{% url 'student-live-exam-mark' %}";
+                    if (examType === 'live') {
+                        window.location.href = "{% url 'student-live-exam-mark' %}";
+                    } else {
+                        window.location.href = "{% url 'student-practice-exam-mark' %}";
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX error:", status, error);
@@ -86,7 +98,7 @@
     }
 
     // Function to update the timer
-    function updateTimer() {
+    function updateTimer(examType) {
         let remainingTime = parseInt(localStorage.getItem('exam_remaining_time'));
         if (remainingTime !== null && remainingTime > 0) {
             remainingTime--;
@@ -97,35 +109,23 @@
                 document.getElementById('timer').innerText = ` ${formatTime(remainingTime)}`;
             }
         } else if (remainingTime === 0) {
-            submitExamAutomatically();
+            submitExamAutomatically(examType);
         }
     }
-    
 
     // Periodically check the timer every second
     setInterval(function() {
         const examId = localStorage.getItem('exam_id');
         if (examId) {
-            updateTimer();
+            // Pass the exam type to the updateTimer function
+            const examType = localStorage.getItem('exam_type');
+            updateTimer(examType);
         }
     }, 1000);
-
-    // When the user navigates away from the exam page, the timer should continue
-    window.addEventListener('beforeunload', function() {
-        localStorage.setItem('is_exam_running', true);
-    });
-
-    // When the user returns to the exam page, reinitialize the timer
-    window.addEventListener('load', function() {
-        const examId = localStorage.getItem('exam_id');
-        if (examId) {
-            const remainingTime = localStorage.getItem('exam_remaining_time');
-            if (remainingTime && remainingTime > 0) {
-                updateTimer();
-            }
-        }
-    });
 </script>
+
+
+
 
 <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
 <script src="{% static 'assets/js/popper.min.js' %}"></script>

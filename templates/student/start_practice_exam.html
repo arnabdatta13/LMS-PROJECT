@@ -2,22 +2,31 @@
 {% block content %}
 {% load static %}
 {% include "base_desine/loader.html" %}
+<div class="page-header">
+  <div class="row align-items-center">
+      <div class="col">
+          <h3 class="page-title">Exams</h3>
+          <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+              <li class="breadcrumb-item active">Exams</li>
+          </ul>
+      </div>
+  </div>
+</div>
+
 
 <div class="timer-container">
   <div id="timer" class="timer"></div>
 </div>
 <div class="jumbotron my-4">
-  <!-- Timer -->
-  
-  
-  <form class="form" autocomplete="off" onsubmit="return saveAns()" action="{% url 'student-practice-exam-calculate-marks' %}" method="POST">
+  <form class="form" id="exam-form" autocomplete="off" action="{% url 'student-practice-exam-calculate-marks' %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="exam_id" value="{{ exam.id }}">
     <h1 style="text-align: center;">{{ exam.exam_name }}</h1>
     <br>
     {% if no_questions %}
     <br>
-      <h3 class="no-questions" >NO QUESTIONS AVAILABLE.</h3>
+      <h3 class="no-questions">NO QUESTIONS AVAILABLE.</h3>
     {% else %}
       {% for q in questions %}
       <div class="question-container">
@@ -26,28 +35,28 @@
 
         <div class="options-container">
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option1 }}" value="Option1">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option1 }}" value="Option1" onchange="saveSelection('{{ exam.id }}', '{{ forloop.counter }}', this.value)">
             <label class="form-check-label" for="{{ q.option1 }}">
               {{ q.option1 }}
             </label>
           </div>
 
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option2 }}" value="Option2">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option2 }}" value="Option2" onchange="saveSelection('{{ exam.id }}', '{{ forloop.counter }}', this.value)">
             <label class="form-check-label" for="{{ q.option2 }}">
               {{ q.option2 }}
             </label>
           </div>
 
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option3 }}" value="Option3">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option3 }}" value="Option3" onchange="saveSelection('{{ exam.id }}', '{{ forloop.counter }}', this.value)">
             <label class="form-check-label" for="{{ q.option3 }}">
               {{ q.option3 }}
             </label>
           </div>
 
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option4 }}" value="Option4">
+            <input class="form-check-input" type="radio" name="{{ forloop.counter }}" id="{{ q.option4 }}" value="Option4" onchange="saveSelection('{{ exam.id }}', '{{ forloop.counter }}', this.value)">
             <label class="form-check-label" for="{{ q.option4 }}">
               {{ q.option4 }}
             </label>
@@ -101,55 +110,57 @@
 
   .form-check-input {
     margin-right: 10px;
-    width: 16px; /* Adjust width */
-    height: 16px; 
+    width: 16px;
+    height: 16px;
   }
+
   .form-check-label {
-    font-size: 18px; /* Adjust as needed */
+    font-size: 18px;
   }
 
   .no-questions {
-    color: #007FFF; /* Text color for no questions available */
+    color: #007FFF;
     text-align: center;
   }
 </style>
 
 <script>
-  // Retrieve the initial timer duration from the model
-  var remainingTime = parseInt("{{ remaining_time }}"); // Convert remaining time to seconds
-
-  function updateTimer() {
-    var hours = Math.floor(remainingTime / 3600);
-    var minutes = Math.floor((remainingTime % 3600) / 60);
-    var seconds = remainingTime % 60;
-    
-    // Pad with leading zeros if necessary
-    hours = String(hours).padStart(2, '0');
-    minutes = String(minutes).padStart(2, '0');
-    seconds = String(seconds).padStart(2, '0');
-
-    // Display the remaining time
-    document.getElementById('timer').innerHTML = hours + ":" + minutes + ":" + seconds;
-
-    // Update the remaining time
-    remainingTime--;
-
-    // Check if the remaining time has reached zero
-    if (remainingTime < 0) {
-      // Submit the form after a delay (e.g., 1 second)
-      setTimeout(function() {
-        document.querySelector('form').submit(); // This submits the form
-      }, 1000);
-    } else {
-      // Schedule the next update after 1 second
-      setTimeout(updateTimer, 1000);
-    }
+  // Save the selected option to localStorage
+  function saveSelection(examId, questionNumber, selectedOption) {
+      const key = `exam_${examId}_question_${questionNumber}`;
+      localStorage.setItem(key, selectedOption);
   }
 
+  // Restore the selected options from localStorage
+  function restoreSelections(examId, totalQuestions) {
+      for (let i = 1; i <= totalQuestions; i++) {
+          const savedOption = localStorage.getItem(`exam_${examId}_question_${i}`);
+          if (savedOption) {
+              const radioInput = document.querySelector(`input[name="${i}"][value="${savedOption}"]`);
+              if (radioInput) {
+                  radioInput.checked = true;
+              }
+          }
+      }
+  }
+
+  // Submit the exam manually
+  function submitExam() {
+      submitExamAutomatically();
+  }
+
+  // Store the exam id and number of questions
+  localStorage.setItem('exam_id', '{{ exam.id }}');
+  localStorage.setItem('exam_remaining_time', parseInt("{{ remaining_time }}"));
+  localStorage.setItem(`exam_${'{{ exam.id }}'}_total_questions`, {{ questions|length }});
+
+  // Restore the selections on page load
+  document.addEventListener('DOMContentLoaded', function() {
+      restoreSelections('{{ exam.id }}', {{ questions|length }});
+  });
+
   // Start the timer
-  window.onload = function() {
-    updateTimer();
-  };
+  updateTimer();
 </script>
 
 <br><br><br><br><br><br>

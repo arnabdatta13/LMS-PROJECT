@@ -2,7 +2,18 @@
 {% load static %}
 {% block content %}
 {% include "base_desine/loader.html" %}
-
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Performance</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Performance</li>
+            </ul>
+        </div>
+    </div>
+  </div>
+  
 <div class="container">
     <h1 style="text-align: center;">Student's Performance Report</h1>
     <hr>
