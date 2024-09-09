@@ -9,14 +9,12 @@
     <div class="container">
     {% for i in images %}
       <!-- Filterable Images / Cards Section -->
-      <div class="row px-2 mt-4 gap-3">
-        <div class="card p-0" data-name="nature">
-          <img src="{{ i.image.url }}" alt="img">
+      <div class="card p-0" data-name="nature">
+          <img src="{{ i.image.url }}" alt="img" class="card-img">
           <div class="card-body">
             <h5 class="card-title"><strong>Title: </strong>{{ i.title }}</h5>
             <p class="card-text"><strong>Description: </strong>{{ i.description }}</p>
           </div>
-        </div>
       </div>
     {% endfor %}
     </div>
@@ -31,26 +29,29 @@
         margin-bottom: 30px;
     }
 
-    /* Container for the gallery */
+    /* Container for the gallery - using CSS Grid for responsive layout */
     .container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr); /* Default to 1 column */
         gap: 20px;
         padding: 20px;
     }
 
-    /* Row container to ensure cards stretch uniformly */
-    .row {
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        gap: 20px;
+    /* Adjust the grid layout for medium and large screens */
+    @media (min-width: 600px) {
+        .container {
+            grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+        }
     }
-    
+
+    @media (min-width: 900px) {
+        .container {
+            grid-template-columns: repeat(3, 1fr); /* 3 columns on large screens */
+        }
+    }
+
     /* Individual card */
     .card {
-        width: 300px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -61,7 +62,6 @@
         background-color: #fff;
         overflow: hidden; /* Ensures content stays inside the card */
         min-height: 340px; /* Ensures a minimum card height */
-        flex-grow: 1; /* Ensures cards grow to the same height */
     }
 
     /* Hover effect for card */
@@ -69,12 +69,11 @@
         transform: scale(1.05);
     }
     
-    /* Card image - ensure aspect ratio is kept */
-    .card img {
-        width: 100%;
+    /* Fixed width for image */
+    .card-img {
+        width: 100%; /* Let the image fill the card's width */
         height: auto;
-        max-height: 250px; /* Limit image height to maintain proportions */
-        object-fit: cover; /* Crops and fills the image if it's too large */
+        object-fit: cover; /* Maintain aspect ratio */
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
     }
@@ -104,10 +103,6 @@
     
     /* Responsive layout for small screens */
     @media (max-width: 768px) {
-        .card {
-            width: 100%;
-        }
-
         .page-title {
             font-size: 2rem;
         }
