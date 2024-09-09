@@ -909,8 +909,14 @@ def STUDENT_PERFORMANCE(request, id):
     subject = Subject.objects.filter(class1=student.class_id)
 
     # Get all exams for the course
-    all_exams = Live_Exam.objects.filter(course=course)
+    selected_subject_id = request.GET.get('subject_id')
 
+        # Filter exams by selected subject (if any), otherwise get all exams for the course
+    if selected_subject_id:
+        all_exams = Live_Exam.objects.filter(course=course, subject_id=selected_subject_id)
+    else:
+        all_exams = Live_Exam.objects.filter(course=course)
+        
     # Get the results for live exams (MCQ and written)
     live_mcq_results = Live_Exam_MCQ_Result.objects.filter(exam__course=course, student=student)
     live_written_results = Live_Exam_Written_Result.objects.filter(exam__course=course, student=student)

@@ -24,14 +24,16 @@
     </div>
     <hr>
     <div class="filters">
-        <select>
-            <option>All Subject</option>
-            {% for i in subject %}
-            <option value="{{ i.id }}">{{ i.name }}</option>
-            {% endfor %}
-        </select>
-        <button class="view-button">View</button>
+        <form method="GET" action="{% url 'student-performance' course.id %}">
+            <select name="subject_id" onchange="this.form.submit()">  <!-- Submit the form on change -->
+                <option value="">All Subjects</option>
+                {% for i in subject %}
+                <option value="{{ i.id }}" {% if request.GET.subject_id == i.id|stringformat:"s" %}selected{% endif %}>{{ i.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
     </div>
+    
     <hr>
     <h4>{{ course.name }}</h4>
     <br>
