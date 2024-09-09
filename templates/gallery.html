@@ -1,0 +1,117 @@
+{% extends "ui.html" %}
+{% block content1 %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+
+    <!-- Page Title -->
+    <h1 class="page-title">Image Gallery</h1>
+
+    <div class="container">
+    {% for i in images %}
+      <!-- Filterable Images / Cards Section -->
+      <div class="row px-2 mt-4 gap-3">
+        <div class="card p-0" data-name="nature">
+          <img src="{{ i.image.url }}" alt="img">
+          <div class="card-body">
+            <h5 class="card-title"><strong>Title: </strong>{{ i.title }}</h5>
+            <p class="card-text"><strong>Description: </strong>{{ i.description }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+
+<style>
+    /* Page title styling */
+    .page-title {
+        text-align: center;
+        color: green;
+        font-size: 3.5rem;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+
+    /* Container for the gallery */
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    /* Row container to ensure cards stretch uniformly */
+    .row {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 20px;
+    }
+    
+    /* Individual card */
+    .card {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        border-radius: 10px;
+        background-color: #fff;
+        overflow: hidden; /* Ensures content stays inside the card */
+        min-height: 340px; /* Ensures a minimum card height */
+        flex-grow: 1; /* Ensures cards grow to the same height */
+    }
+
+    /* Hover effect for card */
+    .card:hover {
+        transform: scale(1.05);
+    }
+    
+    /* Card image - ensure aspect ratio is kept */
+    .card img {
+        width: 100%;
+        height: auto;
+        max-height: 250px; /* Limit image height to maintain proportions */
+        object-fit: cover; /* Crops and fills the image if it's too large */
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    
+    /* Card body styles */
+    .card-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-grow: 1;
+    }
+    
+    /* Card title */
+    .card-title {
+        font-size: 2rem; /* Increased font size for title */
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    /* Card text/description */
+    .card-text {
+        font-size: 1.7rem; /* Increased font size for description */
+        color: #555;
+        margin-bottom: 20px;
+    }
+    
+    /* Responsive layout for small screens */
+    @media (max-width: 768px) {
+        .card {
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+{% endblock %}

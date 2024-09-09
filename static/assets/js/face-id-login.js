@@ -1,4 +1,3 @@
-console.log('hello world')
 
 const getCookie = (name) => {
     let cookieValue = null;
@@ -38,30 +37,31 @@ if (navigator.mediaDevices.getUserMedia) {
             captureBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 captureBtn.classList.add('not-visible');
-                loginBtn.classList.remove('not-visible')
+                loginBtn.classList.remove('not-visible');
+            
                 const track = stream.getVideoTracks()[0];
                 const imageCapture = new ImageCapture(track);
                 console.log(imageCapture);
-
+            
                 imageCapture.takePhoto().then((blob) => {
                     console.log("took photo:", blob);
                     const img = new Image(width, height);
                     img.src = URL.createObjectURL(blob);
                     image.append(img);
-
+            
                     video.classList.add('not-visible');
-
+            
                     const reader = new FileReader();
-
+            
                     reader.readAsDataURL(blob);
                     reader.onloadend = () => {
                         const base64data = reader.result;
                         console.log(base64data);
-
+            
                         const fd = new FormData();
                         fd.append('csrfmiddlewaretoken', csrftoken);
                         fd.append('photo', base64data);
-
+            
                         loginBtn.addEventListener('click', () => {
                             // Perform the login action here
                             console.log('Login button clicked');
@@ -93,7 +93,7 @@ if (navigator.mediaDevices.getUserMedia) {
                                 error: (xhr, status, error) => {
                                     console.log(xhr);
                                     console.log("Response status code:", xhr.status);
-
+            
                                     if (xhr.status === 400) {
                                         // Parse the response JSON to get the error message
                                         const resp = JSON.parse(xhr.responseText);
@@ -112,10 +112,13 @@ if (navigator.mediaDevices.getUserMedia) {
                             });
                         });
                     }
+            
+                    // Restore the mirroring effect to the video element after capturing the image
+                    video.style.transform = 'scaleX(-1)';
                 }).catch((error) => {
                     console.log('takePhoto() error: ', error);
                 });
-            });
+            });            
         })
         .catch((error) => {
             console.log("Something went wrong!", error);

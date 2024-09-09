@@ -3,64 +3,83 @@
 {% load static %}
 {% include "base_desine/loader.html" %}
 
-    <div class="container">
-        <!-- Search Filter Section -->
-        <div class="search-filter">
-            <div class="header1">
-                <div>
-                    <h2>HSC Q&A Service</h2>
-                    <h3>Question and Answer</h3>
-                </div>
-                <a href = "{% url "student-ask-question"%}"><button class="ask-question-btn">Ask a New Question</button></a>
+{% include "base_desine/massages.html" %}
+
+<div class="container">
+    <!-- Search Filter Section -->
+    <div class="search-filter">
+        <div class="header1">
+            <div>
+                <h2>HSC Q&A Service</h2>
+                <h3>Question and Answer</h3>
             </div>
-
-            <hr>
-
-            <div class="search-bar">
-                <input type="text" placeholder="Search your question here" class="search-box">
-                <button class="filter-btn" onclick="toggleFilter()">Filter
-                    <i class="fas fa-filter"></i>
-                </button>
-            </div>
-
-            <hr>
-
-            <!-- Filter Options (Initially Hidden) -->
-            <div class="filter-options" id="filterOptions">
-                <select>
-                    <option value="service">HSC Q&A Service</option>
-                </select>
-                <select>
-                    <option value="subject">All Subject</option>
-                </select>
-                <select>
-                    <option value="chapter">All Chapter</option>
-                </select>
-                <select>
-                    <option value="question">All Question</option>
-                </select>
-            </div>
+            <a href = "{% url "student-ask-question"%}"><button class="ask-question-btn">Ask a New Question</button></a>
         </div>
 
-        <!-- Q&A Section -->
-        <div class="qa-section">
-            <div class="qa-item">
-                <div class="student-question">
-                    <h4>PRANJOY: Today 07:47 PM</h4>
-                    <p>B number ta somadan kore den</p>
-                    <img src="{% static 'images/question.png' %}" alt="Question" class="question-img">
-                </div>
-                <div class="teacher-answer">
-                    <h4>Teacher: Today 07:57 PM</h4>
-                    <img src="{% static 'images/answer.png' %}" alt="Answer" class="answer-img">
-                </div>
-            </div>
+        <hr>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search your question here" class="search-box">
+            <button class="filter-btn" onclick="toggleFilter()">Filter
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
+
+        <hr>
+
+        <!-- Filter Options (Initially Hidden) -->
+        <div class="filter-options" id="filterOptions">
+            <select>
+                <option value="service">HSC Q&A Service</option>
+            </select>
+            <select>
+                <option value="subject">All Subject</option>
+            </select>
+            <select>
+                <option value="chapter">All Chapter</option>
+            </select>
+            <select>
+                <option value="question">All Question</option>
+            </select>
         </div>
     </div>
 
+    <!-- Q&A Section -->
+    <div class="qa-section">
+        {% if questions%}
+            {% for question in questions %}
+                <div class="qa-item">
+                    <div class="student-question">
+                        <h4>{{ question.created_at|date:"M d, Y H:i A" }}</h4>
+                        <p>{{ question.text_question }}</p>
+                        {% if question.photos.exists %}
+                            <img src="{{ question.photos.first.photo.url }}" alt="Question" class="question-img">
+                        {% endif %}
+                    </div>
+                    {% for answer in question.text_answers.all %}
+                        <div class="teacher-answer">
+                            <h4>Teacher: {{ answer.answered_at|date:"M d, Y H:i A" }}</h4>
+                            <p>{{ answer.answer_text }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {%else%}
+        <div class="qa-item">
+            <h3>Sorry. No data Found.</h3>
+        </div>
+        {%endif%}
+    </div>
+</div>
+<script>
+    function toggleFilter() {
+        var filterOptions = document.getElementById("filterOptions");
+        filterOptions.style.display = (filterOptions.style.display === "flex") ? "none" : "flex";
+    }
+</script>
+
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;

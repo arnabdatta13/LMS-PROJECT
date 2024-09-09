@@ -25,6 +25,8 @@ urlpatterns = [
     path('contract', views.CONTRACT,name='contract'),
     path('about', views.ABOUT,name='about'),
 
+    path('gallery', views.GALLERY,name='gallery'),
+
     path('clear-notifications', views.clear_notifications, name='clear_notifications'),
     
     path('base/', views.BASE,name='base'),

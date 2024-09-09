@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate,logout,login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from app.models import CustomUser
-from app.models import Teacher,Add_Notification,Message,Notice
+from app.models import Teacher,Add_Notification,Message,Notice,ImageGallery
 from django.http import JsonResponse
 import face_recognition as fr
 import base64
@@ -55,6 +55,13 @@ def ABOUT(request):
     return render(request,'about.html',context)
 
 
+def GALLERY(request):
+    images = ImageGallery.objects.all()  # Retrieve all image entries from the database
+
+    context = {
+        "images":images,
+    }
+    return render(request,"gallery.html",context)
 
 def clear_notifications(request):
    

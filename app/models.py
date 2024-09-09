@@ -437,3 +437,73 @@ class Notice(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.title
+    
+
+#QA Model
+class StudentQuestion(models.Model):
+    class_id= models.ForeignKey(Class, on_delete=models.DO_NOTHING,default=1)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    chapter = models.CharField(max_length=255)
+    text_question = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.subject} - {self.chapter} ({self.created_at})"
+    
+
+class StudentAudio(models.Model):
+    question = models.ForeignKey(StudentQuestion, related_name='audio_files', on_delete=models.CASCADE)
+    audio_file = models.FileField(upload_to='student_audio/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Audio for Question ID: {self.question.id}"
+
+
+class StudentPhoto(models.Model):
+    question = models.ForeignKey(StudentQuestion, related_name='photos', on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='student_photos/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Photo for Question ID: {self.question.id}"
+
+
+
+class TeacherTextAnswer(models.Model):
+    question = models.ForeignKey(StudentQuestion, related_name='text_answers', on_delete=models.CASCADE)
+    answer_text = models.TextField()
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Text Answer for Question ID: {self.question.id}"
+
+
+class TeacherPhotoAnswer(models.Model):
+    question = models.ForeignKey(StudentQuestion, related_name='photo_answers', on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='teacher_photo_answers/')
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Photo Answer for Question ID: {self.question.id}"
+
+
+class TeacherAudioAnswer(models.Model):
+    question = models.ForeignKey(StudentQuestion, related_name='audio_answers', on_delete=models.CASCADE)
+    audio_file = models.FileField(upload_to='teacher_audio_answers/')
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Audio Answer for Question ID: {self.question.id}"
+
+
+
+
+class ImageGallery(models.Model):
+    title = models.CharField(max_length=255, null=True, blank=True)  # Title can be null/blank
+    description = models.TextField(null=True, blank=True)  # Description can be null/blank
+    image = models.ImageField(upload_to='images/')  # Image upload field (required)
+    uploaded_at = models.DateTimeField(auto_now_add=True)  # Timestamp when the image was uploaded
+
+    def __str__(self):
+        return self.title if self.title else "Untitled"

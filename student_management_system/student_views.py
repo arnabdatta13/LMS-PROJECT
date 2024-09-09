@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notification,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage,Live_Exam_Written_Result,Live_Exam_MCQ_Result,Live_Exam_WRITTEN_Report
+from app.models import Student,Student_Notification,Student_Feedback,Attendance,Attendance_Report,SchoolExamStudentResult,Add_Notification,Practice_Exam,PracticeExamQuestion,Practice_Exam_Result,Course,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,Live_Exam_MCQ_Report,LiveExamTimer,PracticeExamTimer,Class,School_Official_Exam,Subject,LiveExamQuestionOptionSelect,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,LiveExamStudentWrittenAnswerImage,Live_Exam_Written_Result,Live_Exam_MCQ_Result,Live_Exam_WRITTEN_Report,StudentQuestion,StudentPhoto,StudentAudio
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
@@ -274,12 +274,53 @@ def STUDENT_VIEW_SCHOOL_EXAM_RESULT(request):
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_ASK_QUESTION(request):
-    return render(request,'student/q&a.html')
+    if request.method == 'POST':
+        print(request)
+        # Extract data from the POST request
+        subject_id = request.POST.get('subject')
+        chapter = request.POST.get('chapter')
+        text_question = request.POST.get('text_question')
+        print(subject_id,chapter,text_question)
+        messages.warning(request,"Question will not save at now.")
+        return redirect('student-question')  # Redirect to the list of questions or another page
+    
+    user= request.user
+    student= Student.objects.get(admin= user)
+    student_class = student.class_id
+
+    subjects = Subject.objects.filter(class1 = student_class)
+    context = {
+        'subjects': subjects
+    }
+    
+    return render(request,'student/q&a.html',context)
+
+'''
+        # Save the question
+        question = StudentQuestion.objects.create(
+            class_id_id=class_id,
+            subject_id=subject_id,
+            chapter=chapter,
+            text_question=text_question
+        )
+
+        # Save photos
+        for photo in request.FILES.getlist('photos'):
+            StudentPhoto.objects.create(question=question, photo=photo)
+
+        # Save audio files
+        for audio_file in request.FILES.getlist('audio_files'):
+            StudentAudio.objects.create(question=question, audio_file=audio_file)
+'''
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_QUESTION(request):
-    return render(request,'student/student_questions.html')
+    questions = StudentQuestion.objects.all().order_by('-created_at')
+    context = {
+        'questions': questions,
+    }
+    return render(request,'student/student_questions.html',context)
 
 
 @login_required(login_url='login')

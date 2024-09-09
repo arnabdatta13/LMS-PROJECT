@@ -1,9 +1,9 @@
-
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
 {% include "base_desine/loader.html" %}
-
+<form class="form" autocomplete="off" action="{% url 'student-ask-question' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
   <div class="container mt-4">
     <div class="card shadow">
       <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
@@ -15,19 +15,19 @@
       <div class="card-body">
         <form>
           <div class="form-row">
+           
             <div class="form-group col-md-4">
-              <select class="form-control">
-                <option selected>HSC Q&A Service</option>
+              <select class="form-control" id="subject-select" name="subject" required>
+                <option  disabled selected>Select Subject</option>
+                {% for subject in subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                {% endfor %}
+
               </select>
             </div>
             <div class="form-group col-md-4">
-              <select class="form-control">
-                <option selected>Select Subject</option>
-              </select>
-            </div>
-            <div class="form-group col-md-4">
-              <select class="form-control">
-                <option selected>Select Chapter</option>
+              <select class="form-control" id="chapter-select" name="chapter" required>
+                <option disabled selected>Select Chapter</option>
               </select>
             </div>
           </div>
@@ -39,8 +39,8 @@
           </div>
 
           <!-- Textarea -->
-          <div class="form-group">
-            <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question"></textarea>
+          <div class="form-group" >
+            <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name = "text_question" required></textarea>
           </div>
           
           <div class="form-group d-flex justify-content-end">
@@ -90,7 +90,7 @@
     </div>
   </div>
 
-
+</form>
   <style>
     /* Modal and form styling */
 
@@ -287,11 +287,12 @@
                   div.classList.add('uploaded-image');
   
                   div.innerHTML = `
-                      <img src="${e.target.result}" alt="Uploaded image">
-                      <div class="overlay">
-                          <i class="fas fa-times"></i>
-                      </div>
-                  `;
+                    <img src="${e.target.result}" alt="Uploaded image">
+                    <div class="overlay">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+
   
                   // Add delete functionality
                   div.querySelector('.overlay i').addEventListener('click', function () {
@@ -552,6 +553,36 @@
         }
     });
     
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const subjectSelect = document.getElementById('subject-select');
+      const chapterSelect = document.getElementById('chapter-select');
+    
+      // Chapters data for each subject, replace this with the actual chapters you want to map for each subject
+      const chaptersData = {
+        1: ['Chapter 1', 'Chapter 2', 'Chapter 3'],  // Bangla
+        2: ['Introduction', 'Grammar Basics', 'Literature'],  // English
+        3: ['Algebra', 'Geometry', 'Trigonometry']  // Mathematics
+      };
+  
+      // Listen for subject dropdown changes
+      subjectSelect.addEventListener('change', function () {
+        const selectedSubjectId = subjectSelect.value;
+        
+        // Clear existing chapter options
+        chapterSelect.innerHTML = '<option disabled selected>Select Chapter</option>';
+        
+        // Get chapters based on selected subject ID and populate the chapter dropdown
+        if (chaptersData[selectedSubjectId]) {
+          chaptersData[selectedSubjectId].forEach(function (chapter) {
+            const option = document.createElement('option');
+            option.textContent = chapter;
+            option.value = chapter;
+            chapterSelect.appendChild(option);
+          });
+        }
+      });
     });
   </script>
 
