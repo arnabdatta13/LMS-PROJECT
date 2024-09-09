@@ -1,6 +1,6 @@
-# Smart Education School Management System
+# Smart School Management System
 
-Welcome to the **Smart Education School Management System**, a comprehensive platform designed to modernize and enhance the educational experience for students, teachers, and parents alike. Our system focuses on delivering **smart education** by utilizing cutting-edge technology to automate administrative tasks, facilitate communication, and personalize learning journeys.
+Welcome to the **Smart School Management System**, a comprehensive platform designed to modernize and enhance the educational experience for students, teachers, and parents alike. Our system focuses on delivering **smart education** by utilizing cutting-edge technology to automate administrative tasks, facilitate communication, and personalize learning journeys.
 
 Here are the **top features** that set this system apart:
 
@@ -52,4 +52,4 @@ Here are the **top features** that set this system apart:
 
 ---
 
-Our **Smart Education School Management System** aims to bring **efficiency, transparency, and interactivity** to the education process, empowering schools to foster a dynamic and connected learning environment.
+Our **Smart School Management System** aims to bring **efficiency, transparency, and interactivity** to the education process, empowering schools to foster a dynamic and connected learning environment.
