@@ -155,7 +155,9 @@
   localStorage.setItem('exam_id', '{{ exam.id }}');
   localStorage.setItem('exam_remaining_time', parseInt("{{ remaining_time }}"));
   localStorage.setItem(`exam_${'{{ exam.id }}'}_total_questions`, {{ questions|length }});
-
+  localStorage.setItem('exam_type', '{{ exam_type }}');  // 'exam_type' must be passed from the view context
+  console.log(localStorage.getItem('exam_type'));
+  
   // Restore the selections on page load
   document.addEventListener('DOMContentLoaded', function() {
       restoreSelections('{{ exam.id }}', {{ questions|length }});

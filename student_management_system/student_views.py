@@ -386,6 +386,7 @@ def STUDENT_START_PRACTICE_EXAM(request,id):
         'exam':exam,
         'remaining_time': remaining_time,
         'no_questions': questions.count() == 0,
+        'exam_type': 'practice'
     }
 
     return render(request,'student/start_practice_exam.html',context)
@@ -413,6 +414,7 @@ def STUDENT_PRACTICE_EXAM_CALCULATE_MARKS(request):
         exam_timer = PracticeExamTimer.objects.get(exam=exam,user = request.user)
         exam_timer.delete()
 
+        mcq_exam_result = Practice_Exam_Result.objects.create(student=student, exam=exam, marks=total_obtained_marks)
 
         return redirect('student-practice-exam-mark')
         
@@ -631,6 +633,7 @@ def STUDENT_START_LIVE_EXAM(request,id):
         'exam':exam,
         'remaining_time': remaining_time,
         'no_questions': questions.count() == 0,
+        'exam_type': "live" 
     }
 
     return render(request,'student/start_live_exam.html',context)

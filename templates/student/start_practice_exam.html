@@ -70,7 +70,7 @@
       <br><br>
     {% endif %}
     <br>
-    <button class="btn btn-info btn-lg" type="submit">Submit</button>
+    <button class="btn btn-info btn-lg" type="button" onclick="submitExam()">Submit</button>
   </form>
 </div>
 
@@ -147,15 +147,34 @@
       }
   }
 
-  // Submit the exam manually
+  // Submit the exam manually and clear localStorage after submission
   function submitExam() {
-      submitExamAutomatically();
-  }
+    // Set flag to indicate the exam has been manually submitted
+    localStorage.setItem('exam_submitted', 'true');
+
+    // Trigger form submission
+    document.getElementById('exam-form').submit();
+
+    // Clear localStorage for the exam after form submission
+    const examId = localStorage.getItem('exam_id');
+    if (examId) {
+        const totalQuestions = localStorage.getItem(`exam_${examId}_total_questions`);
+        for (let i = 1; i <= totalQuestions; i++) {
+            localStorage.removeItem(`exam_${examId}_question_${i}`);
+        }
+        localStorage.removeItem('exam_id');
+        localStorage.removeItem('exam_remaining_time');
+        localStorage.removeItem('exam_type');
+        console.log("Exam data removed from localStorage.");
+    }
+}
 
   // Store the exam id and number of questions
   localStorage.setItem('exam_id', '{{ exam.id }}');
   localStorage.setItem('exam_remaining_time', parseInt("{{ remaining_time }}"));
   localStorage.setItem(`exam_${'{{ exam.id }}'}_total_questions`, {{ questions|length }});
+  localStorage.setItem('exam_type', '{{ exam_type }}');  // 'exam_type' must be passed from the view context
+  console.log(localStorage.getItem('exam_type'));
 
   // Restore the selections on page load
   document.addEventListener('DOMContentLoaded', function() {
@@ -165,6 +184,7 @@
   // Start the timer
   updateTimer();
 </script>
+
 
 <br><br><br><br><br><br>
 {% endblock %}

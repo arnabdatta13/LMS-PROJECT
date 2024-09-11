@@ -1,31 +1,45 @@
 <script>
-    // Function to automatically submit the exam
-    console.log(examType)
-    function submitExamAutomatically(examType) {
+    function submitExamAutomatically() {
+        // Check if the exam has already been submitted manually
+        if (localStorage.getItem('exam_submitted') === 'true') {
+            console.log("Exam has already been submitted manually, skipping automatic submission.");
+            return;
+        }
+    
         const examId = localStorage.getItem('exam_id');
+        const examType = localStorage.getItem('exam_type');  // Retrieve exam type from localStorage
+        console.log(examType);
+        if (!examType) {
+            console.error('examType is not defined');
+            return;
+        }
         if (examId) {
             const formData = new FormData();
             formData.append('exam_id', examId);
     
             // Loop through saved answers
-            for (let i = 1; i <= localStorage.getItem(`exam_${examId}_total_questions`); i++) {
+            const totalQuestions = localStorage.getItem(`exam_${examId}_total_questions`);
+            for (let i = 1; i <= totalQuestions; i++) {
                 const answer = localStorage.getItem(`exam_${examId}_question_${i}`);
                 if (answer) {
                     formData.append(i, answer);
                     console.log(`Appending question ${i} with answer: ${answer}`);
                 }
             }
-
+    
             // Determine the correct URL based on exam type
             let url;
             if (examType === 'live') {
                 url = "{% url 'student-live-exam-calculate-marks' %}";
-            } else  {
+            } else if (examType === 'practice') {
                 url = "{% url 'student-practice-exam-calculate-marks' %}";
+            } else {
+                console.error("Unknown exam type:", examType);
+                return;
             }
-            
+    
             console.log("Attempting AJAX request to:", url);
-
+    
             $.ajax({
                 url: url,
                 method: "POST",
@@ -40,6 +54,7 @@
                     alert('Your exam has been submitted because the time is up.');
                     localStorage.removeItem('exam_remaining_time');
                     localStorage.removeItem('exam_id');
+                    localStorage.removeItem('exam_type');  // Clear exam type after submission
                     if (examType === 'live') {
                         window.location.href = "{% url 'student-live-exam-mark' %}";
                     } else {
@@ -48,13 +63,12 @@
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX error:", status, error);
-                    alert('There was an error submitting your exam. Please try again.');
+
                 }
             });
         }
     }
     
-
     // Function to format time as HH:MM:SS
     function formatTime(seconds) {
         const hrs = Math.floor(seconds / 3600);
@@ -62,30 +76,30 @@
         const secs = seconds % 60;
         return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-
+    
     // Function to update the timer
-    function updateTimer(examType) {
+    function updateTimer() {
         let remainingTime = parseInt(localStorage.getItem('exam_remaining_time'));
         if (remainingTime !== null && remainingTime > 0) {
             remainingTime--;
             localStorage.setItem('exam_remaining_time', remainingTime);
     
-            // Update the timer display in HH:MM:SS format
-            if (document.getElementById('timer')) {
-                document.getElementById('timer').innerText = ` ${formatTime(remainingTime)}`;
+            // Check if the timer element exists before trying to set innerText
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.innerText = formatTime(remainingTime);
+            } else {
+                console.error("Timer element not found.");
             }
         } else if (remainingTime === 0) {
-            submitExamAutomatically(examType);
+            submitExamAutomatically(); // Auto-submit when time runs out
         }
     }
-
-    // Periodically check the timer every second
-    setInterval(function() {
-        const examId = localStorage.getItem('exam_id');
-        if (examId) {
-            // Pass the exam type to the updateTimer function
-            const examType = localStorage.getItem('exam_type');
-            updateTimer(examType);
-        }
-    }, 1000);
-</script>
+    
+    // Wait until the DOM is fully loaded before running the timer
+    document.addEventListener('DOMContentLoaded', function() {
+        // Start the timer after the DOM is ready
+        setInterval(updateTimer, 1000);
+    });
+    
+    </script>
