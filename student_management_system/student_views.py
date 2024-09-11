@@ -481,7 +481,7 @@ def STUDENT_LIVE_EXAM(request):
 
     if selected_course:
         exam = exam.filter(course=selected_course)
-
+ 
     context= {
         'exam':exams,
         'search_query':search_query,

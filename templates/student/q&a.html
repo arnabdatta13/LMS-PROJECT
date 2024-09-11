@@ -2,6 +2,8 @@
 {% block content %}
 {% load static %}
 {% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
 <form class="form" autocomplete="off" action="{% url 'student-ask-question' %}" method="POST" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="container mt-4">
