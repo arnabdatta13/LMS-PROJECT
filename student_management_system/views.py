@@ -10,7 +10,6 @@ import face_recognition as fr
 import base64
 import numpy as np
 import io
-from deepface import DeepFace
 import cv2
 import face_recognition
 
