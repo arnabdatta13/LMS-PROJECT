@@ -87,27 +87,50 @@ def HOME(request):
     #attendance chart
     student_user = request.user.student
     attendance_data = Attendance.objects.filter(attendance_report__student_id=student_user)
-
+    #print(attendance_data)
     # Calculate available years and monthly attendance data
     years_with_data = set()
     monthly_attendance = defaultdict(lambda: {'present': 0, 'absent': 0})
 
+     # Calculate overall present and absent days
+    total_present_days = 0
+    total_absent_days = 0
+
+
     for attendance in attendance_data:
+        #print(attendance)
         year = attendance.attendance_date.year
+        print(year)
         month = attendance.attendance_date.month
+        print(month)
         years_with_data.add(year)
 
         present_days = Attendance_Report.objects.filter(attendance_id=attendance, student_id=student_user).count()
-
+        print(f"present_days: {present_days}")
         # Get total days in the month
         total_days_in_month = monthrange(year, month)[1]
+        print(total_days_in_month)
+
+        # Update the total present and absent days for the pie chart
+        total_present_days += present_days
+        total_absent_days += total_days_in_month - present_days
 
         # Update the monthly data with present and absent days
         monthly_attendance[(year, month)]['present'] += present_days
-        monthly_attendance[(year, month)]['absent'] += total_days_in_month - present_days
-
+        monthly_attendance[(year, month)]['absent'] = total_days_in_month - monthly_attendance[(year, month)]['present']
+        print(monthly_attendance)
     # Convert the defaultdict to a normal dict
     monthly_attendance = {f"{year},{month}": data for (year, month), data in monthly_attendance.items()}
+
+    total_days = total_present_days + total_absent_days
+    print(total_absent_days)
+    print(total_present_days)
+    if total_days > 0:
+        overall_present_percentage = (total_present_days / total_days) * 100
+        overall_absent_percentage = (total_absent_days / total_days) * 100
+    else:
+        overall_present_percentage = 0
+        overall_absent_percentage = 0
 
 
     context = {
@@ -126,6 +149,10 @@ def HOME(request):
         'attendance_dates': attendance_dates,
         'years_with_data': sorted(years_with_data),
         'monthly_attendance_json': json.dumps(monthly_attendance),
+        'overall_attendance': json.dumps({
+            'present': overall_present_percentage,
+            'absent': overall_absent_percentage
+        }),
     }
 
     return render(request, 'student/home.html', context)

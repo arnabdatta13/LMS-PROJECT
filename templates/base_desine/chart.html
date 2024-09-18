@@ -360,6 +360,36 @@
                 renderMonthlyChart(selectedYear);
             });
         }
+
+
+
+        if ($('#overall_attendance_pie_chart').length > 0) {
+            var overallAttendanceData = JSON.parse('{{ overall_attendance|escapejs }}');
+            console.log("Overall Attendance Data (JS):", overallAttendanceData);
+        
+            var optionsOverallAttendance = {
+                chart: {
+                    type: 'pie',
+                    height: 300
+                },
+                labels: ['Present', 'Absent'],
+                series: [overallAttendanceData['present'], overallAttendanceData['absent']],
+                colors: ['#28a745', '#dc3545'],
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(2) + "%";
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            };
+        
+            var chartOverallAttendance = new ApexCharts(document.querySelector('#overall_attendance_pie_chart'), optionsOverallAttendance);
+            chartOverallAttendance.render();
+        }
+        
     });
     
 
