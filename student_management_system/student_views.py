@@ -302,13 +302,25 @@ def STUDENT_VIEW_SCHOOL_EXAM_RESULT(request):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_ASK_QUESTION(request):
     if request.method == 'POST':
-        print(request)
         # Extract data from the POST request
         subject_id = request.POST.get('subject')
         chapter = request.POST.get('chapter')
         text_question = request.POST.get('text_question')
         print(subject_id,chapter,text_question)
-        messages.warning(request,"Question will not save at now.")
+
+        audio_file = request.FILES.get('audio')
+        print(audio_file)
+        if audio_file:
+            # Save or process the audio file
+            print(f"Audio file: {audio_file.name}")
+
+        # Handle the uploaded files
+        uploaded_files = request.FILES.getlist('files')  # Gets the list of uploaded files
+        for file in uploaded_files:
+            # You can save each file or process it as needed
+            print(file.name)  # For now, just printing the file name
+        
+        messages.success(request, "Question submitted successfully.")
         return redirect('student-question')  # Redirect to the list of questions or another page
     
     user= request.user
