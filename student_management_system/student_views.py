@@ -302,24 +302,41 @@ def STUDENT_VIEW_SCHOOL_EXAM_RESULT(request):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_ASK_QUESTION(request):
     if request.method == 'POST':
-        # Extract data from the POST request
+        user = request.user
+        student = Student.objects.get(admin=user)
+        class_id = student.class_id
+      # Extract data from the POST request
         subject_id = request.POST.get('subject')
         chapter = request.POST.get('chapter')
         text_question = request.POST.get('text_question')
         print(subject_id,chapter,text_question)
 
-        audio_file = request.FILES.get('audio')
-        print(audio_file)
-        if audio_file:
-            # Save or process the audio file
-            print(f"Audio file: {audio_file.name}")
+        audio_files = request.FILES.getlist('audio')
+
+        # Process each audio file
 
         # Handle the uploaded files
         uploaded_files = request.FILES.getlist('files')  # Gets the list of uploaded files
-        for file in uploaded_files:
-            # You can save each file or process it as needed
-            print(file.name)  # For now, just printing the file name
+
+        question = StudentQuestion.objects.create(
+            class_id=class_id,
+            subject_id=subject_id,
+            chapter=chapter,
+            text_question=text_question
+        )
+
+        for photo in uploaded_files:
+            StudentPhoto.objects.create(
+                question=question, photo=photo
+            )
         
+         # Save audio files
+        for audio_file in audio_files:
+            StudentAudio.objects.create(
+                question=question, audio_file=audio_file
+            )
+
+
         messages.success(request, "Question submitted successfully.")
         return redirect('student-question')  # Redirect to the list of questions or another page
     
@@ -334,32 +351,15 @@ def STUDENT_ASK_QUESTION(request):
     
     return render(request,'student/q&a.html',context)
 
-'''
-        # Save the question
-        question = StudentQuestion.objects.create(
-            class_id_id=class_id,
-            subject_id=subject_id,
-            chapter=chapter,
-            text_question=text_question
-        )
-
-        # Save photos
-        for photo in request.FILES.getlist('photos'):
-            StudentPhoto.objects.create(question=question, photo=photo)
-
-        # Save audio files
-        for audio_file in request.FILES.getlist('audio_files'):
-            StudentAudio.objects.create(question=question, audio_file=audio_file)
-'''
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def STUDENT_QUESTION(request):
-    questions = StudentQuestion.objects.all().order_by('-created_at')
+    questions = StudentQuestion.objects.prefetch_related('photos', 'audio_files').order_by('-created_at')
     context = {
         'questions': questions,
     }
-    return render(request,'student/student_questions.html',context)
+    return render(request, 'student/student_questions.html', context)
 
 
 @login_required(login_url='login')

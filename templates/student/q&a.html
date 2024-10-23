@@ -39,7 +39,7 @@
         </div>
 
         <!-- Hidden file input for audio -->
-        <input type="file" id="audio-file-input" name="audio" style="display: none;" />
+        <input type="file" id="audio-file-input" name="audio" style="display: none;" multiple />
 
         <!-- Textarea -->
         <div class="form-group">
@@ -326,6 +326,7 @@
       let timerInterval;
       let startTime;
       let isRecording = false;
+      const dataTransfer = new DataTransfer();
 
       const startButton = document.getElementById('start-btn');
       const timerElement = document.getElementById('timer');
@@ -387,8 +388,7 @@
                   audioBlobUrl = URL.createObjectURL(audioBlob);
 
                   // Create a file from the Blob and assign it to the hidden input
-                  const audioFile = new File([audioBlob], 'recorded-audio.webm', { type: 'audio/webm' });
-                  const dataTransfer = new DataTransfer();
+                  const audioFile = new File([audioBlob], `recorded-audio-${Date.now()}.webm`, { type: 'audio/webm' });
                   dataTransfer.items.add(audioFile);
                   audioFileInput.files = dataTransfer.files; // Attach the audio file to the hidden input
 

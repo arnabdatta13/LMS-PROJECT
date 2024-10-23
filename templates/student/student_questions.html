@@ -56,33 +56,64 @@
         </div>
     </div>
 
-    <!-- Q&A Section -->
-    <div class="qa-section">
-        {% if questions%}
-            {% for question in questions %}
-                <div class="qa-item">
-                    <div class="student-question">
-                        <h4>{{ question.created_at|date:"M d, Y H:i A" }}</h4>
-                        <p>{{ question.text_question }}</p>
-                        {% if question.photos.exists %}
-                            <img src="{{ question.photos.first.photo.url }}" alt="Question" class="question-img">
-                        {% endif %}
-                    </div>
-                    {% for answer in question.text_answers.all %}
-                        <div class="teacher-answer">
-                            <h4>Teacher: {{ answer.answered_at|date:"M d, Y H:i A" }}</h4>
-                            <p>{{ answer.answer_text }}</p>
-                        </div>
-                    {% endfor %}
+    {% if questions %}
+        {% for question in questions %}
+        <!-- Q&A Section -->
+        <div class="qa-section">
+            <div class="qa-item">
+                <div class="student-question">
+                    <h4>{{ question.created_at|date:"M d, Y H:i A" }}</h4>
+                    <p>{{ question.text_question }}</p>
+
+                    <!-- Display the first image (if any) -->
+                    {% if question.photos.exists %}
+                        <img src="{{ question.photos.first.photo.url }}" alt="Question Image" class="question-img">
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {%else%}
-        <div class="qa-item">
-            <h3>Sorry. No data Found.</h3>
+
+                <!-- Loop through all photos related to this question -->
+                {% if question.photos.all %}
+                    <div class="question-photos">
+                        {% for photo in question.photos.all %}
+                            <img src="{{ photo.photo.url }}" alt="Question Photo" class="question-img">
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Loop through all audio files related to this question -->
+                {% if question.audio_files.all %}
+                    <div class="question-audios">
+                        <h5 style="margin-top:25px; margin-bottom:15px;";>Related Audio:</h5>
+                        {% for audio in question.audio_files.all %}
+                            <audio controls>
+                                <source src="{{ audio.audio_file.url }}" type="audio/webm">
+                                Your browser does not support the audio element.
+                            </audio>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Display teacher answers (if any) -->
+                {% for answer in question.text_answers.all %}
+                    <div class="teacher-answer">
+                        <h4>Teacher: {{ answer.answered_at|date:"M d, Y H:i A" }}</h4>
+                        <p>{{ answer.answer_text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-        {%endif%}
-    </div>
+        {% endfor %}
+        <br>
+    {% else %}
+        <div class="qa-section">
+            <div class="qa-item">
+                <h3>Sorry. No data found.</h3>
+            </div>
+        </div>
+    {% endif %}
+
 </div>
+
 <script>
     function toggleFilter() {
         var filterOptions = document.getElementById("filterOptions");
@@ -187,6 +218,7 @@
             align-items: center;
             gap: 5px;
             transition: background-color 0.3s ease;
+            margin-left:15px;
         }
 
         .filter-btn:hover {
