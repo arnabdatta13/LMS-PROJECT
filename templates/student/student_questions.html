@@ -63,43 +63,84 @@
             <div class="qa-item">
                 <div class="student-question">
                     <h4>{{ question.created_at|date:"M d, Y H:i A" }}</h4>
-                    <p>{{ question.text_question }}</p>
+
+                    {% if question.text_question %}
+                        <h5>Question: <strong>{{ question.text_question }}<strong></h5>
+                    {%endif%}
 
                     <!-- Display the first image (if any) -->
-                    {% if question.photos.exists %}
-                        <img src="{{ question.photos.first.photo.url }}" alt="Question Image" class="question-img">
+                    {% if question.photos.all %}
+                    <br>
+                        <div class="question-photos">
+                            <h5>Uploaded Photo: </h5>
+                            
+                            {% for photo in question.photos.all %}
+                                <img src="{{ photo.photo.url }}" alt="Question Photo" class="question-img">
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if question.audio_files.all %}
+                    <br>
+                        <div class="question-audios">
+                            <br>
+                            <h5 style="margin-top:25px; margin-bottom:15px;";>Related Audio:</h5>
+                            {% for audio in question.audio_files.all %}
+                                <audio controls>
+                                    <source src="{{ audio.audio_file.url }}" type="audio/webm">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
 
                 <!-- Loop through all photos related to this question -->
-                {% if question.photos.all %}
-                    <div class="question-photos">
-                        {% for photo in question.photos.all %}
-                            <img src="{{ photo.photo.url }}" alt="Question Photo" class="question-img">
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                
 
                 <!-- Loop through all audio files related to this question -->
-                {% if question.audio_files.all %}
-                    <div class="question-audios">
-                        <h5 style="margin-top:25px; margin-bottom:15px;";>Related Audio:</h5>
-                        {% for audio in question.audio_files.all %}
-                            <audio controls>
-                                <source src="{{ audio.audio_file.url }}" type="audio/webm">
-                                Your browser does not support the audio element.
-                            </audio>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                {% if question.text_answers.exists or question.photo_answers.exists or question.audio_answers.exists %}
 
-                <!-- Display teacher answers (if any) -->
-                {% for answer in question.text_answers.all %}
+                    <br>
+                    <!-- Display teacher answers (if any) -->
                     <div class="teacher-answer">
-                        <h4>Teacher: {{ answer.answered_at|date:"M d, Y H:i A" }}</h4>
-                        <p>{{ answer.answer_text }}</p>
+                        
+                        <!-- Text Answer -->
+                        {% if question.text_answers.all %}
+                            
+                            {% for answer in question.text_answers.all %}
+                                <div class="text-answer">
+                                    <h4>Teacher: {{ answer.answered_at|date:"M d, Y H:i A" }}</h4>
+                                    <h5>Text Answer(s): <strong>{{ answer.answer_text }}</strong></h5>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+        
+                        <!-- Photo Answer -->
+                        {% if question.photo_answers.all %}
+                            <br>
+                            <h5>Teacher Photo Answer(s):</h5>
+                            <div class="teacher-photo-answers">
+                                {% for photo_answer in question.photo_answers.all %}
+                                    <img src="{{ photo_answer.photo.url }}" alt="Teacher Photo Answer" class="teacher-answer-img">
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+        
+                        <!-- Audio Answer -->
+                        {% if question.audio_answers.all %}
+                        <br>
+                            <h5>Teacher Audio Answer(s):</h5>
+                            <div class="teacher-audio-answers">
+                                {% for audio_answer in question.audio_answers.all %}
+                                    <audio controls>
+                                        <source src="{{ audio_answer.audio_file.url }}" type="audio/webm">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
-                {% endfor %}
+                {%endif%}
             </div>
         </div>
         {% endfor %}
@@ -267,13 +308,14 @@
         }
 
         .qa-item {
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            padding: 10px;
             margin-bottom: 20px;
         }
 
         .student-question, .teacher-answer {
+            width:65%;
             padding: 20px;
             margin-bottom: 10px;
             background-color: #f8f8f8; /* Subtle gray background to distinguish items */
@@ -297,11 +339,16 @@
             margin-bottom: 10px;
         }
 
-        .question-img, .answer-img {
-            width: 100%;
+        
+        
+
+        .question-img, .teacher-answer-img {
+            width: 32%;
+            height:20%;
             border-radius: 5px;
             margin-top: 10px;
         }
+
         /* Horizontal Lines */
         hr {
             border: 0;
