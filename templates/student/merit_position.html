@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Merit Position</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Merit Position</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="merit-container">
+        <div class="merit-top">
+            <div class="merit-info">
+                {% if student.admin.profile_pic == "" %}
+                    <span class="user-img"><img class="rounded-circle" src="{% static 'assets/img/no-image-icon-23483.png'%}" width="31" alt="{{ student.admin.first_name }} {{ student.admin.last_name }}"></span>
+                {% else %}
+                    <span class="user-img"><img class="rounded-circle" src="{{ student.admin.profile_pic.url }}" width="31" alt="{{ student.admin.first_name }} {{ student.admin.last_name }}"></span>
+                {% endif %}
+                <div class="merit-details">
+                    <h4>{{ student.admin.first_name }} {{ student.admin.last_name }}</h4>
+                    <p>Position: &nbsp <strong>{{ merit_position }}</strong></p>
+                    <p>Your Marks: &nbsp <strong>{{ login_user_mark }}</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="merit-list">
+            {% for student, result in sorted_students %}
+            <div class="merit-item {% if student == request.user.student %}highlight{% endif %}">
+                <div class="merit-rank">{{ forloop.counter }}</div>
+                <div class="merit-student">
+                    {% if student.admin.profile_pic == "" %}
+                        <span class="user-img"><img class="rounded-circle" src="{% static 'assets/img/no-image-icon-23483.png'%}" width="31" alt="{{ student.admin.first_name }} {{ student.admin.last_name }}"></span>
+                    {% else %}
+                        <span class="user-img"><img class="rounded-circle" src="{{ student.admin.profile_pic.url }}" width="31" alt="{{ student.admin.first_name }} {{ student.admin.last_name }}"></span>
+                    {% endif %}
+                    <div class="merit-details">
+                        <h5>{{ student.admin.first_name }} {{ student.admin.last_name }}</h5>
+                        <p>{{ result.marks }} Marks</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<style>
+    .merit-container {
+        background-color: #f5f7fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .merit-top {
+        background-color: #4e73df;
+        color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .merit-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .merit-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-right: 20px;
+    }
+
+    .merit-details h4 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .merit-details p {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .merit-list {
+        margin-top: 20px;
+    }
+
+    .merit-item {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .merit-item.highlight {
+        background-color: #d4edda;
+    }
+
+    .merit-rank {
+        font-size: 1.5rem;
+        margin-right: 20px;
+    }
+
+    .merit-student {
+        display: flex;
+        align-items: center;
+    }
+
+    .merit-photo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 15px;
+    }
+
+    .merit-details h5 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .merit-details p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .jumbotron {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        footer {
+            background-color: #212529;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .fa {
+            padding: 20px;
+            font-size: 23px;
+            width: 60px;
+            text-align: center;
+            text-decoration: none;
+            margin: 5px 2px;
+            border-radius: 50%;
+        }
+        .fa:hover {
+            opacity: 0.5;
+            text-decoration: none;
+        }
+        .navbar-brand {
+            font-size: 20px;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    {% include "base_desine/loader.html" %}
+
+    <div class="bs-example">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #000;">
+            <a style="color: #fff; text-decoration: none;" href="{%url ""%}"><font face="Comic sans MS" size="4"> জুশুরগাও আভারাণী ঘোষ সরকারি প্রাথমিক বিদ্যালয়</font></a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                <div class="navbar-nav">
+                    <a style="padding-left: 30px;" href="{% url '' %}" class="nav-item nav-link">Home</a>
+                    <a href="{% url 'join_now' %}" class="nav-item nav-link active">Join Now</a>
+                   
+                    <a href="{% url 'login' %}" class="nav-item nav-link">Login</a>
+
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <br><br><br>
+    <section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
+        <div class="container text-center">
+            <h1 class="display-4 text-info">Welcome to the School</h1>
+            <p class="display-5 d-none d-sm-block">Test your knowledge and excel in your studies.</p>
+            <p class="lead">This platform is dedicated to students, teachers, and administrators of our school.</p>
+            <p class="lead">Log in to access quizzes tailored to your courses and subjects. If you are a member of our school community, sign up now to unlock a wealth of educational resources.</p>
+            <br>
+            <h3 class = "text-center">Demo Account</h3>
+            <br>
+            <div class="row">
+                
+                <div class="col-md-4 text-left">
+                    <h4 class="text-info">Admin Account</h4>
+                    <p><strong>Username:</strong> admin</p>
+                    <p><strong>Password:</strong> 1234</p>
+                </div>
+                <div class="col-md-4 text-left">
+                    <h4 class="text-info">Teacher Account</h4>
+                    <p><strong>Username:</strong> soma</p>
+                    <p><strong>Password:</strong> 1234</p>
+                </div>
+                <div class="col-md-4 text-left">
+                    <h4 class="text-info">Student Account 1</h4>
+                    <p><strong>Username:</strong> arnab1</p>
+                    <p><strong>Password:</strong> 1234</p>
+                </div>
+                <div class="col-md-4 text-left">
+                    <h4 class="text-info">Student Account 2</h4>
+                    <p><strong>Username:</strong> soma1</p>
+                    <p><strong>Password:</strong> 1234</p>
+                </div>
+            </div>
+            <p>Use This Account to login </p>
+
+            <p><strong>Get Started:</strong></p>
+            <a href="{% url 'login' %}" class="btn btn-lg btn-info"><i class="fa fa-user-plus" aria-hidden="true"></i> Login</a>
+        </div>
+    </section>
+    
+
+
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="wow fadeInUp footer-copyright">
+                        <p>Made by Arnab Datta<br></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

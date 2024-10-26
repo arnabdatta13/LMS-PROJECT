@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Exams</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Exams</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid analysis-report">
+    <div class="report-card">
+        <h3>Analysis Report</h3>
+        <p class="exam-name">{{ exam.exam_name }}</p>
+        <p class="mcq-score">MCQ Obtained: {{ user_total_score }}/{{ exam.total_marks }}</p>
+        <p class="written-exam-status">Written Exam Evaluation is Pending</p>
+        <p class="highest-marks">Highest Marks: {{ highest_mark }}</p>
+        <p class="merit-position">Merit Position: {{ merit_position }}</p>
+    </div>
+
+    <div class="mcq-section">
+        <h3>MCQ</h3>
+        {% for question in mcq_questions %}
+        <div class="card">
+            <div class="question">
+                <p class="question-number">Question {{ forloop.counter }}</p>
+                <p class="question-text"><strong>{{ question.question }}</strong></p>
+            </div>
+            <div class="options">
+                <label class="option">
+                    <span class="circle-label {% if question.option1_selected %}filled{% endif %}">A</span>
+                    <span>{{ question.option1 }}</span>
+                    {% if question.answer == 'Option1' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option2_selected %}filled{% endif %}">B</span>
+                    <span>{{ question.option2 }}</span>
+                    {% if question.answer == 'Option2' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option3_selected %}filled{% endif %}">C</span>
+                    <span>{{ question.option3 }}</span>
+                    {% if question.answer == 'Option3' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+                <label class="option">
+                    <span class="circle-label {% if question.option4_selected %}filled{% endif %}">D</span>
+                    <span>{{ question.option4 }}</span>
+                    {% if question.answer == 'Option4' %}
+                    <i class="fa fa-check-circle correct-icon"></i>
+                    {% endif %}
+                </label>
+            </div>
+            <div class="result {% if question.is_correct %}correct{% else %}incorrect{% endif %}">
+                {% if question.is_correct %}
+                <span>Correct</span>
+                {% else %}
+                <span>Incorrect</span>
+                {% endif %}
+            </div>
+            <div class="statistics">
+                <div class="stat">
+                    <span class="stat-label">A</span>
+                    <span class="percentage">{{ question.option1_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">B</span>
+                    <span class="percentage">{{ question.option2_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">C</span>
+                    <span class="percentage">{{ question.option3_percentage }}%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">D</span>
+                    <span class="percentage">{{ question.option4_percentage }}%</span>
+                </div>
+            </div>
+            <div class="solution">
+                <span>Solution: <br>{{ question.solution_details }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <br><br>
+
+    <!-- Questions Container -->
+
+    <div class="questions-container">
+        <div class="title">
+            <h2>Templated Written</h2>
+        </div>
+        {% for item in written_questions %}
+        <div class="question-container">
+            <div class="question-header">
+                <h3>Question {{ forloop.counter }}</h3>
+                <div class="score">
+                    {% if item.results.obtained_marks != None %}
+                        <span><u>Obtained: {{ item.results.obtained_marks }}/{{ item.results.marks }}</u></span>
+                    {% elif item.answers.0.answer_text or item.answers.0.images.all %}
+                        <span><u>Pending</u></span>
+                    {% else %}
+                        <span><u>Not Answered</u></span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="question-content-box">
+                <div class="question-content">
+                    <p>{{ item.question.question }}</p>
+                </div>
+            </div>
+            <br>
+            <div class="solution">
+                <span>Solution: <br>{{ item.question.solution_details }}</span>
+            </div>
+            <br>
+            {% for answer in item.answers %}
+            {% if answer.answer_text or answer.images.all %}
+            <div class="answer-container">
+                {% if answer.answer_text %}
+                <h4>Your Answer:</h4>
+                <div class="answer-content">
+                    <p>{{ answer.answer_text }}</p>
+                </div>
+                {% endif %}
+                
+                {% if answer.images.all %}
+                <h4>Picture Answer:</h4>
+                <br>
+                <div class="image-container">
+                    {% for image in answer.images.all %}
+                        <img src="{{ image.image.url }}" alt="Image">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center">
+        <form method="get" action="{% url 'student-merit-position' exam.id %}">
+            <button type="submit" class="btn btn-primary">Merit Position</button>
+        </form>
+    </div>
+    <br>
+</div>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+    body {
+        background-color: #f2ecf7;
+    }
+    .analysis-report {
+        padding: 20px;
+    }
+    .report-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .report-card h3 {
+        color: green;
+        margin-bottom: 10px;
+    }
+    .report-card .exam-info,
+    .report-card .exam-name,
+    .report-card .mcq-score,
+    .report-card .written-exam-status,
+    .report-card .highest-marks,
+    .report-card .merit-position {
+        margin: 5px 0;
+    }
+    .report-card .written-exam-status {
+        color: red;
+    }
+
+    .mcq-section {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .mcq-section h3 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        box-sizing: border-box;
+        padding: 20px;
+        position: relative;
+        margin-bottom: 20px;
+    }
+    .question-number {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #555;
+        font-weight: 500;
+    }
+    .question-text {
+        font-size: 25px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    .options {
+        margin-bottom: 2px;
+    }
+    .option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        transition: background-color 0.3s, transform 0.3s;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .option:hover {
+        background-color: #e6e6e6;
+        transform: translateY(-2px);
+    }
+    .circle-label {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid black;
+        text-align: center;
+        line-height: 22px;
+        margin-right: 10px;
+        font-weight: 500;
+        color: #444;
+    }
+    .circle-label.filled {
+        background-color: black;
+        color: white;
+    }
+    .correct-icon {
+        color: green;
+        margin-left: 10px;
+        font-size: 20px;
+    }
+    .result {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .result.correct {
+        background-color: #4CAF50;
+    }
+    .result.incorrect {
+        background-color: #FF5722;
+    }
+    .statistics {
+        display: flex;
+        justify-content: space-around;
+        background-color: #FF7F50;
+        padding: 2px;
+        border-radius: 10px;
+        box-shadow: 0 0.7px 6px rgb(250, 95, 85);
+        gap: 5px;
+    }
+    .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        flex: 1;
+        text-align: center;
+        border-radius: 8px;
+        background-color: #FF5722;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+    .stat-label {
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .percentage {
+        font-size: 1em;
+    }
+    .solution {
+        background-color: #e6ffe6;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid green;
+        margin-top: 7px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+
+
+
+
+
+    
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.85);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    
+    .questions-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .questions-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .questions-container .title h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .question-container {
+        background-color: rgba(255, 255, 255, 0.85);
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+    }
+    
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 10px;
+    }
+    
+    .question-header h3 {
+        font-size: 20px;
+        color: #007bff;
+        margin: 0;
+    }
+    
+    .score {
+        font-size: 18px;
+        color: #007bff;
+    }
+    
+    .question-content-box {
+        border: 1px solid #007bff;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: rgba(240, 248, 255, 0.5);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .question-content {
+        font-size: 16px;
+        color: #333;
+    }
+    
+    .answer-container {
+        margin-top: 0px;
+    }
+    
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .image-container img {
+        max-width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        height: auto;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        transition: transform 0.3s ease;
+    }
+    
+    .image-container img:hover {
+        transform: scale(1.05);
+    }
+    
+    .answer-content {
+        font-size: 16px;
+        color: #333;
+        border: 1px solid #007bff;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: rgba(240, 248, 255, 0.5);
+        margin-bottom: 30px;
+    }
+    
+    .col-sm-11 {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+    
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.2s ease;
+    }
+    
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+    
+    
+    .button-group {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .button-group .btn {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    
+    .button-group .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .button-group .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .button-group .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    
+    .button-group .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .button-group .btn-danger:hover {
+        background-color: #c82333;
+    }
+    
+    .button-group .btn-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+    
+    .button-group .btn-warning:hover {
+        background-color: #e0a800;
+    }
+    
+    /* Keyframes for animations */
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .question-container {
+            padding: 10px;
+        }
+    
+        .question-header h3, .score {
+            font-size: 16px;
+        }
+    
+        .question-content {
+            font-size: 14px;
+        }
+    
+        .answer-content {
+            font-size: 14px;
+        }
+    
+        .form-group input {
+            padding: 8px;
+            font-size: 14px;
+        }
+    
+        .button-group .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    }
+    
+    
+</style>
+{% endblock %}

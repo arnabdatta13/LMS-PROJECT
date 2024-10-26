@@ -1,0 +1,585 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3 class="page-title">Welcome {{student.admin.first_name}} {{student.admin.last_name}}!</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% include "base_desine/massages.html" %}
+<div class="row">
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-one w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon">
+                        <i class="fas fa-laptop-medical"></i>
+                    </div>
+                    <div class="db-info">
+                        <h3>{{total_live_classes}}</h3>
+                        <h6>Live Class</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-two w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="db-info">
+                        <h3>{{total_live_exams}}</h3>
+                        <h6>Live Exam</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12 d-flex">
+        <div class="card bg-three w-100">
+            <div class="card-body">
+                <div class="db-widgets d-flex justify-content-between align-items-center">
+                    <div class="db-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <div class="db-info">
+                        <h3>{{practice_exam}}</h3>
+                        <h6>Practice Exam</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<br>
+
+<div class="container-full">
+    <h1>Course Schedule</h1>
+    <div class="upcoming-section" onclick="toggleClasses(this)">
+        <div class="upcoming-class">
+            <h4>
+                Upcoming Classes ({{ live_class_count }} live, {{ upcoming_class_count }} upcoming)
+                <i class="fas fa-chevron-down dropdown-icon"></i>
+            </h4>
+        </div>
+
+        <div class="class-items">
+            {% for i in live_classes %}
+            <div class="class-item">
+                <div class="class-status live">
+                    <span class="status-live">Live</span>
+                </div>
+                <p class="topic">{{i.topic}}</p>
+                <br>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
+                <br>
+                <p>Class: <br><strong>{{i.class1.name}}</strong></p>
+                <h4>Course:</h4>
+                <br>
+                <p>{{i.course.name}}</p>
+                
+                <br>
+                <a href="{% url "student-join-online-live-class-home" i.id %}"><button>Join Now</button><a>
+            </div>
+            {% endfor %}
+
+            {% for i in upcoming_classes %}
+            <div class="class-item">
+                <div class="class-status upcoming">
+                    <span class="status-upcoming">Upcoming</span>
+                </div>
+                <p class="topic">{{i.topic}}</p>
+                <br>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
+                <h4>Course:</h4>
+                <p>NDC & SJC Admission Course [Offline]</p>
+                <p>College Admission Program 2024</p>
+                <br>
+                <a href="{% url "student-join-online-live-class-home" i.id%}"><button>Join Now</button><a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="upcoming-live-section" onclick="toggleClasses(this)">
+        <div class="upcoming-exam">
+            <h4>
+                Upcoming Live Exam ({{live_exam_count}} live, {{upcoming_exam_count}} upcoming)
+                <i class="fas fa-chevron-down dropdown-icon"></i>
+            </h4>
+        </div>
+
+        <div class="class-items">
+            {% for i in live_exams %}
+            <div class="class-item">
+                <div class="class-status live">
+                    <span class="status-live">Live</span>
+                </div>
+                <p class="topic">{{i.topic}}</p>
+                <br>
+                <p class="topic">{{i.exam_name}}</p>
+                <br>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
+                <h4>Course:</h4>
+                <br>
+                <p>Class: {{i.class_id.name}}</p>
+                <p>{{i.course.name}}</p>
+                <br>
+                <a href="{% url "student-take-live-exam" i.id %}"><button>Take Exam</button><a>
+            </div>
+            {% endfor %}
+
+            {% for i in upcoming_exams %}
+            <div class="class-item">
+                <div class="class-status upcoming">
+                    <span class="status-upcoming">Upcoming</span>
+                </div>
+                <p class="topic">{{i.exam_name}}</p>
+                <br>
+                <p>Date & Time: <br><strong>{{i.start_time}}</strong></p>
+                <h4>Course:</h4>
+                <br>
+                <p>Class: {{i.class_id.name}}</p>
+                <p>{{i.course.name}}</p>
+                <br>
+                <a href="{% url "student-take-live-exam-home" i.id%}"><button>Take Exam</button><a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="upcoming-practice-section">
+        <div class="upcoming-practice">
+            <a href="{% url "student-practice-exam" %}"><h4>
+                Practice Exam
+                <i class="fas fa-chevron-right dropdown-icon"></i>
+            </h4></a>
+        </div>
+    </div>
+
+</div>
+<br><br>
+<div class="row">
+    <div class="col-md-12 col-lg-6">
+        
+        <div class="card card-chart">
+            <br>
+            <div class="col-md-12">
+                <label for="yearSelector">Select Year:</label>
+                <select id="yearSelector" class="form-control">
+                    {% for year in years_with_data %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <hr>
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <h5 class="card-title">Monthly Attendance Report</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="student_attendance_report"></div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="col-md-12 col-lg-6">
+        
+        <div class="card card-chart">
+            
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <h5 class="card-title">Overall Attendance Report</h5>
+                    </div>
+                </div>
+            </div>
+            <br><br>
+            <div class="card-body">
+                <div id="overall_attendance_pie_chart"></div>
+            </div>
+            <br><br><br><br><br>
+        </div>
+    </div>
+</div>
+
+
+<br><br>
+<h2 style="text-align: center;">Attendance Report</h2>
+
+
+<div class="calendar-container">
+    <div class="wrapper">
+        <header>
+            <p class="current-date"></p>
+            <div class="icons">
+                <span id="prev" class="material-symbols-rounded">chevron_left</span>
+                <span id="next" class="material-symbols-rounded">chevron_right</span>
+            </div>
+        </header>
+        <div class="calendar">
+            <ul class="weeks">
+                <li>Sun</li>
+                <li>Mon</li>
+                <li>Tue</li>
+                <li>Wed</li>
+                <li>Thu</li>
+                <li>Fri</li>
+                <li>Sat</li>
+            </ul>
+            <ul class="days"></ul>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
+
+<script>
+function toggleClasses(element) {
+    var classItems = element.querySelector('.class-items');
+    classItems.classList.toggle('show');
+}
+const attendanceDates = {{ attendance_dates|safe }};
+const daysTag = document.querySelector(".days"),
+    currentDate = document.querySelector(".current-date"),
+    prevNextIcon = document.querySelectorAll(".icons span");
+
+let date = new Date(),
+    currYear = date.getFullYear(),
+    currMonth = date.getMonth();
+
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const renderCalendar = () => {
+    let firstDayofMonth = new Date(currYear, currMonth, 1).getDay(),
+        lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate(),
+        lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate(),
+        lastDayofMonth = new Date(currYear, currMonth, lastDateofMonth).getDay(),
+        liTag = "";
+
+    for (let i = firstDayofMonth; i > 0; i--) {
+        liTag += `<li class="inactive"><span>${lastDateofLastMonth - i + 1}</span></li>`;
+    }
+
+    for (let i = 1; i <= lastDateofMonth; i++) {
+        let attendanceDate = new Date(currYear, currMonth, i);
+        let isToday = i === date.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear();
+        let isPresent = attendanceDates.some(d => new Date(d).toDateString() === attendanceDate.toDateString());
+        let classList = "";
+
+        if (isPresent) {
+            classList = "present";
+        } else {
+            classList = "absent";
+        }
+
+        if (isToday) {
+            classList += " active";
+        }
+
+        liTag += `<li class="${classList}"><span>${i}</span></li>`;
+    }
+
+    for (let i = lastDayofMonth; i < 6; i++) {
+        liTag += `<li class="inactive"><span>${i - lastDayofMonth + 1}</span></li>`;
+    }
+
+    currentDate.innerText = `${months[currMonth]} ${currYear}`;
+    daysTag.innerHTML = liTag;
+}
+
+renderCalendar();
+
+prevNextIcon.forEach(icon => {
+    icon.addEventListener("click", () => {
+        currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
+
+        if (currMonth < 0 || currMonth > 11) {
+            date = new Date(currYear, currMonth, new Date().getDate());
+            currYear = date.getFullYear();
+            currMonth = date.getMonth();
+        } else {
+            date = new Date();
+        }
+        renderCalendar();
+    });
+});
+
+
+
+
+</script>
+
+<style>
+    
+
+    .container-full {
+        width: 100%;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+    }
+    
+    h1 {
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+    
+    .upcoming-section, .upcoming-live-section, .upcoming-practice-section {
+        border: 2px solid #007bff;
+        border-radius: 10px;
+        margin-top: 20px;
+        overflow: hidden;
+    }
+    
+    .upcoming-section:hover, .upcoming-live-section:hover, .upcoming-practice-section:hover {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+    }
+    
+    .upcoming-section h4, .upcoming-live-section h4, .upcoming-practice-section h4 {
+        color: #007bff;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        margin: 0;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .upcoming-section h4 .dropdown-icon, .upcoming-live-section h4 .dropdown-icon, .upcoming-practice-section h4 .dropdown-icon {
+        font-size: 20px;
+        transition: transform 0.3s;
+    }
+    
+    .upcoming-section:hover h4 .dropdown-icon, .upcoming-live-section:hover h4 .dropdown-icon, .upcoming-practice-section:hover h4 .dropdown-icon {
+        transform: rotate(180deg);
+    }
+    
+    .class-items {
+        padding: 25px 0 0;
+        display: none;
+        flex-wrap: wrap;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .class-items.show {
+        display: flex;
+        
+    }
+    
+    .class-items .class-item {
+        position: relative;
+        background: linear-gradient(135deg, #f6f6f6, #ffffff);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border: 2px solid #007bff;
+        margin-bottom: 15px;
+        padding: 20px;
+        transition: transform 0.3s;
+        width: 100%;
+        max-width: 330px;
+        box-sizing: border-box;
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+    
+    .class-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .class-status.live {
+        background-color: red;
+    }
+
+    .class-status.upcoming {
+        background-color: green;
+    }
+
+    .class-item p {
+        margin: 0;
+        font-size: 16px;
+        color: #444;
+    }
+    
+    .class-item p.topic {
+        color: #007bff;
+        font-weight: bold;
+    }
+    
+    .class-item h4 {
+        margin-bottom: 0;
+    }
+    
+    .class-item strong {
+        font-weight: bold;
+    }
+    
+    .class-item button {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .class-item button:hover {
+        background-color: #0056b3;
+    }
+    
+    .class-items .class-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .upcoming-live-section {
+        border: 2px solid #28a745;
+        border-radius: 10px;
+        margin-top: 20px;
+        overflow: hidden;
+    }
+    
+    .upcoming-live-section:hover {
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);
+    }
+    
+    .upcoming-live-section h4 {
+        color: #28a745;
+    }
+    
+    .upcoming-live-section:hover h4 .dropdown-icon {
+        transform: rotate(180deg);
+    }
+    
+    .upcoming-practice-section {
+        border: 2px solid #ffc107;
+        border-radius: 10px;
+        margin-top: 20px;
+        overflow: hidden;
+    }
+    
+    .upcoming-practice-section:hover {
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
+    }
+    
+    .upcoming-practice-section h4 {
+        color: #ffc107;
+    }
+    
+    .upcoming-practice-section:hover h4 .dropdown-icon {
+        transform: rotate(180deg);
+    }
+    
+    .calendar li{
+        color: #333;
+        width: calc(100% / 7);
+        font-size: 1.07rem;
+    }
+
+    .calendar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+    
+    .wrapper {
+        width: 400px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    header {
+        display: flex;
+        align-items: center;
+        padding: 20px 30px 10px 30px;
+        justify-content: space-between;
+    }
+    
+    header p {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+    
+    .calendar {
+        padding: 20px;
+    }
+    
+    .calendar ul {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+        text-align: center;
+    }
+    
+    .calendar .days li.inactive {
+        color: #ccc;
+    }
+    
+    .calendar .days li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        width: calc(100% / 7);
+        font-weight: 500;
+        position: relative;
+    }
+    
+    .calendar .days li span {
+        display: inline-block;
+        width: 30px; /* Adjust the size as needed */
+        height: 30px; /* Adjust the size as needed */
+        line-height: 30px;
+        text-align: center;
+        border-radius: 50%;
+    }
+    
+    /* Ensure present and absent have higher specificity than active */
+    .calendar .days li.present span {
+        background: #28a745;
+        color: #fff;
+    }
+    
+    .calendar .days li.absent span {
+        background: #ff4d4d;
+        color: #fff;
+    }
+    
+
+</style>
+{% include 'base_desine/chart.html' %}
+
+{% endblock %}

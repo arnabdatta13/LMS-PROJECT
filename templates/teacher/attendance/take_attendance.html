@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include "base_desine/loader.html" %}
+
+
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">Take Attendance</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">Take Attendance</li>
+           </ul>
+       </div>
+   </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+            {% if action is None%}
+             <form method='post' action='?action=get_student' enctype="multipart/form-data">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Take Attendance</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+ 
+                  
+                 
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id' required>
+                        <option value="" disabled selected>Select Class</option>
+                        {% for i in class%}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <label>Session Year</label>
+                        <select class="form-control" name='session_year_id'required>
+                        <option value="" disabled selected>Select Session Year</option>
+                        {% for i in session_year %}
+                        <option value = '{{i.id}}'>{{i.session_start}} To {{i.session_end}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  
+                   
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Fetch Student</button>
+                   </div>
+                
+             </form>
+             {% else %}
+             <form method='post' action='{% url "teacher-save-attendance" %}' enctype="multipart/form-data">
+               {% csrf_token%}
+                  <div class="col-12">
+                     <h5 class="form-title"><span>Take Attendance</span></h5>
+                  </div>
+                  {% include "base_desine/massages.html" %}
+
+                 
+                
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id' required disabled>
+                     
+                       
+                        <option>{{get_class}}</option>
+                        <input type="hidden" name="class_id" value="{{ get_class.id }}">
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <label>Session Year</label>
+                        <select class="form-control" name='session_year_id'required disabled>
+          
+                        <option >{{get_session_year}}</option>
+                        <input type="hidden" name="session_year_id" value="{{ get_session_year.id }}">
+
+                        </select>
+                  </div>
+                 <br>
+                 
+                 <hr>
+                 <div class="col-sm-11 ">
+                  <div class="form-group">
+                     <label>Attendance Date</label>
+                     <input type="date" class="form-control" name='attendance_date'required >
+                  </div>
+                 </div>
+
+                 
+                 
+               <br><br>
+               <div class="row">
+                  <div class="col-sm-12">
+                      <div class="card card-table">
+                          <div class="card-body">
+                              <div class="table-responsive">
+                                  <table id="table_id" class=" table table-hover table-center mb-0 ">
+                                      <thead>
+                                          <tr>
+                                              <th>ID</th>
+                                              <th>Name</th>
+                                              <th>Class</th>
+                                              <th>Roll</th>
+                                              
+                                              <th class="text-right">Action</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          {% for i in student %}
+                                          <tr>
+                                              <td>{{ i.id }}</td>
+                                              <td>{{i.admin.first_name}}&nbsp{{i.admin.last_name}}</td>
+                                              <td>{{ i.class_id }}</td>
+                                              <td>{{ i.roll_number }}</td>
+                                              
+                                              <td  class="text-right">
+                                                  <div class="actions">
+                                                   <div class="form-check">
+                                                       <input type="checkbox" class="form-check-input" id="exampleCheck{{ i.id }}" value='{{i.id}}' name = "student_id">
+                                                       <label class="form-check-label" for="exampleCheck{{ i.id }}">Present</label>
+                                                     </div>
+                                                  </div>
+                                              </td>
+                                          </tr>
+   
+                                          {% endfor %}
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-12 text-center">
+               <button type="submit" class="btn btn-primary">Submit Attendance</button>
+               </div>
+               <br>
+               
+            </form>
+            <br>
+
+            
+           
+           
+             {% endif %}
+          </div>
+       </div>
+    </div>
+ </div>
+ 
+
+{% endblock %}

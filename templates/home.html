@@ -1,0 +1,341 @@
+{% extends "ui.html" %}
+{% block content1 %}
+{% load static%}
+{% include "base_desine/loader.html" %}
+
+<section class="home">
+    <div class="swiper home-slider">
+       
+       <div class="swiper-wrapper">
+ 
+          <section class="swiper-slide slide" style="background: url({% static 'assets/images/home-slide-1.jpg' %}) no-repeat;">
+             <div class="content">
+                <h3>আমাদের সাথে তোমার সেরা পড়াশোনা শুরু কর।</h3>
+                <p>আমরা আশা করি আমাদের বিদ্যালয়ে তোমদের পড়াশোনার ভালোভাবে দেখাশোনা করা হচ্ছে । আমরা তোমদের সমস্ত সমস্যা সমাধানের জন্য আমাদের যথাসাধ্য চেষ্টা করছি।</p>
+                <a href="{% url 'join_now'%}" class="btn">get started</a>
+             </div>
+          </section>
+ 
+          <section class="swiper-slide slide" style="background: url({% static 'assets/images/home-slide-2.jpg' %}) no-repeat;">
+             <div class="content">
+                <h3>start your best study with us.</h3>
+                <p>We hope that your studies are well looked after in our school. We are trying our best to solve all your problems.
+                </p>
+                <a href="{% url 'join_now'%}" class="btn">get started</a>
+             </div>
+          </section>
+ 
+          <section class="swiper-slide slide" style="background: url({% static 'assets/images/home-slide-3.jpg' %}) no-repeat;">
+             <div class="content">
+                <h3>আমাদের সাথে তোমার সেরা পড়াশোনা শুরু কর।</h3>
+                <p>আমরা আশা করি আমাদের বিদ্যালয়ে তোমদের পড়াশোনার ভালোভাবে দেখাশোনা করা হচ্ছে । আমরা তোমদের সমস্ত সমস্যা সমাধানের জন্য আমাদের যথাসাধ্য চেষ্টা করছি।</p>
+                <a href="{% url 'join_now'%}" class="btn">get started</a>
+             </div>
+          </section>
+ 
+       </div>
+ 
+       <div class="swiper-pagination"></div>
+ 
+    </div>
+ </section>
+ 
+ 
+ <!-- home section ends -->
+ 
+
+<!--<div class="ticker-wrapper-h">
+   <div class="heading"></div>
+   
+   <ul class="news-ticker-h">
+      <li><a href="">What is Lorem Ipsum?</a></li>
+      <li><a href="">Why do we use it?</a></li>
+      <li><a href="">Where does it come from?</a></li>
+      <li><a href="">Where can I get some?</a></li>
+   </ul>
+</div>-->
+
+
+ 
+ <br><br><br>
+ <section class="notice-board-container">
+   <h1 class="notice-heading">Notice</h1>
+   <div class="marquee">
+      <marquee onmouseover="this.stop();" onmouseout="this.start();">
+         {% for i in notice %}
+         <a href="{{ i.pdf.url }}" download>{{ i.title }}</a>{% if not forloop.last %} | {% endif %}
+         {% endfor %}
+      </marquee>
+   </div>
+   <table class="notice-board">
+      <thead>
+          <tr>
+              <th>Date</th>
+              <th>Notice</th>
+              <th>Views</th>
+          </tr>
+      </thead>
+      <tbody>            
+         {% for i in notice %}
+          <tr>
+              <td>{{ i.updated_at }}</td>
+              <td><a href="{{ i.pdf.url }}" download>{{ i.title }}</a></td>
+              <td><a href="{{ i.pdf.url }}" target="_blank" class = "btn">View</a></td>
+            </tr>
+         {% endfor %}
+      </tbody>
+   </table>
+</section>
+
+
+ <section class="subjects">
+ 
+    <h1 class="heading"> </h1>
+ 
+    <div class="box-container">
+ 
+       <div class="box">
+          <img src="{% static 'assets/images/about-icon-2.png' %}" alt="">
+          <h3>english</h3>
+          <p></p>
+       </div>
+ 
+       <div class="box">
+          <img src="{% static 'assets/images/subject-icon-2.png' %}" alt="">
+          <h3>mathematics</h3>
+          <p></p>
+       </div>
+ 
+       <div class="box">
+          <img src="{% static 'assets/images/subject-icon-3.png' %}" alt="">
+          <h3>religion</h3>
+          <p></p>
+       </div>
+ 
+       <div class="box">
+          <img src="{% static 'assets/images/subject-icon-4.png' %}" alt="">
+          <h3>bangladesh and world identity</h3>
+          <p></p>
+       </div>
+ 
+       <div class="box">
+          <img src="{% static 'assets/images/subject-icon-5.png' %}" alt="">
+          <h3>science</h3>
+          <p></p>
+       </div>
+ 
+       <div class="box">
+          <img src="{% static 'assets/images/subject-icon-6.png' %}" alt="">
+          <h3>bangla</h3>
+          <p></p>
+       </div>
+ 
+    </div>
+ 
+ </section>
+ 
+ <!-- subjects section ends -->
+ 
+ <!-- home courses slider section starts  -->
+ 
+ 
+ 
+ 
+ 
+ <section class="courses">
+ 
+    
+ 
+    <div class="box-container">
+ 
+       <div class="box">
+          <div class="image">
+             <img src="{% static 'assets/images/school.jpg' %}" alt="">
+             <h3>about school</h3>
+          </div>
+          <div class="content">
+             <h3>জুশুরগাঁও আভা রাণী ঘোষ সরকারি প্রাথমিক বিদ্যালয়।</h3>
+             <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eaque, odit!</p>
+             <a href="" class="btn">read more</a>
+             <div class="icons">
+                <span> <i class="fas fa-book"></i> 12 modules </span>
+                <span> <i class="fas fa-clock"></i> 6 hours </span>
+             </div>
+          </div>
+       </div>
+ 
+       <div class="box">
+          <div class="image">
+             <img src="{% static 'assets/images/school_routine.png' %}" alt="">
+             <h3>bangla</h3>
+          </div>
+          <div class="content">
+             <h3>school routine</h3>
+             <p>তোমার বিদ্যালয়ের ক্লাস রুটিন ডাউনলোড কর।
+             </p>
+             <a href="ebook/Bangla-Class-1.pdf" class="btn">download</a>
+ <br><br><br>
+          </div>
+       </div>
+ 
+       <div class="box">
+          <div class="image">
+             <img src="{% static 'assets/images/contact-img.png' %}" alt="">
+             <h3>Contact Us</h3>
+          </div>
+          <div class="content">
+             <h3>contact us</h3>
+             <p>তোমার যেকোন সমস্যার জন্য আমাদের সাথে যোগাযোগ করুন। </p>
+             <a href="{% url "contract" %}" class="btn">contact us</a>
+ 
+             <div class="icons">
+                <span> <i class="fas fa-book"></i> 12 modules </span>
+                <span> <i class="fas fa-clock"></i> 6 hours </span>
+             </div>
+          </div>
+       </div>
+ 
+       
+    </section>
+ <!-- footer section starts  -->
+ 
+ <br><br><br>
+ 
+ 
+ <section class="reviews">
+ 
+    <h1 class="heading"> our students review </h1>
+ 
+    <div class="swiper reviews-slider">
+ 
+       <div class="swiper-wrapper">
+ 
+          <div class="swiper-slide slide">
+             <p>এই বিদ্যালয়ের প্রত্যেকটি শিক্ষক এত যত্ন করে ক্লাসগুলো করান যে আমার বাচ্চা ক্লাসগুলো খুব এঞ্জয় করে।</p>
+             <img src="{% static 'assets/images/pic-1.png' %}" alt="">
+             <h3>john deo</h3>
+             <div class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+             </div>
+          </div>
+ 
+         <div class="swiper-slide slide">
+             <p>এই বিদ্যালয়ের প্রত্যেকটি শিক্ষকদের পড়ানোর টেকনিক খুব চমৎকার। তাদের ক্লাসগুলো খুব ভালো।    <br>      </p>
+             <img src="{% static 'assets/images/pic-2.png' %}" alt="">
+             <h3>john deo</h3>
+             <div class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+             </div>
+          </div>
+ 
+          <div class="swiper-slide slide">
+             <p>বিদ্যালয়টির পড়াশোনার পরিবেশ খুব চমৎকার।এই বিদ্যালয়ের শিক্ষকরা খুব ভালো। তারা সকলে খুব আন্তরিক।
+             </p>
+             <img src="{% static 'assets/images/pic-3.png' %}" alt="">
+             <h3>john deo</h3>
+             <div class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+             </div>
+         </div>
+      </div>
+    </div>
+ 
+ </section>
+ <style>
+
+   .notice-board-container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+  }
+
+  .notice-heading {
+      font-size: 32px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-align:center;
+  }
+
+  .notice-board {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Arial', sans-serif;
+  }
+
+  .notice-board th, .notice-board td {
+      border: 1px solid #ddd;
+      text-align: left;
+      padding: 14px;
+      font-size: 18px;
+  }
+
+  .notice-board th {
+      background-color: #2980b9;
+      color: white;
+      text-transform: uppercase;
+  }
+
+  .notice-board td {
+      background-color: #f9f9f9;
+      color: #2c3e50;
+  }
+
+  .notice-board tr:nth-child(even) td {
+      background-color: #ecf0f1;
+  }
+
+  .marquee {
+      width: 100%;
+      background-color: #2980b9;
+      color: white;
+      padding: 12px;
+      font-size: 22px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .marquee a {
+   color: inherit; /* Inherit the color from the parent element */
+   text-decoration: none; /* Remove the underline from the link */
+   }
+
+   .marquee a:hover {
+      color: inherit; /* Keep the color the same on hover */
+      text-decoration: underline; /* Optionally add underline on hover */
+   }
+
+  .notice-board a {
+   color: inherit; /* Inherit color from the parent element */
+   text-decoration: none; /* Remove underline */
+   font-weight: normal; /* Ensure normal font weight */
+   text-shadow: none; /* Remove any text shadow */
+   transform: none; /* Reset any transform applied */
+   opacity: 1; /* Ensure full opacity */
+}
+
+.notice-board a:hover {
+   text-decoration: underline; /* Optionally add underline on hover */
+   color: #000; /* Optionally change color on hover */
+}
+
+</style>
+
+{% endblock  %}

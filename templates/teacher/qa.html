@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content%}
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Q&A</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url "teacher-home"%}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Q&A</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class=" table table-hover table-center mb-0 ">
+                            <thead>
+                                <tr>
+                                   
+                                    <th>Queation</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Chapter</th>
+                                    <th style="text-align: center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for question in unanswered_questions %}
+                                <tr>
+                                    <td>{{ question.text_question }}</td>
+                                    <td>{{ question.user.admin.first_name }} &nbsp; {{ question.user.admin.last_name }}</td>
+                                    <td>{{ question.class_id.name }}</td>
+                                    <td>{{ question.subject.name }}</td>
+                                    <td>{{ question.chapter }}</td>
+                                    <td>
+                                        <div class="actions" style="text-align: center">
+                                            <a href="{% url "teacher-qa" question.id%}"><button class="btn btn-success">Pending</button></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock%}

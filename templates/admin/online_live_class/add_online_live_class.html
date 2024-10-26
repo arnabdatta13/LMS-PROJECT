@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content%}
+
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+   <div class="page-header">
+       <div class="row align-items-center">
+           <div class="col">
+               <h3 class="page-title">Add Live Class</h3>
+               <ul class="breadcrumb">
+                   <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+                   <li class="breadcrumb-item active">Add Live Class</li>
+               </ul>
+           </div>
+           <div class="col-auto text-right float-right ml-auto">
+        
+            <a href="{% url 'admin-view-online-live-class' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+            </div>
+           
+       </div>
+   </div>
+
+   <div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action="{% url 'admin-add-online-live-class'%}">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Add Live Class</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Class Topic:</label>
+                         <input type="text" class="form-control" name='topic' required >
+                      </div>
+                  </div>
+                  
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id'required>
+                        <option value="" disabled selected>Select Class</option>
+                        {% for i in class%}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <label>Course</label>
+                        <select class="form-control" name='course'required>
+                        <option value="" disabled selected>Select Course</option>
+                        {% for i in course%}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Start Time (YYYY-MM-DDTHH:MM:SSZ):</label>
+                       <input type="datetime-local" class="form-control" name='start_time' required >
+                    </div>
+                </div>
+
+
+                <div class="col-sm-11">
+                    <div class="form-group">
+                       <label>Duration (minutes):</label>
+                       <input type="number" class="form-control" name='duration' required >
+                    </div>
+                </div>
+
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Add Live Class</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+</div>
+
+
+
+{% endblock%}

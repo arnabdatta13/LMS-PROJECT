@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+{% include "base_desine/massages.html" %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Q&A Service</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Q&A Service</li>
+            </ul>
+        </div>
+    </div>
+  </div>
+  
+<div class="container">
+    <!-- Search Filter Section -->
+    <div class="search-filter">
+        <div class="header1">
+            <div>
+                <h2>HSC Q&A Service</h2>
+                <h3>Question and Answer</h3>
+            </div>
+            <a href = "{% url "student-ask-question"%}"><button class="ask-question-btn">Ask a New Question</button></a>
+        </div>
+
+        <hr>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search your question here" class="search-box">
+            <button class="filter-btn" onclick="toggleFilter()">Filter
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
+
+        <hr>
+
+        <!-- Filter Options (Initially Hidden) -->
+        <div class="filter-options" id="filterOptions">
+            <select>
+                <option value="service">HSC Q&A Service</option>
+            </select>
+            <select>
+                <option value="subject">All Subject</option>
+            </select>
+            <select>
+                <option value="chapter">All Chapter</option>
+            </select>
+            <select>
+                <option value="question">All Question</option>
+            </select>
+        </div>
+    </div>
+
+    {% if questions %}
+        {% for question in questions %}
+        <!-- Q&A Section -->
+        <div class="qa-section">
+            <div class="qa-item">
+                <div class="student-question">
+                    <h4>{{ question.created_at|date:"M d, Y H:i A" }}</h4>
+
+                    {% if question.text_question %}
+                        <h5>Question: <strong>{{ question.text_question }}<strong></h5>
+                    {%endif%}
+
+                    <!-- Display the first image (if any) -->
+                    {% if question.photos.all %}
+                    <br>
+                        <div class="question-photos">
+                            <h5>Uploaded Photo: </h5>
+                            
+                            {% for photo in question.photos.all %}
+                                <img src="{{ photo.photo.url }}" alt="Question Photo" class="question-img">
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if question.audio_files.all %}
+                    <br>
+                        <div class="question-audios">
+                            <br>
+                            <h5 style="margin-top:25px; margin-bottom:15px;";>Related Audio:</h5>
+                            {% for audio in question.audio_files.all %}
+                                <audio controls>
+                                    <source src="{{ audio.audio_file.url }}" type="audio/webm">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Loop through all photos related to this question -->
+                
+
+                <!-- Loop through all audio files related to this question -->
+                {% if question.text_answers.exists or question.photo_answers.exists or question.audio_answers.exists %}
+
+                    <br>
+                    <!-- Display teacher answers (if any) -->
+                    <div class="teacher-answer">
+                        
+                        <!-- Text Answer -->
+                        {% if question.text_answers.all %}
+                            
+                            {% for answer in question.text_answers.all %}
+                                <div class="text-answer">
+                                    <h4>Teacher: {{ answer.answered_at|date:"M d, Y H:i A" }}</h4>
+                                    <h5>Text Answer(s): <strong>{{ answer.answer_text }}</strong></h5>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+        
+                        <!-- Photo Answer -->
+                        {% if question.photo_answers.all %}
+                            <br>
+                            <h5>Teacher Photo Answer(s):</h5>
+                            <div class="teacher-photo-answers">
+                                {% for photo_answer in question.photo_answers.all %}
+                                    <img src="{{ photo_answer.photo.url }}" alt="Teacher Photo Answer" class="teacher-answer-img">
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+        
+                        <!-- Audio Answer -->
+                        {% if question.audio_answers.all %}
+                        <br>
+                            <h5>Teacher Audio Answer(s):</h5>
+                            <div class="teacher-audio-answers">
+                                {% for audio_answer in question.audio_answers.all %}
+                                    <audio controls>
+                                        <source src="{{ audio_answer.audio_file.url }}" type="audio/webm">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {%endif%}
+            </div>
+        </div>
+        {% endfor %}
+        <br>
+    {% else %}
+        <div class="qa-section">
+            <div class="qa-item">
+                <h3>Sorry. No data found.</h3>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+    function toggleFilter() {
+        var filterOptions = document.getElementById("filterOptions");
+        filterOptions.style.display = (filterOptions.style.display === "flex") ? "none" : "flex";
+    }
+</script>
+
+    <style>
+        body {
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 30px auto; /* Added some margin on top and bottom */
+            padding: 20px;
+            background-color: #ffffff; /* White background for the container */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+            transition: all 0.3s ease;
+        }
+
+        /* Search Filter Section */
+        .search-filter {
+            background-color: #5a2b66;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Header */
+        .header1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header1 h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header1 h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        /* Ask a New Question Button */
+        .ask-question-btn {
+            background-color: #3b0a45;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .ask-question-btn:hover {
+            background-color: #472358;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .search-box {
+            width: 85%;
+            padding: 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-box:focus {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            outline: none;
+        }
+
+        /* Filter Button */
+        .filter-btn {
+            background-color: #3b0a45;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+            margin-left:15px;
+        }
+
+        .filter-btn:hover {
+            background-color: #472358;
+        }
+
+        /* Filter Options */
+        .filter-options {
+            display: none; /* Initially hidden */
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .filter-options select {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background-color: #ffffff; /* White background */
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow to differentiate from other sections */
+            transition: all 0.3s ease;
+        }
+
+        .qa-item {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .student-question, .teacher-answer {
+            width:65%;
+            padding: 20px;
+            margin-bottom: 10px;
+            background-color: #f8f8f8; /* Subtle gray background to distinguish items */
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .student-question:hover, .teacher-answer:hover {
+            background-color: #f0f0f0;
+        }
+
+        .student-question {
+            align-self: flex-end;
+        }
+
+        .teacher-answer {
+            align-self: flex-start;
+        }
+
+        .student-question h4, .teacher-answer h4 {
+            margin-bottom: 10px;
+        }
+
+        
+        
+
+        .question-img, .teacher-answer-img {
+            width: 32%;
+            height:20%;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        /* Horizontal Lines */
+        hr {
+            border: 0;
+            border-top: 1px solid white; /* Set the color of the line to white */
+            margin: 10px 0;
+        }
+
+    </style>
+
+    <script>
+        function toggleFilter() {
+            var filterOptions = document.getElementById("filterOptions");
+            filterOptions.style.display = (filterOptions.style.display === "flex") ? "none" : "flex";
+        }
+    </script>
+
+    <!-- Make sure to include Font Awesome for the filter icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{% endblock %}

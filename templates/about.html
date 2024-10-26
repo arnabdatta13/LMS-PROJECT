@@ -1,0 +1,234 @@
+{% extends "ui.html" %}
+{% block content1 %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+
+<section class="about">
+
+    <div class="image">
+       <img src="{% static 'assets/images/about-img.jpg' %}" alt="">
+    </div>
+    <br><br>
+    <div class="content">
+       <h3 class="about-title">আমাদের সাথে তোমার শিক্ষা যাত্রা সফল কর।</h3>
+       <p>আমাদের শিক্ষকরা তোমাদের সকল সুবিধা অসুবিধার জন্য প্রতিনিয়ত কাজ করতাছে। তোমাদের ভালো ভবিষ্যতের জন্য তারা নরলস চেষ্টা করছে। তোমাদের পড়াশোনার ভবিষ্যতের ও স্মার্ট যুগের কথা চিন্তা করে আমরা তোমাদের জন্য ওয়েবসাইটি তৈরি করেছি।</p>
+       <div class="icons-container">
+          <div class="icons">
+             <img src="{% static 'assets/images/about-icon-1.png' %}" alt="">
+             <h3>4</h3>
+             <span>teachers</span>
+          </div>
+          <div class="icons">
+             <img src="{% static 'assets/images/about-icon-2.png' %}" alt="">
+             <h3>250+</h3>
+             <span>students</span>
+          </div>
+          <div class="icons">
+             <img src="{% static 'assets/images/about-icon-3.png' %}" alt="">
+             <h3>2+</h3>
+             <span>awards</span>
+          </div>
+       </div>
+    </div>
+ 
+</section>
+ 
+<!-- about section ends -->
+ 
+<!-- teachers section starts  -->
+
+<section class="teachers">
+
+   <h1 class="heading">Expert Teachers</h1>
+
+   <div class="box-container">
+
+      {% for i in teacher %}
+      <div class="teacher-box">
+         <div class="tutor1">
+            <div class="avatar">
+               {% if i.admin.profile_pic == "" %}
+                  <img src="{% static 'assets/img/no-image-icon-23483.png'%}" alt="User Image" class="avatar-img rounded-circle">
+               {% else %}
+                  <img src="/{{i.admin.profile_pic}}" alt="User Image" class="avatar-img rounded-circle">
+               {% endif %}
+            </div>
+            <div class="tutor-info1">
+               <h3>{{ i.admin.first_name }}&nbsp;{{ i.admin.last_name }}</h3>
+               <span>Teacher</span>
+               <p><i class="fas fa-phone-alt"></i> {{ i.phone_number }}</p>
+               <p><i class="fas fa-map-marker-alt"></i> {{ i.address }}</p>
+            </div>
+         </div>
+      </div>
+      {% endfor %}
+      
+   </div>
+
+</section>
+
+<!-- teachers section ends -->
+
+<!-- students reviews section starts  -->
+
+<section class="reviews">
+ 
+    <h1 class="heading"> Our Students' Reviews </h1>
+ 
+    <div class="swiper reviews-slider">
+ 
+       <div class="swiper-wrapper">
+ 
+          <div class="swiper-slide slide">
+             <p>এই বিদ্যালয়ের প্রত্যেকটি শিক্ষক এত যত্ন করে ক্লাসগুলো করান যে আমার বাচ্চা ক্লাসগুলো খুব এঞ্জয় করে।</p>
+             <img src="{% static 'assets/images/pic-1.png' %}" alt="">
+             <h3>john deo</h3>
+             <div class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+             </div>
+          </div>
+ 
+          <!-- Remaining reviews slides -->
+ 
+       </div>
+ 
+    </div>
+ 
+</section>
+
+<style>
+   .teachers {
+      background-color: #f0f4f8;
+      padding: 80px 0;
+      font-family: 'Roboto', sans-serif;
+  }
+  
+  .box-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 0 50px;
+  }
+  
+  .teacher-box {
+      background-color: #ffffff;
+      border-radius: 25px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      padding: 30px;
+      position: relative;
+      z-index: 0;
+      width: 430px;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+  }
+  
+  .teacher-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #007bff, #00c3ff);
+      z-index: 1;
+  }
+  
+  .teacher-box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  
+  .tutor1 {
+      display: flex;
+      align-items: center;
+      z-index: 2;
+  }
+  
+  .avatar {
+      flex-shrink: 0;
+      margin-right: 25px;
+      border-radius: 50%;
+      overflow: hidden;
+      width: 110px;
+      height: 110px;
+      border: 5px solid #ffffff;
+      transition: border-color 0.3s ease;
+  }
+  
+  .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+  }
+  
+  .teacher-box:hover .avatar {
+      border-color: #00c3ff;
+  }
+  
+  .tutor-info1 h3 {
+      margin: 0;
+      color: #333;
+      font-weight: 700;
+      font-size: 5em;
+  }
+  
+  .tutor-info1 span {
+      display: block;
+      font-size: 3em;
+      color: #555;
+      margin-top: 10px;
+      font-weight: 500;
+  }
+  
+  .tutor-info1 p {
+      font-size: 2em;
+      color: #777;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+  }
+  
+  .tutor-info1 p i {
+      margin-right: 10px;
+      color: #007bff;
+  }
+  
+  @media (max-width: 768px) {
+      .box-container {
+          flex-direction: column;
+          align-items: center;
+          padding: 0 20px;
+      }
+      .teacher-box {
+          width: 90%; 
+          padding: 25px;
+          height: 300px; 
+      }
+      .avatar {
+          width: 90px;
+          height: 90px;
+      }
+      .tutor-info1 h3 {
+          font-size: 5em;
+      }
+      .tutor-info1 span {
+          font-size: 3em;
+      }
+      .tutor-info1 p {
+          font-size: 2em;
+      }
+  }
+</style>
+
+{% endblock  %}

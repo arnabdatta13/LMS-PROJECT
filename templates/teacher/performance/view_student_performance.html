@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="container">
+    <h1 style="text-align: center;">Student's Performance Report</h1>
+    <hr>
+    <div class="student-info">
+        <p>Student's Name: {{ student.admin.first_name }} {{ student.admin.last_name }}</p>
+        <p>Reg. & Roll No.: ({{ student.roll_number }})</p>
+        <p>Institute: {{ request.user.student.institute_name }}</p>
+    </div>
+    <hr>
+    <h4>{{ course.name }}</h4>
+    <br>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial</th>
+                    <th>Date</th>
+                    <th>Exam Name</th>
+                    <th>Subject</th>
+                    <th>Platform</th>
+                    <th>Obtain Marks</th>
+                    <th>Total Marks</th>
+                    <th>Highest Marks</th>
+                    <th>Merit</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in all_results %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.exam.start_time }}</td>
+                    <td>{{ item.exam.exam_name }}</td>
+                    <td>{{ item.exam.subject }}</td>
+                    <td>{{ item.model_name }}</td>
+                    <td>{{ item.obtained_marks }}</td>
+                    <td>{{ item.obtained_marks }} / {{ item.total_marks }}</td>
+                    <td>{{ item.highest_marks }}</td>
+                    <td>{{ item.merit_position }}</td> <!-- Merit position for this exam -->
+                    <td><a href="{% url "teacher-student-performance-view-question" item.exam.id %}"><button class="btn btn-success">View Question</button></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br><br>
+    <h4>Student Merit Calculation</h4>
+    <br>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial</th>
+                    <th>Course Name</th>
+                    <th>Total Exam Marks</th>
+                    <th>Total Obtained Marks</th>
+                    <th>Highest Marks</th>
+                    <th>Merit Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{ course_name }}</td>
+                    <td>{{ total_exam_mark }}</td>
+                    <td>{{ total_obtain_mark }}</td>
+                    <td>{{ highest_total_marks }}</td>
+                    <td>{{ merit_position }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<br><br>
+<style>
+    .container {
+        width: 100%;
+        margin: 20px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 20px;
+    }
+    .student-info {
+        margin-bottom: 20px;
+    }
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+    }
+    .filters select, .filters button {
+        padding: 5px;
+        font-size: 14px;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+    th, td {
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .view-button {
+        background-color: #007FFF;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-right: 30px;
+    }
+    .view-button:hover {
+        background-color: #5a6268;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Students Notification</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'teacher-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Students Notification</li>
+                </ul>
+            </div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                View All Notification
+            </button>
+        </div>
+    </div>
+    {% include "base_desine/massages.html" %}
+    <br>
+    <form method="get" action="{% url 'admin-student-send-notification' %}">
+        
+    
+        <div class="form-group">
+            <label for="class_filter">Filter by Class:</label>
+            <select class="form-control" id="class_filter" name="class_filter" >
+                <option value="">All Classes</option>
+                <option value="Class One" {% if selected_class == 'Class One' %}selected{% endif %}>Class One</option>
+                <option value="Class Two" {% if selected_class == 'Class Two' %}selected{% endif %}>Class Two</option>
+                <option value="Class Three" {% if selected_class == 'Class Three' %}selected{% endif %}>Class Three</option>
+                <option value="Class Four" {% if selected_class == 'Class Four' %}selected{% endif %}>Class Four</option>
+                <option value="Class Five" {% if selected_class == 'Class Five' %}selected{% endif %}>Class Five</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="roll_number_filter">Filter by Roll Number:</label>
+            <div class="input-group mb-3">
+            <input type="text" class="form-control" id="roll_number_filter" placeholder="Enter Roll Number" name="roll_number_filter" value="{{ roll_number_query }}">
+            
+        </div>
+        </div>
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+   
+    
+
+    
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class="table table-hover table-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in student %}
+                                <tr>
+                                    <td>{{ i.id }}</td>
+                                    <td>
+                                        <h2 class="table-avatar">
+                                            <a href="student-details.html">{{ i.admin.first_name }} &nbsp; {{ i.admin.last_name }}</a>
+                                        </h2>
+                                    </td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#sendnotification-{{ forloop.counter }}">
+                                            Send Notification
+                                        </button>
+                                    </td>
+                                </tr>
+                                <div class="modal fade" id="sendnotification-{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Send Teacher Notification To {{ i.admin.first_name }} &nbsp;{{ i.admin.last_name }}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="post" action="{% url 'teacher-student-save-notification' %}">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" name="message">
+                                                        <input type="text" class="form-control" name="student_id" value="{{ i.admin.id }}" hidden>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Send Notification</button>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for View All Notifications -->
+
+<!-- Modal -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          
+          <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="table_id" class=" table table-hover table-center mb-0 ">
+                                <thead>
+                                  <tr>
+                                    <th style = "width:60%">Message</th>
+                                    <th style = "width:30%" class="text-right">Status</th>
+                                        
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                {% for i in notification %}
+                                  <tr>
+                                    <td>{{ i.message }}</td>
+                                    <td class="text-right">
+                                      <div class="actions">
+                                          {% if i.status == 0 %}
+                                          <span class="badge badge-danger">Unread The Message</span>
+                                          {% else %}
+                                          <span class="badge badge-success">Read The Message</span>
+                                          {% endif %}
+                                      </div>
+                                    </td>
+                                   
+                                   
+                                  </tr>
+                                {% endfor %}
+  
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+<!-- Modals for Sending Notifications to Teachers -->
+
+
+{% endblock %}

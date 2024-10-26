@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">courses</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'teacher-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Courses</li>
+                </ul>
+            </div>
+
+            
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+<hr>
+
+<br><br>
+    
+<div class="container">
+    {% for i in course %}
+    <div class="card">
+        
+        <div class="in-branch">Course</div>
+        <div class="header1">{{ i.name }}</div>
+        <div class="details">
+
+            <p><strong>Class</strong><br>{{ i.class1.name }}</p>
+        </div>
+            <a href="{%url "teacher-view-student-performance/student" i.id %}" class="view-result">View Report</a>
+
+        
+    </div>
+    {%endfor%}
+</div>
+
+
+<style>
+    body {
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        position: relative;
+        text-align: center;
+        box-sizing: border-box;
+        flex: 1 1 calc(50% - 40px); /* Two cards per row with space between */
+    }
+    .header1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #5e2e91;
+        margin-top:25px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    .details {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    .details p {
+        margin: 5px 0;
+    }
+    .absent {
+        background-color: #463072;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .absent:hover {
+        background-color: #36255a;
+    }
+    .view-result {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+    .view-result:hover {
+        background-color: #45a049;
+    }
+    .status {
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+    .in-branch {
+        background-color: #009688;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 100%; /* One card per row on small screens */
+        }
+    }
+</style>
+
+
+{% endblock %}

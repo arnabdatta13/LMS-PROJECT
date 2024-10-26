@@ -1,0 +1,611 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+<form class="form" autocomplete="off" action="{% url 'student-ask-question' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="container mt-4">
+    <div class="card shadow">
+      <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Ask a New Question</h5>
+        <button type="button" class="close text-white">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="card-body">
+        <!-- Remove the inner form tag -->
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <select class="form-control" id="subject-select" name="subject" required>
+              <option value="" disabled selected>Select Subject</option>
+              {% for subject in subjects %}
+              <option value="{{ subject.id }}">{{ subject.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-4">
+            <select class="form-control" id="chapter-select" name="chapter" required>
+              <option value="" disabled selected>Select Chapter</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- New Container Above the Textarea -->
+        <div id="container-above-textarea" class="mb-3 p-3 d-none" style="background-color: ##fff; border-radius: 8px; border: 1px solid #ccc;">
+          <h5>Uploaded Files:</h5>
+          <div id="uploaded-files" class="d-flex flex-wrap"></div>
+        </div>
+
+        <!-- Hidden file input for audio -->
+        <input type="file" id="audio-file-input" name="audio" style="display: none;" multiple />
+
+        <!-- Textarea -->
+        <div class="form-group">
+          <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required></textarea>
+        </div>
+
+        <div class="form-group d-flex justify-content-end">
+          <input type="file" id="file-input" name="files" style="display: none;" accept="image/*" multiple>
+          <button type="button" class="btn btn-purple mx-1" id="file-upload-btn"><i class="fas fa-paperclip"></i></button>
+          <button type="button" class="btn btn-teal mx-1" id="camera-button"><i class="fas fa-camera"></i></button>
+          <button type="button" class="btn btn-green mx-1" id="mic-button"><i class="fas fa-microphone"></i></button>
+          <button type="submit" class="btn btn-lightblue">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+  <!-- Modal for Microphone Recording -->
+  <div id="micModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h5>Recording Audio</h5>
+
+      <!-- Timer and Waveform -->
+      <div id="recording-view" class="d-flex flex-column justify-content-center align-items-center">
+        <div class="mic-icon-container d-flex justify-content-center align-items-center">
+          <i class="fas fa-microphone"></i>
+        </div>
+        <div class="timer mt-3" id="timer">00:00:00</div>
+        <div id="waveform-container" class="mt-4">
+          <canvas id="waveform" width="300" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- Finished Recording View -->
+      <div id="finished-view" class="d-none">
+        <audio id="audio-player" controls>
+          <source id="audio-source" type="audio/webm">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+      <!-- Buttons Placement -->
+      <div class="mt-4 gap-5">       <!-- Start and Stop Button -->
+        <button id="start-btn" class="btn-green start-btn">Start</button>
+        <!-- Delete and Add Buttons -->
+        <button id="delete-btn" class="btn btn-danger mt-2 d-none">Delete</button>
+        <button id="add-btn" class="btn btn-success mt-2 d-none">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Modal and form styling */
+
+    .bg-purple {
+      background-color: #5e3260;
+    }
+    .text-white {
+      color: #ffffff;
+    }
+    .btn-purple {
+      background-color: #754192;
+      color: #ffffff;
+      border-radius: 50%;
+    }
+    .btn-teal {
+      background-color: #418b7a;
+      color: #ffffff;
+      border-radius: 50%;
+    }
+    .btn-green {
+      background-color: #4CAF50;
+      color: #ffffff;
+      border-radius: 50%;
+    }
+    .btn-lightblue {
+      background-color: #a5bfff;
+      color: #ffffff;
+    }
+    .card {
+      border-radius: 10px;
+    }
+    .card-header .close {
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 1;
+      opacity: 1;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1050;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 15px;
+      width: 350px;
+      height: 400px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    }
+    .mic-icon-container {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 40px;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+    }
+    .timer {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: bold;
+    }
+    .start-btn, .stop-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .stop-btn {
+      background-color: #f44336; /* Red Stop Button */
+      color: white;
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .close-modal:hover,
+    .close-modal:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Waveform container and styling */
+    #waveform-container {
+      width: 100%;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    canvas {
+      border-radius: 8px;
+    }
+
+
+    /* Uploaded image styling */
+    .uploaded-image, .uploaded-audio {
+      position: relative;
+      margin-right: 10px;
+    }
+
+    .uploaded-image img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .uploaded-audio audio {
+      width: 200px;
+    }
+
+    .uploaded-image .overlay, .uploaded-audio .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .uploaded-image:hover .overlay,
+    .uploaded-audio:hover .overlay {
+      opacity: 1;
+    }
+
+    .uploaded-image .overlay i,
+    .uploaded-audio .overlay i {
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+
+
+    /* Hidden view */
+    .d-none {
+      display: none;
+    }
+  </style>
+
+  <script>
+    document.getElementById('camera-button').addEventListener('click', function() {
+      document.getElementById('file-input').click();
+    });
+
+    document.getElementById('file-upload-btn').addEventListener('click', function() {
+      document.getElementById('file-input').click();
+    });
+
+    document.getElementById('file-input').addEventListener('change', function() {
+      if (this.files.length > 0) {
+          const containerAboveTextarea = document.getElementById('container-above-textarea');
+          const uploadedFilesContainer = document.getElementById('uploaded-files');
+  
+          // Show the container if hidden
+          containerAboveTextarea.classList.remove('d-none');
+  
+          // Iterate over each file and display them
+          Array.from(this.files).forEach(file => {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                  const div = document.createElement('div');
+                  div.classList.add('uploaded-image');
+  
+                  div.innerHTML = `
+                    <img src="${e.target.result}" alt="Uploaded image">
+                    <div class="overlay">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+
+  
+                  // Add delete functionality
+                  div.querySelector('.overlay i').addEventListener('click', function () {
+                      div.remove();
+                      if (uploadedFilesContainer.children.length === 0) {
+                          containerAboveTextarea.classList.add('d-none');
+                      }
+                  });
+  
+                  uploadedFilesContainer.appendChild(div);
+              };
+              reader.readAsDataURL(file);
+          });
+      }
+  });
+  
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      let mediaRecorder;
+      let audioChunks = [];
+      let audioBlobUrl;
+      let audioContext;
+      let source;
+      let analyser;
+      let canvas = document.getElementById('waveform');
+      let canvasCtx = canvas.getContext('2d');
+      let timerInterval;
+      let startTime;
+      let isRecording = false;
+      const dataTransfer = new DataTransfer();
+
+      const startButton = document.getElementById('start-btn');
+      const timerElement = document.getElementById('timer');
+      const modal = document.getElementById('micModal');
+      const micButton = document.getElementById('mic-button');
+      const closeModal = document.querySelector('.close-modal');
+      const recordingView = document.getElementById('recording-view');
+      const finishedView = document.getElementById('finished-view');
+      const audioPlayer = document.getElementById('audio-player');
+      const audioSource = document.getElementById('audio-source');
+      const deleteBtn = document.getElementById('delete-btn');
+      const addBtn = document.getElementById('add-btn');
+      const textarea = document.getElementById('question-textarea');
+      const containerAboveTextarea = document.getElementById('container-above-textarea');
+      const uploadedFilesContainer = document.getElementById('uploaded-files');
+      const formElement = document.querySelector('form');
+      const audioFileInput = document.getElementById('audio-file-input'); // Hidden input for audio
+
+      // Show the modal when the mic button is clicked
+      micButton.addEventListener('click', function () {
+          modal.style.display = 'block';
+          resetToInitialView();
+      });
+
+      // Close the modal when the close button is clicked
+      closeModal.addEventListener('click', function () {
+          modal.style.display = 'none';
+          resetRecording();
+      });
+
+      // Close the modal if the user clicks outside the modal content
+      window.addEventListener('click', function (event) {
+          if (event.target === modal) {
+              modal.style.display = 'none';
+              resetRecording();
+          }
+      });
+
+      startButton.addEventListener('click', async function () {
+          if (!isRecording) {
+              // Start Recording
+              const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              mediaRecorder = new MediaRecorder(stream);
+              mediaRecorder.start();
+
+              // Set up Audio Context for waveform visualization
+              audioContext = new AudioContext();
+              source = audioContext.createMediaStreamSource(stream);
+              analyser = audioContext.createAnalyser();
+              analyser.fftSize = 1024; // Increased fftSize for smoother wave
+              source.connect(analyser);
+
+              mediaRecorder.ondataavailable = (event) => {
+                  audioChunks.push(event.data);
+              };
+
+              mediaRecorder.onstop = () => {
+                  const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                  audioBlobUrl = URL.createObjectURL(audioBlob);
+
+                  // Create a file from the Blob and assign it to the hidden input
+                  const audioFile = new File([audioBlob], `recorded-audio-${Date.now()}.webm`, { type: 'audio/webm' });
+                  dataTransfer.items.add(audioFile);
+                  audioFileInput.files = dataTransfer.files; // Attach the audio file to the hidden input
+
+
+                  audioSource.src = audioBlobUrl;
+                  audioPlayer.load();
+              };
+
+              // Start Timer
+              startTime = Date.now();
+              timerInterval = setInterval(updateTimer, 1000);
+
+              // Replace Start button with Stop button
+              startButton.textContent = "Stop";
+              startButton.classList.remove("btn-green");
+              startButton.classList.add("stop-btn");
+
+              // Start drawing the waveform
+              isRecording = true;
+              drawWaveform();
+          } else {
+              // Stop Recording and show the finished view
+              stopRecording();
+              replaceWithFinishedView();
+          }
+      });
+
+      function updateTimer() {
+          const elapsedTime = Date.now() - startTime;
+          const seconds = Math.floor(elapsedTime / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+
+          const displaySeconds = String(seconds % 60).padStart(2, '0');
+          const displayMinutes = String(minutes % 60).padStart(2, '0');
+          const displayHours = String(hours).padStart(2, '0');
+
+          timerElement.textContent = `${displayHours}:${displayMinutes}:${displaySeconds}`;
+        }
+
+      function drawWaveform() {
+          if (!isRecording) return;
+
+          requestAnimationFrame(drawWaveform);
+
+          let bufferLength = analyser.fftSize;
+          let dataArray = new Uint8Array(bufferLength);
+          analyser.getByteTimeDomainData(dataArray);
+
+          canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Green color wave effect with smoother curves
+          canvasCtx.strokeStyle = '#4CAF50'; // Green color for the wave
+
+          canvasCtx.lineWidth = 2;
+          canvasCtx.shadowBlur = 5;
+          canvasCtx.shadowColor = "rgba(76, 175, 80, 0.6)"; // Soft green shadow
+
+          canvasCtx.beginPath();
+
+          let sliceWidth = canvas.width / bufferLength;
+          let x = 0;
+
+          for (let i = 0; i < bufferLength; i++) {
+              let v = dataArray[i] / 128.0;
+              let y = v * canvas.height / 2;
+
+              if (i === 0) {
+                  canvasCtx.moveTo(x, y);
+              } else {
+                  canvasCtx.quadraticCurveTo(x - sliceWidth / 2, y, x, y); // Smoother curves
+              }
+
+              x += sliceWidth;
+          }
+
+          canvasCtx.stroke();
+      }
+
+      function stopRecording() {
+          clearInterval(timerInterval);
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+              mediaRecorder.stop();
+          }
+          if (audioContext) {
+              audioContext.close();
+          }
+          isRecording = false;
+      }
+
+      function resetRecording() {
+          recordingView.classList.remove('d-none');
+          finishedView.classList.add('d-none');
+          startButton.textContent = "Start";
+          startButton.classList.remove("stop-btn");
+          startButton.classList.add("btn-green");
+          timerElement.textContent = "00:00:00";
+          document.getElementById('waveform-container').style.display = 'block';
+          startButton.style.display = 'inline-block';
+          drawStartLine(); // Reset to start line
+      }
+
+      function replaceWithFinishedView() {
+          // Hide the waveform and stop button
+          document.getElementById('waveform-container').style.display = 'none';
+          startButton.style.display = 'none';
+
+          // Show audio player and delete/add buttons
+          finishedView.classList.remove('d-none');
+          deleteBtn.classList.remove('d-none');
+          addBtn.classList.remove('d-none');
+      }
+
+      function drawStartLine() {
+          canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+          canvasCtx.strokeStyle = 'rgb(200, 200, 200)';
+          canvasCtx.lineWidth = 2;
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(0, canvas.height / 2);
+          canvasCtx.lineTo(canvas.width, canvas.height / 2);
+          canvasCtx.stroke();
+      }
+
+      function resetToInitialView() {
+          resetRecording();
+          audioChunks = [];
+          deleteBtn.classList.add('d-none');
+          addBtn.classList.add('d-none');
+      }
+
+      // Delete action
+      deleteBtn.addEventListener('click', function () {
+          resetToInitialView();
+      });
+
+      // Add action - shows the recorded voice in the container above the textarea
+      addBtn.addEventListener('click', function () {
+        if (audioBlobUrl) {
+            // Create an audio element
+            const audioElementDiv = document.createElement('div');
+            audioElementDiv.classList.add('uploaded-audio');
+    
+            const audioElement = document.createElement('audio');
+            audioElement.controls = true;
+            audioElement.src = audioBlobUrl;
+    
+            const overlayDiv = document.createElement('div');
+            overlayDiv.classList.add('overlay');
+    
+            const closeIcon = document.createElement('i');
+            closeIcon.classList.add('fas', 'fa-times');
+    
+            // Append close icon to overlay
+            overlayDiv.appendChild(closeIcon);
+    
+            // Add delete functionality for the audio
+            closeIcon.addEventListener('click', function () {
+                audioElementDiv.remove();
+                if (uploadedFilesContainer.children.length === 0) {
+                    containerAboveTextarea.classList.add('d-none');
+                }
+            });
+    
+            // Append the audio element and overlay to the main div
+            audioElementDiv.appendChild(audioElement);
+            audioElementDiv.appendChild(overlayDiv);
+    
+            // Append the new audio element to the uploaded files container
+            containerAboveTextarea.classList.remove('d-none');
+            uploadedFilesContainer.appendChild(audioElementDiv);
+    
+            // Close the modal and reset the recording view
+            modal.style.display = 'none';
+            resetRecording();
+        }
+
+        
+
+    });
+    
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const subjectSelect = document.getElementById('subject-select');
+      const chapterSelect = document.getElementById('chapter-select');
+    
+      // Chapters data for each subject; adjust based on actual data
+      const chaptersData = {
+        1: ['Chapter 1', 'Chapter 2', 'Chapter 3'],  // Bangla
+        2: ['Introduction', 'Grammar Basics', 'Literature'],  // English
+        3: ['Algebra', 'Geometry', 'Trigonometry']  // Mathematics
+      };
+    
+      subjectSelect.addEventListener('change', function () {
+        const selectedSubjectId = subjectSelect.value;
+    
+        // Clear and reset chapter options
+        chapterSelect.innerHTML = '<option value="" disabled selected>Select Chapter</option>';
+    
+        // Populate chapter options if available for selected subject
+        if (chaptersData[selectedSubjectId]) {
+          chaptersData[selectedSubjectId].forEach(function (chapter) {
+            const option = document.createElement('option');
+            option.value = chapter;
+            option.textContent = chapter;
+            chapterSelect.appendChild(option);
+          });
+        }
+      });
+    });
+    
+
+    
+  
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}

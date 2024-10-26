@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+{% include "base_desine/loader.html" %}
+
+<div class="page-header">
+      <div class="row align-items-center">
+         <div class="col">
+            <h3 class="page-title">Edit Question</h3>
+            <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+                  <li class="breadcrumb-item active">Edit Question</li>
+            </ul>
+         </div>
+
+         <div class="col-auto text-right float-right ml-auto">
+
+            <a href="{% url 'admin-view-practice-exam-question' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+         </div>
+      </div>
+</div>
+
+
+
+<div class="row">
+   <div class="col-sm-12">
+      <div class="card">
+         <div class="card-body">
+            <form method='post' action='{% url "admin-update-practice-exam-question" %}' >
+               {% csrf_token%}
+                  <div class="col-12">
+                     <h5 class="form-title"><span>Edit Question</span></h5>
+                  </div>
+                  {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                    <label>Exam</label>
+                       <select class="form-control" name='exam_id'required>
+                       <option value="" disabled selected >Select Exam</option>
+                       {% for i in exam %}
+                       <option value = '{{i.id}}'>{{i.exam_name}}</option>
+                       {% endfor%}
+                       </select>
+                 </div>
+                 <br>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Question</label>
+                            <textarea class="form-control" name='question'required >{% for i in question %} {{i.question}} {%endfor%}</textarea>
+                        </div>
+                    </div>
+                   <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Marks</label>
+                        <input type="text" class="form-control" name='question_id' value='{% for i in question %} {{i.id}} {%endfor%}' hidden>
+                        <input type="text" class="form-control " name='mark'required value='{% for i in question %} {{i.marks}} {%endfor%}'>
+                     </div>
+                   </div>
+
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Option 1</label>
+                            <input type="text" class="form-control" name='option1'required value='{% for i in question %} {{i.option1}} {%endfor%}'>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Option 2</label>
+                            <input type="text" class="form-control" name='option2'required value='{% for i in question %} {{i.option2}} {%endfor%}'>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Option 3</label>
+                            <input type="text" class="form-control" name='option3'required value='{% for i in question %} {{i.option3}} {%endfor%}'>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Option 4</label>
+                            <input type="text" class="form-control" name='option4'required value='{% for i in question %} {{i.option4}} {%endfor%}'>
+                        </div>
+                    </div>
+                    <div class="col-sm-11">
+                        <label>Answer</label>
+                           <select class="form-control" name='answer'required>
+                            <option value="" disabled selected>Select Answer</option>
+                           
+                            <option value="Option1">Option 1</option>
+                            <option value="Option2">Option 2</option>
+                            <option value="Option3">Option 3</option>
+                            <option value="Option4">Option 4</option>
+                           </select>
+                     </div>
+                     <br>
+                     <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Solution</label>
+                            <textarea class="form-control" name='solution'required >{% for i in question %} {{i.solution_details}} {%endfor%}</textarea>
+                        </div>
+                    </div>
+                  
+                  
+                 
+                 
+                  <div class="col-12">
+                     <button type="submit" class="btn btn-primary">Edit Question</button>
+                  </div>
+               
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

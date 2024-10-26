@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">Edit Student</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">Edit Student</li>
+           </ul>
+       </div>
+
+       <div class="col-auto text-right float-right ml-auto">
+
+
+           <a href="{% url 'admin-student-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+
+
+           
+       </div>
+   </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action='{% url "admin-student-update" %}' enctype="multipart/form-data">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Edit Student</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>First Name</label>
+                         <input type="text" class="form-control" name='first_name' value='{% for i in student %} {{i.admin.first_name}} {% endfor%}'>
+                      </div>
+                  </div>
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Last Name</label>
+                         <input type="text" class="form-control" name='last_name' value='{% for i in student %} {{i.admin.last_name}} {% endfor%}'>
+                      </div>
+                  </div>
+                   
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Username </label>
+                        <input type="text" class="form-control" name='username' value='{% for i in student %} {{i.admin.username}} {% endfor%}'>
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name='password'  placeholder="Fill Only If You Want To Change Your Password">
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Father's Name</label>
+                        <input type="text" class="form-control" name='fathers_name' value='{% for i in student %} {{i.fathers_name}} {% endfor%}'>
+                     </div>
+                 </div>
+                 <div class="col-sm-11">
+                  <div class="form-group">
+                     <label>Mother's Name</label>
+                     <input type="text" class="form-control" name='mathers_name'  value='{% for i in student %} {{i.mothers_name}} {% endfor%}'>
+                  </div>
+                 </div>
+                 <br>
+                  <div class="col-sm-11">
+                     <label>Class</label>
+                        <select class="form-control" name='class_id'required>
+                        <option value="" disabled selected >Select Class</option>
+                        {% for i in class%}
+                        <option value = '{{i.id}}'>{{i.name}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Roll</label>
+                        <input type="text" class="form-control " name='roll' value='{% for i in student %} {{i.roll_number}} {% endfor%}'>
+                     </div>
+                  </div>
+
+                  <div class="col-sm-11">
+                     <label>Gender</label>
+                        <select class="form-control" name='gender'  required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value = 'Female'>Female</option>
+                        <option value='Male'>Male</option>
+                        <option value='Others'>Others</option>
+                        </select>
+                  </div>
+                  <br>
+                  
+                  <div class="col-sm-11">
+                     <label>Session Year</label>
+                        <select class="form-control" name='session_year_id' required>
+                        <option value="" disabled selected>Select Session Year</option>
+                        {% for i in session_year%}
+                        <option value = '{{i.id}}'>{{i.session_start}} To {{i.session_end}}</option>
+                        {% endfor%}
+                        </select>
+                  </div>
+                  <br>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" class="form-control " name='phone_number'   value='{% for i in student %} {{i.phone_number}} {% endfor%}'>
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                     <div class="form-group">
+                        <label >Address</label>
+                        <textarea class="form-control" name='address' >{% for i in student %} {{i.address}} {% endfor%}</textarea>
+                     </div>
+                  </div>
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label> Profile Pic</label>
+                         <input type="file" class="form-control" name='profile_pic'>
+                         <input type="text" class="form-control" name='student_id' value='{% for i in student%} {{i.admin.id}} {%endfor%}' hidden>
+                      </div>
+                  </div>
+                   
+                   
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Update Student</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock %}

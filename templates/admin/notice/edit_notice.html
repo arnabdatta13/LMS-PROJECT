@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content%}
+
+{% include "base_desine/loader.html" %}
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action="{% url 'admin-update-notice'%}">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Edit Notice</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Title</label>
+                         <input type="text" class="form-control" name='title'required  value= "{{notice.title}}">
+                         <input type="text" class="form-control" name='notice_id'required value="{{notice.id}}" hidden>
+                      </div>
+                  </div>
+                  <div class="col-sm-11">
+                    <div class="form-group">
+                       <label> PDF </label>
+                       <input type="file" class="form-control" name='pdf'>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Update Notice</button>
+                </div>
+            
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock%}

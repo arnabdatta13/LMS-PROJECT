@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Online Live Class</title>
+    <!-- Add Zoom Web SDK CSS -->
+    <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.9.0/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.9.0/css/react-select.css">
+</head>
+<body>
+    <div id="zmmtg-root"></div>
+    <div id="aria-notify-area"></div>
+    <div class="zoom-meeting"></div>
+
+    <!-- Add Zoom Web SDK JavaScript -->
+    <script src="https://source.zoom.us/2.9.0/lib/vendor/react.min.js"></script>
+    <script src="https://source.zoom.us/2.9.0/lib/vendor/react-dom.min.js"></script>
+    <script src="https://source.zoom.us/2.9.0/lib/vendor/redux.min.js"></script>
+    <script src="https://source.zoom.us/2.9.0/lib/vendor/redux-thunk.min.js"></script>
+    <script src="https://source.zoom.us/2.9.0/lib/vendor/jquery.min.js"></script>
+    <script src="https://source.zoom.us/2.9.0/lib/vendor/lodash.min.js"></script>
+    <script src="https://source.zoom.us/zoom-meeting-2.9.0.min.js"></script>
+
+    <script>
+        // Zoom Meeting configuration
+        const meetConfig = {
+            sdkKey: "{{ sdk_key }}",
+            signature: "{{ signature }}",
+            meetingNumber: "{{ meeting_id }}",
+            userName: "{{ username }}",
+            passWord: "{{ password }}",
+            leaveUrl: "https://your-website.com/leave",
+            role: 1,
+            zak: "{{ zak_token }}"
+        };
+
+        ZoomMtg.preLoadWasm();
+        ZoomMtg.prepareWebSDK();
+
+        function beginZoomMeeting() {
+            ZoomMtg.init({
+                leaveUrl: meetConfig.leaveUrl,
+                success: function() {
+                    ZoomMtg.join({
+                        meetingNumber: meetConfig.meetingNumber,
+                        userName: meetConfig.userName,
+                        signature: meetConfig.signature,
+                        sdkKey: meetConfig.sdkKey,
+                        userEmail: "arnabdatta83@gmail.com",
+                        passWord: meetConfig.passWord,
+                        zak: meetConfig.zak,
+                        success: function(res) {
+                            console.log("Join meeting success");
+                        },
+                        error: function(res) {
+                            console.log(res);
+                        }
+                    });
+                },
+                error: function(res) {
+                    console.log(res);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            beginZoomMeeting();
+        });
+    </script>
+</body>
+</html>

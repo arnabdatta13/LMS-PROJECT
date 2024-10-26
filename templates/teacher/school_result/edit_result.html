@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content%}
+
+{% include "base_desine/loader.html" %}
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+            <form method="post" action="{% url 'teacher-update-result' %}">
+                {% csrf_token %}
+                <input type="hidden" name="result_id" value="{{ result.id }}">
+                <div class="form-group">
+                    <label for="exam_mark">Full Mark</label>
+                    <input type="text" class="form-control" id="exam_mark" name="exam_mark" value="{{ result.exam_mark }}">
+                </div>
+                <div class="form-group">
+                    <label for="assignment_mark">Obtain Mark</label>
+                    <input type="text" class="form-control" id="assignment_mark" name="assignment_mark" value="{{ result.assignment_mark }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Result</button>
+            </form>
+            
+          </div>
+       </div>
+    </div>
+ </div>
+
+{% endblock%}

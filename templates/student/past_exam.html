@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Past Exams</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Past Exams</li>
+            </ul>
+        </div>
+    </div>
+  </div>
+  
+<div class="container">
+    {% for exam, exam_type in all_exams %}
+    <div class="card">
+        {% if exam_type == 'live' %}
+            <div class="in-branch">Live Exam</div>
+        {% else %}
+            <div class="in-branch">Practice Exam</div>
+        {% endif %}
+        <div class="header1">{{ exam.exam_name }}</div>
+        <div class="details">
+            <p><strong>Date & Time</strong><br>
+                {% if exam.start_time %}
+                    {{ exam.start_time|date:"d M, Y h:i A" }} to {{ exam.end_time|date:"d M, Y h:i A" }}
+                {% else %}
+                    {{ exam.created_at|date:"d M, Y h:i A" }}
+                {% endif %}
+            </p>
+            <p><strong>Duration</strong><br>{{ exam.duration }}</p>
+            <p><strong>Course</strong><br>{{ exam.course.name }}</p>
+        </div>
+        {% if exam_type == 'live' %}
+            {% if exam.id in live_exam_reports or exam.id in written_answers %}
+                <p class="text-success">You have taken this exam.</p>
+            {% if exam.id in live_exam_reports or exam.id in written_answers %}
+                <a href="{% url 'student-view-live-exam-result' exam.id %}" class="view-result">View Result</a>
+            {% endif %}
+            
+        {% else %}
+            <p class="text-danger">You did not take this exam.</p>
+        {% endif %}
+        {% elif exam_type == 'practice' %}
+            {% if exam.id in practice_exam_results %}
+                <div class="status">You took the exam</div>
+                <a href="{% url "student-view-practice-exam-mark" exam.id%}" class="view-result">View Result</a>
+            {% else %}
+                <div class="status">You didn't take the exam</div>
+                <button class="absent">Absent</button>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    body {
+        background-color: #f2ecf7;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        position: relative;
+        text-align: center;
+        box-sizing: border-box;
+        flex: 1 1 calc(50% - 40px); /* Two cards per row with space between */
+    }
+    .header1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #5e2e91;
+        margin-top:25px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    .details {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    .details p {
+        margin: 5px 0;
+    }
+    .absent {
+        background-color: #463072;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .absent:hover {
+        background-color: #36255a;
+    }
+    .view-result {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+    .view-result:hover {
+        background-color: #45a049;
+    }
+    .status {
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+    .in-branch {
+        background-color: #009688;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+    @media (max-width: 768px) {
+        .card {
+            flex: 1 1 100%; /* One card per row on small screens */
+        }
+    }
+</style>
+{% endblock %}

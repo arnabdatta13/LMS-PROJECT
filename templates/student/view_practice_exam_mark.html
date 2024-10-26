@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">View Marks</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'student-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">View Marks</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class=" table table-hover table-center mb-0 ">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Exam Name</th>
+                                    <th>Total Marks</th>
+                                    <th>Attempt</th>
+                                    <th>date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in result %}
+                                <tr>
+                                    <td>{{ i.id }}</td>
+                                    <td>{{ i.exam }}</td>
+                                    <td>{{ i.marks }}</td>
+                                    <td>Attempt {{ forloop.counter }}</td>
+                                    <td>{{ i.date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

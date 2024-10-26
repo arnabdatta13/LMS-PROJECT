@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content%}
+
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+   <div class="page-header">
+       <div class="row align-items-center">
+           <div class="col">
+               <h3 class="page-title">Notification</h3>
+               <ul class="breadcrumb">
+                   <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+                   <li class="breadcrumb-item active">Notification</li>
+               </ul>
+           </div>
+           
+         <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url "teacher-view-notification"%}" class="btn btn-outline-primary mr-2"><i class="fa fa-eye"></i> View Notification</a>
+        </div>
+       </div>
+   </div>
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action="{% url 'teacher-add-notification'%}">
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Add Notification</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Notification Details</label>
+                         <input type="text" class="form-control" name='notification'required >
+                      </div>
+                  </div>
+                  
+                  
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Add Notification</button>
+                   </div>
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+</div>
+{% endblock%}

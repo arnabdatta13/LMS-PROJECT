@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% include "base_desine/loader.html" %}
+
+   <div class="content container-fluid">
+      <div class="page-header">
+         <div class="row align-items-center">
+            <div class="col">
+               <h3 class="page-title">Edit Subject</h3>
+               <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="subjects.html">Subject</a></li>
+                  <li class="breadcrumb-item active">Edit Subject</li>
+               </ul>
+            </div>
+         </div>
+      </div>
+      {% include "base_desine/massages.html" %}
+      <div class="row">
+         <div class="col-sm-12">
+            <div class="card">
+               <div class="card-body">
+                  <form action="{% url 'admin-subject-update' %}" method="post">
+                     {% csrf_token %}
+                     <div class="row">
+                        <div class="col-12">
+                           <h5 class="form-title"><span>Subject Information</span></h5>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                           <div class="form-group">
+                              <label>Subject Name</label>
+                              <input type="text" class="form-control" name= "subject_name" value="{{subject.name}}" required>
+                              <input type="text" class="form-control" name= "subject_id" value="{{subject.id}}" hidden required>
+                           </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                           <label>Class</label>
+                           <select class="form-control" name='class_id' required>
+                              <option disabled selected>Select Class</option>
+                                 {% for i in class%}
+                              <option value = '{{i.id}}'>{{i.name}}</option>
+                                 {% endfor%}
+                           </select>
+                        </div>
+                        
+                        
+                        <div class="col-12 mt-4" >
+                           <button type="submit" class="btn btn-primary">Update Subject</button>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+
+ 
+{% endblock %}

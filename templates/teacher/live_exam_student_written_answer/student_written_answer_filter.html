@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">View Student Written Answer</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'teacher-home' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">View Student Written Answer</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% include "base_desine/massages.html" %}
+
+    {% if action is None %}
+        <form method="post" action="?action=Show-Courses">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>View Student Written Answer</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Class</label>
+                                        <select class="form-control" name="class_id" required>
+                                            <option value="" disabled selected>-- Select Class--</option>
+                                            {% for class in classes %}
+                                                <option value="{{ class.id }}">{{ class.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Fetch Courses</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% elif action == 'Show-Courses' %}
+        <form method="post" action="?action=Show-Exams">
+            {% csrf_token %}
+            <input type="hidden" name="class_id" value="{{ selected_class_id }}">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>View Student Written Answer</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Course</label>
+                                        <select class="form-control" name="course_id" required>
+                                            <option value="" disabled selected>-- Select Course--</option>
+                                            {% for course in courses %}
+                                                <option value="{{ course.id }}">{{ course.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Fetch Exams</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% elif action == 'Show-Exams' %}
+        <form method="post" action="?action=Show-Students">
+            {% csrf_token %}
+            <input type="hidden" name="class_id" value="{{ selected_class_id }}">
+            <input type="hidden" name="course_id" value="{{ selected_course_id }}">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="form-title"><span>View Student Written Answer</span></h5>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label>Exam</label>
+                                        <select class="form-control" name="exam_id" required>
+                                            <option value="" disabled selected>-- Select Exam--</option>
+                                            {% for exam in exams %}
+                                                <option value="{{ exam.id }}">{{ exam.exam_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Fetch Students</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% elif action == 'Show-Students' %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card card-table">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="table_id" class="table table-hover table-center mb-0 ">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Roll</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in students%}
+                                <tr>
+                                    <td>{{ i.id }}</td>
+                                    <td>{{ i.admin.first_name }} &nbsp; {{ i.admin.last_name }}</td>
+                                    <td>{{i.roll_number}}</td>
+
+                                    <td class="text-right">
+                                        <div class="actions">
+                                            <a href="{% url 'teacher-student-written-answer' i.id exam %}" class="btn btn-sm bg-success-light mr-2">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
