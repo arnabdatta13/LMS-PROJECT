@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam,Notice,StudentQuestion
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam,Notice,StudentQuestion,TeacherTextAnswer,TeacherAudioAnswer,TeacherPhotoAnswer
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -2430,3 +2430,40 @@ def TEACHER_ANSWER(request,id):
     }
 
     return render(request, "teacher/answer.html", context)
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def TEACHER_ANSWER_STUDENT_QUESTION(request):
+    if request.method == "POST":
+        user = request.user
+        teacher = Teacher.objects.get(admin=user)
+        
+    
+        answer_text = request.POST.get('text_question')
+        question_id = request.POST.get("question_id")
+        audio_files = request.FILES.getlist('audio')
+        uploaded_files = request.FILES.getlist('files')  # Gets the list of uploaded files
+
+        question = StudentQuestion.objects.get(id = question_id)
+
+        TeacherTextAnswer.objects.create(
+            teacher= teacher,
+            question = question,
+            answer_text=answer_text
+        )
+
+        for photo in uploaded_files:
+            TeacherPhotoAnswer.objects.create(
+                question=question, 
+                photo=photo
+            )
+        
+         # Save audio files
+        for audio_file in audio_files:
+            TeacherAudioAnswer.objects.create(
+                question=question, 
+                audio_file=audio_file
+            )
+
+        messages.success(request,"Answer has been submited successfully.")
+        return redirect("teacher-qa")

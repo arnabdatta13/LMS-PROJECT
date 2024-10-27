@@ -4,8 +4,6 @@
 {% load static %}
 
 <div class="container">
-    <form method="post" action="{% url 'teacher-give-student-live-exam-written-question-mark' %}">
-        {% csrf_token %}
         <!-- Student Information Container -->
         <div class="student-info-container">
             <h2>Student Information</h2>
@@ -67,7 +65,7 @@
                 <div class="answer-container">
 
                     
-                    <form class="form" autocomplete="off" action="{% url 'student-ask-question' %}" method="POST" enctype="multipart/form-data">
+                    <form class="form" autocomplete="off" action="{% url 'teacher-answer-student-question' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="teacher-answer" style= "border: 2px solid rgba(0, 0, 0, 0.1); margin:13px;">
                             <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
@@ -84,7 +82,9 @@
                       
                               <!-- Hidden file input for audio -->
                               <input type="file" id="audio-file-input" name="audio" style="display: none;" multiple />
-                      
+
+                              <input type="text" value = "{{question.id}}" name="question_id" hidden />
+
                               <!-- Textarea -->
                               <div class="form-group">
                                 <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required></textarea>
@@ -107,18 +107,12 @@
             <input type="hidden" name="student_id" value="{{ student.id }}">
             <input type="hidden" name="exam_id" value="{{ exam.id }}">
             
-            {%if written_answers%}
-            <div class="button-group">
-                <button type="submit" class="btn btn-primary">Submit Marks</button>
-            </div>
-            {%else%}
+            
             <div class="button-group">
                 <a href="{% url "teacher-home" %}" ><button class="btn btn-primary">Go Back</button></a>
             </div>
             <br>
-            {%endif%}
         </div>
-    </form>
 </div>
 
 

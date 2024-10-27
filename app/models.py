@@ -472,6 +472,7 @@ class StudentPhoto(models.Model):
 
 
 class TeacherTextAnswer(models.Model):
+    teacher = models.ForeignKey(Teacher,on_delete=models.CASCADE,default= 1)
     question = models.ForeignKey(StudentQuestion, related_name='text_answers', on_delete=models.CASCADE)
     answer_text = models.TextField()
     answered_at = models.DateTimeField(auto_now_add=True)
