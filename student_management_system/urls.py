@@ -309,6 +309,9 @@ urlpatterns = [
     path('teacher-qa', teacher_views.QA,name='teacher-qa'),
     path('teacher-qa/<int:id>', teacher_views.TEACHER_ANSWER,name='teacher-qa'),
     path('teacher-answer-student-question', teacher_views.TEACHER_ANSWER_STUDENT_QUESTION,name='teacher-answer-student-question'),
+    path('teacher-view-student-question-answer', teacher_views.TEACHER_VIEW_STUDENT_QUESTION_ANSWER,name='teacher-view-student-question-answer'),
+    path('teacher-edit-student-question-answer/<int:id>', teacher_views.TEACHER_EDIT_STUDENT_QUESTION_ANSWER,name='teacher-edit-student-question-answer'),
+    path('teacher-delete-student-question-answer/<int:id>', teacher_views.TEACHER_DELETE_STUDENT_QUESTION_ANSWER,name='teacher-delete-student-question-answer'),
 
 
     #this is student panel url

@@ -2411,7 +2411,9 @@ def DELETE_NOTICE(request,id):
 def QA(request):
     # Fetch questions without any related answers (text, photo, or audio)
     unanswered_questions = StudentQuestion.objects.filter(
-        ~Q(text_answers__isnull=False) | ~Q(photo_answers__isnull=False) | ~Q(audio_answers__isnull=False)
+        Q(text_answers__isnull=True) &
+        Q(photo_answers__isnull=True) &
+        Q(audio_answers__isnull=True)
     ).distinct()
 
     context = {
@@ -2419,7 +2421,6 @@ def QA(request):
     }
 
     return render(request, "teacher/qa.html", context)
-
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
@@ -2430,6 +2431,7 @@ def TEACHER_ANSWER(request,id):
     }
 
     return render(request, "teacher/answer.html", context)
+
 
 @login_required(login_url='login')
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
@@ -2467,3 +2469,48 @@ def TEACHER_ANSWER_STUDENT_QUESTION(request):
 
         messages.success(request,"Answer has been submited successfully.")
         return redirect("teacher-qa")
+    
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')  
+def TEACHER_VIEW_STUDENT_QUESTION_ANSWER(request):
+    # Filter questions with any type of answer from the teacher
+    answered_questions = StudentQuestion.objects.filter(
+        Q(text_answers__isnull=False) | 
+        Q(audio_answers__isnull=False) | 
+        Q(photo_answers__isnull=False)
+    ).distinct()
+    
+    context = {
+        'answered_questions': answered_questions
+    }
+    
+    return render(request, "teacher/view_answer.html", context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')  
+def TEACHER_EDIT_STUDENT_QUESTION_ANSWER(request,id):
+    question = StudentQuestion.objects.get(id = id)
+
+    context = {
+        "question":question,
+    }
+    return render(request,"teacher/edit_answer.html",context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')  
+def TEACHER_DELETE_STUDENT_QUESTION_ANSWER(request,id):
+    # Filter questions with any type of answer from the teacher
+    TeacherTextAnswer.objects.filter(question_id=id).delete()
+
+    # Filter and delete audio answers related to the question
+    TeacherAudioAnswer.objects.filter(question_id=id).delete()
+
+    # Filter and delete photo answers related to the question
+    TeacherPhotoAnswer.objects.filter(question_id=id).delete()
+    messages.success(request,"Answer has been deleted successfully.")
+    return redirect("teacher-view-student-question-answer")

@@ -85,10 +85,20 @@
 
                               <input type="text" value = "{{question.id}}" name="question_id" hidden />
 
+                                {% if question.text_answers.exists %}
+                                    {% for answer in question.text_answers.all %}
+                                        <div class="form-group">
+                                            <h5 style="margin-left:3px; margin-bottom:15px; margin-top:20px;">Answer:</h5>
+                                            <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required >{{answer.answer_text}}</textarea>
+                                        </div>
+                                    {%endfor%}
+                                {%else%}
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required ></textarea>
+                                    </div>
+                                {%endif%}
                               <!-- Textarea -->
-                              <div class="form-group">
-                                <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required></textarea>
-                              </div>
+                              
                               <hr>
                               <div class="form-group d-flex justify-content-end">
                                 <input type="file" id="file-input" name="files" style="display: none;" accept="image/*" multiple>
@@ -587,6 +597,77 @@
 
 
 <script>
+    // Load saved images and audio on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        const uploadedFilesContainer = document.getElementById('uploaded-files');
+        const containerAboveTextarea = document.getElementById('container-above-textarea');
+        containerAboveTextarea.classList.remove('d-none'); // Ensure the container is visible
+
+        console.log("Initializing loading of saved files...");
+
+        // Show saved photo answers
+        {% for photo in question.photo_answers.all %}
+        (function() {
+            const photoDiv = document.createElement('div');
+            photoDiv.classList.add('uploaded-image');
+            photoDiv.innerHTML = `
+                <img src="{{ photo.photo.url }}" alt="Teacher Photo Answer" class="teacher-answer-img">
+                <div class="overlay">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+            console.log("Loaded saved image from:", "{{ photo.photo.url }}"); // Debug log for each image
+
+            // Add delete functionality for each image
+            photoDiv.querySelector('.overlay i').addEventListener('click', function () {
+                photoDiv.remove();
+                if (uploadedFilesContainer.children.length === 0) {
+                    containerAboveTextarea.classList.add('d-none');
+                }
+            });
+            uploadedFilesContainer.appendChild(photoDiv);
+        })();
+        {% endfor %}
+
+        // Show saved audio answers
+        {% for audio in question.audio_answers.all %}
+        (function() {
+            const audioDiv = document.createElement('div');
+            audioDiv.classList.add('uploaded-audio');
+            audioDiv.innerHTML = `
+                <audio controls>
+                    <source src="{{ audio.audio_file.url }}" type="audio/webm">
+                    Your browser does not support the audio element.
+                </audio>
+                <div class="overlay">
+                    <i class="fas fa-times"></i>
+                </div>
+            `;
+            console.log("Loaded saved audio from:", "{{ audio.audio_file.url }}"); // Debug log for each audio
+
+            // Add delete functionality for each audio
+            audioDiv.querySelector('.overlay i').addEventListener('click', function () {
+                audioDiv.remove();
+                if (uploadedFilesContainer.children.length === 0) {
+                    containerAboveTextarea.classList.add('d-none');
+                }
+            });
+            uploadedFilesContainer.appendChild(audioDiv);
+        })();
+        {% endfor %}
+
+        // Confirm all saved files loaded
+        if (uploadedFilesContainer.children.length > 0) {
+            console.log("All saved files loaded into the container.");
+        } else {
+            console.log("No saved files to load.");
+        }
+    });
+
+    
+        
+
+
     document.getElementById('camera-button').addEventListener('click', function() {
       document.getElementById('file-input').click();
     });
@@ -886,10 +967,8 @@
             resetRecording();
         }
 
-        
-
         });
-    
+        
     });
 
     
