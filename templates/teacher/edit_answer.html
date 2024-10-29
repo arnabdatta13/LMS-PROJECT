@@ -2,6 +2,20 @@
 {% block content %}
 {% include "base_desine/loader.html" %}
 {% load static %}
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Edit Answer</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url "teacher-home"%}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Edit Answer</li>
+                </ul>
+            </div>
+            <div class="col-auto text-right float-right ml-auto">
+                <a href="{% url "teacher-view-student-question-answer" %}" class="btn btn-outline-primary mr-2"><i class="fa fa-eye"></i>View Answers</a>
+            </div>
+        </div>
+    </div>
 
 <div class="container">
         <!-- Student Information Container -->
@@ -65,7 +79,7 @@
                 <div class="answer-container">
 
                     
-                    <form class="form" autocomplete="off" action="{% url 'teacher-answer-student-question' %}" method="POST" enctype="multipart/form-data">
+                    <form class="form" autocomplete="off" action="{% url 'teacher-edit-student-question-answer-post' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="teacher-answer" style= "border: 2px solid rgba(0, 0, 0, 0.1); margin:13px;">
                             <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
@@ -86,12 +100,10 @@
                               <input type="text" value = "{{question.id}}" name="question_id" hidden />
 
                                 {% if question.text_answers.exists %}
-                                    {% for answer in question.text_answers.all %}
-                                        <div class="form-group">
-                                            <h5 style="margin-left:3px; margin-bottom:15px; margin-top:20px;">Answer:</h5>
-                                            <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required >{{answer.answer_text}}</textarea>
-                                        </div>
-                                    {%endfor%}
+                                    <div class="form-group">
+                                        <h5 style="margin-left:3px; margin-bottom:15px; margin-top:20px;">Answer:</h5>
+                                        <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required >{% for answer in question.text_answers.all %}{{answer.answer_text}}{%endfor%}</textarea>
+                                    </div>
                                 {%else%}
                                     <div class="form-group">
                                         <textarea class="form-control" rows="4" id="question-textarea" placeholder="Ask a question" name="text_question" required ></textarea>
@@ -601,11 +613,13 @@
     document.addEventListener('DOMContentLoaded', function () {
         const uploadedFilesContainer = document.getElementById('uploaded-files');
         const containerAboveTextarea = document.getElementById('container-above-textarea');
+        const imageFileInput = document.getElementById('file-input'); // Image input
+        const audioFileInput = document.getElementById('audio-file-input'); // Audio input
+        const formElement = document.querySelector('form');
+    
         containerAboveTextarea.classList.remove('d-none'); // Ensure the container is visible
-
-        console.log("Initializing loading of saved files...");
-
-        // Show saved photo answers
+    
+        // Load and display saved images
         {% for photo in question.photo_answers.all %}
         (function() {
             const photoDiv = document.createElement('div');
@@ -616,20 +630,30 @@
                     <i class="fas fa-times"></i>
                 </div>
             `;
-            console.log("Loaded saved image from:", "{{ photo.photo.url }}"); // Debug log for each image
-
-            // Add delete functionality for each image
+            uploadedFilesContainer.appendChild(photoDiv);
+    
+            // Add delete functionality
             photoDiv.querySelector('.overlay i').addEventListener('click', function () {
                 photoDiv.remove();
                 if (uploadedFilesContainer.children.length === 0) {
                     containerAboveTextarea.classList.add('d-none');
                 }
             });
-            uploadedFilesContainer.appendChild(photoDiv);
+    
+            // Convert image URL to blob and add to file input
+            fetch("{{ photo.photo.url }}")
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'saved-image.jpg', { type: blob.type });
+                    const dataTransfer = new DataTransfer();
+                    Array.from(imageFileInput.files).forEach(file => dataTransfer.items.add(file)); // Keep existing files
+                    dataTransfer.items.add(file);
+                    imageFileInput.files = dataTransfer.files;
+                });
         })();
         {% endfor %}
-
-        // Show saved audio answers
+    
+        // Load and display saved audio
         {% for audio in question.audio_answers.all %}
         (function() {
             const audioDiv = document.createElement('div');
@@ -643,26 +667,31 @@
                     <i class="fas fa-times"></i>
                 </div>
             `;
-            console.log("Loaded saved audio from:", "{{ audio.audio_file.url }}"); // Debug log for each audio
-
-            // Add delete functionality for each audio
+            uploadedFilesContainer.appendChild(audioDiv);
+    
+            // Add delete functionality
             audioDiv.querySelector('.overlay i').addEventListener('click', function () {
                 audioDiv.remove();
                 if (uploadedFilesContainer.children.length === 0) {
                     containerAboveTextarea.classList.add('d-none');
                 }
             });
-            uploadedFilesContainer.appendChild(audioDiv);
+    
+            // Convert audio URL to blob and add to audio input
+            fetch("{{ audio.audio_file.url }}")
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], 'saved-audio.webm', { type: blob.type });
+                    const dataTransfer = new DataTransfer();
+                    Array.from(audioFileInput.files).forEach(file => dataTransfer.items.add(file)); // Keep existing files
+                    dataTransfer.items.add(file);
+                    audioFileInput.files = dataTransfer.files;
+                });
         })();
         {% endfor %}
-
-        // Confirm all saved files loaded
-        if (uploadedFilesContainer.children.length > 0) {
-            console.log("All saved files loaded into the container.");
-        } else {
-            console.log("No saved files to load.");
-        }
     });
+    
+    
 
     
         

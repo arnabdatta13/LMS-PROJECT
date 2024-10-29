@@ -21,7 +21,23 @@
 
     {% include "base_desine/massages.html" %}
 
+    <form method="get" action="{% url 'teacher-view-student-question-answer' %}">
+        
+        <div class="form-group">
+            <label for="class_filter">Filter by Class:</label>
+            <select class="form-control" id="class_filter" name="class_filter" >
+                <option value="">All Classes</option>
+                {% for class_instance in classes %}
+                <option value="{{ class_instance.id }}" {% if class_instance.id|stringformat:"s" == selected_class %}selected{% endif %}>{{ class_instance.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+    <br>
 
     <div class="row">
         <div class="col-sm-12">

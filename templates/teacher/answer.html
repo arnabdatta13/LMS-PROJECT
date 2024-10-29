@@ -2,7 +2,20 @@
 {% block content %}
 {% include "base_desine/loader.html" %}
 {% load static %}
-
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="page-title">Answer</h3>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url "teacher-home"%}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Answer</li>
+            </ul>
+        </div>
+        <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url "teacher-qa" %}" class="btn btn-outline-primary mr-2"><i class="fas fa-question-circle mr-2"></i>Q&A</a>
+        </div>
+    </div>
+</div>
 <div class="container">
         <!-- Student Information Container -->
         <div class="student-info-container">
