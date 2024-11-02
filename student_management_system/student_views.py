@@ -1094,3 +1094,8 @@ def STUDENT_PAST_EXAM(request):
 
 
 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def AI_TEACHER(request):
+    return render(request,"student/ai_teacher.html")

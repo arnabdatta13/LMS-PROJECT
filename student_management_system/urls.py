@@ -362,7 +362,7 @@ urlpatterns = [
 
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
     path('student-question',student_views.STUDENT_QUESTION,name='student-question'),
-
+    path('ai-teacher',student_views.AI_TEACHER,name='ai-teacher'),
 
     
 ] + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

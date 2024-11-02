@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "base_desine/loader.html" %}
+{% include "base_desine/exam_timer_auto.html" %}
+
+<div class="chat-container">
+    <div class="chat-window">
+        <div class="chat-bubble ai-message">Hello! How can I assist you today?</div>
+    </div>
+</div>
+<div class="input-container">
+    <div class="input-area">
+        <input type="text" placeholder="Message ChatGPT">
+        <span class="icon send-icon">➤</span> <!-- Send icon -->
+    </div>
+</div>
+
+<script>
+    // JavaScript for sending messages
+    const inputField = document.querySelector('.input-area input');
+    const sendIcon = document.querySelector('.send-icon');
+    const chatWindow = document.querySelector('.chat-window');
+
+    sendIcon.addEventListener('click', sendMessage);
+
+    function sendMessage() {
+        const messageText = inputField.value.trim();
+        if (messageText) {
+            // Create student message bubble
+            const studentBubble = document.createElement('div');
+            studentBubble.classList.add('chat-bubble', 'student-message');
+            studentBubble.textContent = messageText;
+
+            // Append to chat window
+            chatWindow.appendChild(studentBubble);
+            chatWindow.scrollTop = chatWindow.scrollHeight;  // Auto scroll to the bottom
+            inputField.value = '';  // Clear input field
+
+            // Simulate AI response
+            setTimeout(() => {
+                const aiBubble = document.createElement('div');
+                aiBubble.classList.add('chat-bubble', 'ai-message');
+                aiBubble.textContent = "Thanks for your question! Here's some information on that topic.";
+                chatWindow.appendChild(aiBubble);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 1000);
+        }
+    }
+</script>
+
+<style>
+    
+
+    .chat-container {
+        width: 100vw;
+        max-width: 100%; /* Ensures it doesn’t overflow on larger screens */
+        display: flex;
+        height: 78vh; /* Adjust height to leave space for the input container */
+        flex-direction: column;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+    }
+
+    /* Chat window styling */
+    .chat-window {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-bubble {
+        padding: 10px 15px;
+        border-radius: 20px;
+        max-width: 80%;
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    .ai-message {
+        background-color: #007bff;
+        color: #ffffff;
+        align-self: flex-start;
+        border-bottom-left-radius: 0;
+    }
+
+    .student-message {
+        background-color: #f1f1f1;
+        color: #333333;
+        align-self: flex-end;
+        border-bottom-right-radius: 0;
+    }
+
+    /* Input Container Styling */
+    .input-container {
+        position:fixed;
+        bottom:0;
+        width: 100%;
+        background-color: #f3f4f6;
+        display: flex;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .input-area {
+        width: 100%;
+        max-width: 650px; /* Match chat-container width */
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background-color: #f1f1f1;
+    }
+
+    .input-area input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 20px;
+        outline: none;
+        background-color: #ffffff;
+        margin: 0 10px;
+    }
+
+    .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        background-color: #e0e0e0;
+        color: #333;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .icon:hover {
+        background-color: #d1d1d1;
+    }
+
+    /* Responsive styling for mobile */
+    @media (max-width: 768px) {
+        .chat-container {
+            width: 100vw;
+            height: 79vh;
+        }
+
+        .input-area {
+            padding: 8px;
+        }
+
+        .input-area input {
+            margin: 0 8px;
+        }
+    }
+</style>
+
+{% endblock %}

@@ -215,6 +215,7 @@
                   <li class="{% active_link 'teacher-qa' 'active' %}">
                      <a href="{% url 'teacher-qa'%}"><i class="fas fa-question-circle mr-2"></i> <span>Q&A</span></a>
                   </li>
+                  
                   <li class="{% active_link 'teacher-add-notice' 'active' %}">
                      <a href="{% url 'teacher-add-notice'%}"><i class="fas fa-sticky-note"></i> <span>Add Notice</span></a>
                   </li>
@@ -298,11 +299,13 @@
                      <a href="{% url 'student-question'%}"><i class="fas fa-question-circle mr-2"></i> <span>Q&A</span></a>
                   </li>
 
+                  <li class="{% active_link 'ai-teacher' 'active' %}">
+                     <a href="{% url 'ai-teacher'%}"><i class="fas fa-robot"></i> <span>AI Teacher</span></a>
+                  </li>
+
                   <li class="{% active_link 'student-feedback' 'active' %}">
                      <a href="{% url 'student-feedback'%}"><i class="fas fa-comments"></i> <span>Send Feedback</span></a>
                   </li>
-
-
 
                   <li class="{% active_link 'student-notification' 'active' %}">
                      <a href="{% url 'student-notification'%}"><i class="fas fa-bell"></i> <span>Notification</span></a>
