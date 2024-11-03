@@ -216,6 +216,9 @@ urlpatterns = [
     path('teacher-update-live-exam-mcq-question', teacher_views.UPDATE_LIVE_EXAM_MCQ_QUESTION,name='teacher-update-live-exam-mcq-question'),
     path('teacher-delete-live-exam-mcq-question/<str:id>', teacher_views.DELETE_LIVE_EXAM_MCQ_QUESTION,name='teacher-delete-live-exam-mcq-question'),
 
+    path('create-ai-generated-question/<int:id>', teacher_views.CREATE_AI_GENERATED_QUESTION,name='create-ai-generated-question'),
+    path('create-ai-generated-question-post', teacher_views.CREATE_AI_GENERATED_QUESTION_POST,name='create-ai-generated-question-post'),
+
 
     path('teacher-add-live-exam-written-question',teacher_views.ADD_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-add-live-exam-written-question'),
     path('teacher-save-live-exam-written-question', teacher_views.SAVE_LIVE_EXAM_WRITTEN_QUESTION,name='teacher-save-live-exam-written-question'),
@@ -241,8 +244,6 @@ urlpatterns = [
     path('teacher-edit-practice-exam-question/<str:id>', teacher_views.EDIT_PRACTICE_EXAM_QUESTION,name='teacher-edit-practice-exam-question'),
     path('teacher-update-practice-exam-question', teacher_views.UPDATE_PRACTICE_EXAM_QUESTION,name='teacher-update-practice-exam-question'),
     path('teacher-delete-peactice-exam-question/<str:id>', teacher_views.DELETE_PRACTICE_EXAM_QUESTION,name='teacher-delete-practice-exam-question'),
-
-
 
 
     path('teacher-star-student-add', teacher_views.STAR_STUDENT_ADD,name='teacher-star-student-add'),
@@ -348,7 +349,6 @@ urlpatterns = [
     path('student-submit-live-exam-written',student_views.STUDENT_SUBMIT_LIVE_EXAM_WRITTEN,name='student-submit-live-exam-written'),
 
 
-
     path('student-view-online-live-class', student_views.VIEW_ONLINE_LIVE_CLASS, name='student-view-online-live-class'),
     path('student-join-online-live-class-home/<int:id>/', student_views.JOIN_ONLINE_LIVE_CLASS_HOME, name='student-join-online-live-class-home'),
 
@@ -363,6 +363,8 @@ urlpatterns = [
     path('student-ask-question',student_views.STUDENT_ASK_QUESTION,name='student-ask-question'),
     path('student-question',student_views.STUDENT_QUESTION,name='student-question'),
     path('ai-teacher',student_views.AI_TEACHER,name='ai-teacher'),
+    path('ai-teacher-answer',student_views.AI_TEACHER_ANSWER,name='ai-teacher-answer'),
+
 
     
 ] + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

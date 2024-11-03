@@ -15,6 +15,7 @@ from django.db.models import Count
 from django.http import JsonResponse
 from collections import defaultdict
 import json
+from student_management_system.ai_teacher import triaging_system_prompt,math_agent_prompt,english_agent_prompt,science_agent_prompt,general_knowledge_agent_prompt,text_formate_agent_prompt,triage_tools,current_agent,conversation_messages,formate_teacher_answer,handle_english_agent,handle_general_knowledge_agent,handle_math_agent,handle_science_agent,handle_user_message
 
 
 
@@ -1099,3 +1100,40 @@ def STUDENT_PAST_EXAM(request):
 @user_passes_test(lambda user: user.user_type == 3, login_url='login')
 def AI_TEACHER(request):
     return render(request,"student/ai_teacher.html")
+
+    
+conversation_messages.append({
+    "role": "assistant",
+    "content": "Welcome to SmartLearn Academy! We offer specialized assistance with Math, English, Science, and General Knowledge through our advanced AI teachers. Our goal is to make learning easier and more effective for you. At SmartLearn Academy, we are here to support you with any academic challenges. Please let me know which AI teacher you would like to connect with today."
+})
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 3, login_url='login')
+def AI_TEACHER_ANSWER(request):
+    
+    if request.method == "POST":
+        global current_agent
+        global conversation_messages
+        print(current_agent)
+
+        user_query = request.POST.get('message')
+        if current_agent == "TrigeAgent":
+            response = handle_user_message(user_query)
+            print(response)
+        elif current_agent == "MathAgent":
+            response = handle_math_agent(user_query,conversation_messages)
+            print(response)
+        elif current_agent == "EnglishAgent":
+            response = handle_english_agent(user_query,conversation_messages)
+            print(response)
+        elif current_agent == "ScienceAgent":
+            response = handle_science_agent(user_query,conversation_messages)
+            print(response)
+        elif current_agent == "GeneralKnowledgeAgent":
+            response = handle_general_knowledge_agent(user_query,conversation_messages)
+            print(response)
+        return JsonResponse({'answer': response})
+    
+
+

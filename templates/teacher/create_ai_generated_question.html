@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+       
+<div class="page-header">
+    <div class="row align-items-center">
+       <div class="col">
+          <h3 class="page-title">Add MCQ Question</h3>
+          <ul class="breadcrumb">
+             <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+             <li class="breadcrumb-item active">Add MCQ Question</li>
+          </ul>
+       </div>
+       <div class="col-auto text-right float-right ml-auto">
+        <a href = "" class="btn btn-outline-primary mr-2"><i class="fa fa-eye"></i> View MCQ Question</a>
+        </div>
+    </div>
+ </div>
+  <form method="post" action="{% url 'create-ai-generated-question-post' %}">
+      {% csrf_token %}
+           <div class="row">
+              <div class="col-sm-12">
+                 <div class="card">
+                    <div class="card-body">
+                             <div class="col-12">
+                                 <h5 class="form-title"><span>Add Question</span></h5>
+                             </div>
+
+                             <div class="col-sm-11 ">
+                                <label>Class</label>
+                                   <select class="form-control" name='class_id' required disabled>
+                                
+                                  
+                                   <option value = '{{class.id}}'>{{class}}</option>
+                                  
+                                   </select>
+                             </div>
+                             <br>                             
+
+                             <hr>
+                             
+                             <div class="col-sm-11">
+                                <label>Exam</label>
+                                   <select class="form-control" name='exam_id'required>
+                                   <option value="" disabled selected >Select Exam</option>
+                                   {% for i in exam %}
+                                   <option value = '{{i.id}}'>{{i.exam_name}}</option>
+                                   {% endfor%}
+                                   </select>
+                             </div>
+                             <br>
+                             <div class="col-sm-11">
+                                <div class="form-group">
+                                    <label>Chapter</label>
+                                    <input type="text" class="form-control" name='chapter'required>
+                                </div>
+                            </div>
+                           <div class="col-sm-11">
+                             <div class="form-group">
+                                <label>Number Of Question</label>
+                                <input type="number" class="form-control " name='number_of_question'required>
+                             </div>
+                           </div>
+        
+                            
+                            <div class="col-sm-11">
+                                <div class="form-group">
+                                    <label>Each Question Marks</label>
+                                    <input type="number" class="form-control" name='each_question_mark'required>
+                                </div>
+                            </div>
+                            <div class="col-sm-11">
+                                <div class="form-group">
+                                   <label>Content</label>
+                                   <textarea class="form-control" name='content'required></textarea>
+                                </div>
+                             </div>
+                            
+                           
+                            <div class="col-10 mr-3 ">
+                                <button type="submit" class="btn btn-primary">Generate Question</button>
+                             </div>
+                          
+                        <hr>
+                      </div>
+                    </div>
+                 </div>
+           </div>
+  </form>
+{%endblock%}

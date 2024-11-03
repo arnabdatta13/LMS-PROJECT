@@ -2,20 +2,20 @@
 {% block content %}
 {% include "base_desine/loader.html" %}
 
-<div class="content container-fluid">
-               <div class="page-header">
-                  <div class="row align-items-center">
-                     <div class="col">
-                        <h3 class="page-title">Add MCQ Question</h3>
-                        <ul class="breadcrumb">
-                           <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
-                           <li class="breadcrumb-item active">Add MCQ Question</li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
+               
          {% include "base_desine/massages.html" %}
       {% if action is None %}
+      <div class="page-header">
+        <div class="row align-items-center">
+           <div class="col">
+              <h3 class="page-title">Add MCQ Question</h3>
+              <ul class="breadcrumb">
+                 <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+                 <li class="breadcrumb-item active">Add MCQ Question</li>
+              </ul>
+           </div>
+        </div>
+     </div>
       <form method="post" action="?action=Show-Students">
           {% csrf_token %}
                <div class="row">
@@ -59,13 +59,26 @@
                   
       </form>
       {% else %}
+      <div class="page-header">
+        <div class="row align-items-center">
+           <div class="col">
+              <h3 class="page-title">Add MCQ Question</h3>
+              <ul class="breadcrumb">
+                 <li class="breadcrumb-item"><a href="{% url 'teacher-home'%}">Dashboard</a></li>
+                 <li class="breadcrumb-item active">Add MCQ Question</li>
+              </ul>
+           </div>
+           <div class="col-auto text-right float-right ml-auto">
+            <a href = "{% url "create-ai-generated-question" get_class.id %}" class="btn btn-outline-primary mr-2"><i class="fas fa-plus"></i> AI Generated MCQ</a>
+            </div>
+        </div>
+     </div>
       <form method="post" action="{% url 'teacher-save-live-exam-mcq-question' %}">
           {% csrf_token %}
                <div class="row">
                   <div class="col-sm-12">
                      <div class="card">
                         <div class="card-body">
-                              
                                  <div class="col-12">
                                      <h5 class="form-title"><span>Add Question</span></h5>
                                  </div>

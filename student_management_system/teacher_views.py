@@ -2582,7 +2582,33 @@ def TEACHER_EDIT_STUDENT_QUESTION_ANSWER_POST(request):
                 question=question, 
                 audio_file=audio_file
         )
-
-
         messages.success(request,"Answer has been edited successfully.")
         return redirect("teacher-view-student-question-answer")
+
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def CREATE_AI_GENERATED_QUESTION(request,id):
+    current_time = timezone.now()
+    class_id = Class.objects.get(id = id)
+    exam = Live_Exam.objects.filter(class_id=class_id,end_time__gt=current_time)
+    context = {
+        "exam":exam,
+        "class":class_id
+    }
+    return render(request,"teacher/create_ai_generated_question.html",context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def CREATE_AI_GENERATED_QUESTION_POST(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        chapter = request.POST.get('chapter')
+        number_of_question = request.POST.get('number_of_question')
+        each_question_mark = request.POST.get('each_question_mark')
+        content = request.POST.get('content')
+        print(exam_id,chapter,number_of_question,each_question_mark,content)
+        
+        return redirect("teacher-view-live-exam-mcq-question")
