@@ -21,6 +21,7 @@ RESPONSE_JSON = {
             "d": "choice here",
         },
         "correct": "correct answer",
+        "solution": "give solution details."
     },
     "2": {
         "mcq": "multiple choice question",
@@ -31,6 +32,8 @@ RESPONSE_JSON = {
             "d": "choice here",
         },
         "correct": "correct answer",
+        "solution": "give solution details."
+
     },
     "3": {
         "mcq": "multiple choice question",
@@ -41,6 +44,8 @@ RESPONSE_JSON = {
             "d": "choice here",
         },
         "correct": "correct answer",
+        "solution": "give solution details."
+
     },
 }
 TEMPLATE = """
@@ -81,22 +86,5 @@ generate_evaluate_chain = SequentialChain(
     output_variables=["quiz", "review"],
     verbose=True,
 )
-
-TEXT = ""
-
-NUMBER = 5
-SUBJECT = "biology"
-TONE = "simple"
-
-with get_openai_callback() as cb:
-    response = generate_evaluate_chain(
-        {
-            "text": TEXT,
-            "number": NUMBER,
-            "subject": SUBJECT,
-            "tone": TONE,
-            "response_json": json.dumps(RESPONSE_JSON)
-        }
-    )
-
-print(response)
+"""
+"""

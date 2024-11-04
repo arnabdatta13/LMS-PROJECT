@@ -20,7 +20,8 @@ from datetime import timedelta,datetime
 from django.utils import timezone
 from django.db.models import Case, When, Value, IntegerField
 from collections import defaultdict
-
+from student_management_system.ai_generated_mcq_question import RESPONSE_JSON,generate_evaluate_chain
+from langchain.callbacks import get_openai_callback
 
 
 @login_required(login_url='login')
@@ -1012,9 +1013,10 @@ def SAVE_LIVE_EXAM_MCQ_QUESTION(request):
 @user_passes_test(lambda user: user.user_type == 2, login_url='login')
 def VIEW_LIVE_EXAM_MCQ_QUESTION_FILTER(request):
     exam = Live_Exam.objects.all()
-
+    current_time = timezone.now()
     context = {
         'exam':exam,   
+        "current_time":current_time,
     }
 
     return render(request,'teacher/live_exam/view_live_exam_mcq_question_filter.html',context)
@@ -2605,10 +2607,52 @@ def CREATE_AI_GENERATED_QUESTION(request,id):
 def CREATE_AI_GENERATED_QUESTION_POST(request):
     if request.method == "POST":
         exam_id = request.POST.get('exam_id')
-        chapter = request.POST.get('chapter')
         number_of_question = request.POST.get('number_of_question')
         each_question_mark = request.POST.get('each_question_mark')
         content = request.POST.get('content')
-        print(exam_id,chapter,number_of_question,each_question_mark,content)
         
+        exam = Live_Exam.objects.get(id = exam_id)
+        TONE = "simple"
+
+        with get_openai_callback() as cb:
+            response = generate_evaluate_chain(
+                {
+                    "text": content,
+                    "number": number_of_question,
+                    "subject": exam.subject.name,
+                    "tone": TONE,
+                    "response_json": json.dumps(RESPONSE_JSON)
+                }
+            )
+
+        quiz=response.get("quiz")
+        quiz = json.loads(quiz)
+
+        for key, value in quiz.items():
+            mcq = value["mcq"]
+            options = value["options"]
+            correct_answer = value["correct"]
+            if correct_answer == "a":
+                correct_answer = "Option1"
+            elif correct_answer == "b":
+                correct_answer = "Option2"
+            elif correct_answer == "c":
+                correct_answer = "Option3"
+            elif correct_answer == "d":
+                correct_answer = "Option4"
+
+            print(quiz)
+            solution = value["solution"]
+            LiveExamMCQQuestion.objects.create(
+                exam=exam,
+                marks=each_question_mark,
+                question=mcq,
+                option1=options.get("a", ""),
+                option2=options.get("b", ""),
+                option3=options.get("c", ""),
+                option4=options.get("d", ""),
+                answer=correct_answer,
+                solution_details=solution
+            )
+        messages.success(request,"Ai Generated MCQ Question has benn created successfully.")
         return redirect("teacher-view-live-exam-mcq-question")
