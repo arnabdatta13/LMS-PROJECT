@@ -3,72 +3,19 @@
 {% block content %}
 {% include "base_desine/loader.html" %}
 {% include "base_desine/exam_timer_auto.html" %}
-
 <div class="chat-container">
+    <h2 style= "margin-top:25px; text-align: center;">AI Teacher</h2>
+
     <div class="chat-window">
         <div class="chat-bubble ai-message">Welcome to SmartLearn Academy! We offer specialized assistance with Math, English, Science, and General Knowledge through our advanced AI teachers. Our goal is to make learning easier and more effective for you.At SmartLearn Academy, we are here to support you with any academic challenges. Please let me know which AI teacher you would like to connect with today.</div>
     </div>
 </div>
 <div class="input-container">
     <div class="input-area">
-        <input type="text" placeholder="Message ChatGPT">
+        <input type="text" placeholder="Message AI Teacher">
         <span class="icon send-icon">➤</span> <!-- Send icon -->
     </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    // JavaScript for sending messages
-    const inputField = document.querySelector('.input-area input');
-    const sendIcon = document.querySelector('.send-icon');
-    const chatWindow = document.querySelector('.chat-window');
-
-    sendIcon.addEventListener('click', sendMessage);
-
-    function sendMessage() {
-        const messageText = inputField.value.trim();
-        if (messageText) {
-            // Create student message bubble
-            const studentBubble = document.createElement('div');
-            studentBubble.classList.add('chat-bubble', 'student-message');
-            studentBubble.textContent = messageText;
-
-            // Append to chat window
-            chatWindow.appendChild(studentBubble);
-            chatWindow.scrollTop = chatWindow.scrollHeight;  // Auto scroll to the bottom
-            inputField.value = '';  // Clear input field
-
-            // Send AJAX POST request to Django backend
-            $.ajax({
-                url: "{% url "ai-teacher-answer" %}",  // Django URL for handling the request
-                type: 'POST',
-                data: {
-                    'message': messageText,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token for security
-                },
-                success: function(response) {
-                    // Display the response in the chat window
-                    const aiBubble = document.createElement('div');
-                    aiBubble.classList.add('chat-bubble', 'ai-message');
-                    aiBubble.textContent = response.answer;  // Assume 'answer' is the key in the JSON response
-                    chatWindow.appendChild(aiBubble);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                },
-                error: function(xhr, status, error) {
-                    // Handle error case
-                    const errorBubble = document.createElement('div');
-                    errorBubble.classList.add('chat-bubble', 'ai-message');
-                    errorBubble.textContent = "Sorry, there was an error processing your request. Please try again.";
-                    chatWindow.appendChild(errorBubble);
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
-            });
-        }
-    }
-</script>
-
-
 <style>
     
 
@@ -125,7 +72,7 @@
 
     .input-area {
         width: 100%;
-        max-width: 650px; /* Match chat-container width */
+        max-width: 460px; /* Match chat-container width */
         display: flex;
         align-items: center;
         padding: 10px;
@@ -176,5 +123,64 @@
         }
     }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // JavaScript for sending messages
+    const inputField = document.querySelector('.input-area input');
+    const sendIcon = document.querySelector('.send-icon');
+    const chatWindow = document.querySelector('.chat-window');
+
+    sendIcon.addEventListener('click', sendMessage);
+    inputField.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();  // Prevent default form submission
+            sendMessage();
+        }
+    });
+    function sendMessage() {
+        const messageText = inputField.value.trim();
+        if (messageText) {
+            // Create student message bubble
+            const studentBubble = document.createElement('div');
+            studentBubble.classList.add('chat-bubble', 'student-message');
+            studentBubble.textContent = messageText;
+
+            // Append to chat window
+            chatWindow.appendChild(studentBubble);
+            chatWindow.scrollTop = chatWindow.scrollHeight;  // Auto scroll to the bottom
+            inputField.value = '';  // Clear input field
+
+            // Send AJAX POST request to Django backend
+            $.ajax({
+                url: "{% url "ai-teacher-answer" %}",  // Django URL for handling the request
+                type: 'POST',
+                data: {
+                    'message': messageText,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token for security
+                },
+                success: function(response) {
+                    // Display the response in the chat window
+                    const aiBubble = document.createElement('div');
+                    aiBubble.classList.add('chat-bubble', 'ai-message');
+                    aiBubble.textContent = response.answer;  // Assume 'answer' is the key in the JSON response
+                    chatWindow.appendChild(aiBubble);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                },
+                error: function(xhr, status, error) {
+                    // Handle error case
+                    const errorBubble = document.createElement('div');
+                    errorBubble.classList.add('chat-bubble', 'ai-message');
+                    errorBubble.textContent = "Sorry, there was an error processing your request. Please try again.";
+                    chatWindow.appendChild(errorBubble);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            });
+        }
+    }
+</script>
+
+
 
 {% endblock %}

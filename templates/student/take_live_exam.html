@@ -53,10 +53,10 @@
                         </ul>
                     <p></p>
                     {%if live_exam_mcq_taken == 0 %}
-                    <a href="{% url 'student-start-live-exam' exam.id%}" class="btn btn-info">Let's Start</a>
+                    <a href="{% url 'student-start-live-exam' exam.id%}" class="btn btn-info" style = "margin-bottom:10px;">Let's Start MCQ Exam</a>
                     {%endif%}
                     {%if live_exam_written_taken == 0 %}
-                    <a href="{% url 'student-start-live-exam-written' exam.id%}" class="btn btn-info">Let's Start Written Exam</a>
+                    <a href="{% url 'student-start-live-exam-written' exam.id%}" class="btn btn-info" style ="margin-bottom:10px;">Let's Start Written Exam</a>
                     {%endif%}
                 </div>  
                 <div class="card-footer">Best Of Luck</div>  

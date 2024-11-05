@@ -136,6 +136,40 @@
          </div>
       </div>
    </div>
+   <div class="col-md-12 col-lg-6">
+      <div class="card card-chart">
+         <br>
+         <div class="col-md-12">
+            <label for="yearSelector">Select Year:</label>
+            <select id="yearSelector" class="form-control">
+                {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <hr>
+         <div class="col-md-12">
+            <label for="classSelector">Select Class:</label>
+            <select id="classSelector" class="form-control">
+               {% for class in classes %}
+                  <option value="{{ class.id }}">{{ class.name }}</option>
+               {% endfor %}
+            </select>
+         </div>
+         <hr>
+         <div class="card-header">
+            <div class="row align-items-center">
+               <div class="col-6">
+                  <h5 class="card-title">School Exam result report</h5>
+               </div>
+               
+            </div>
+         </div>
+         <div class="card-body">
+            <div id="school-exam-result-report"></div>
+        </div>
+      </div>
+   </div>
  </div>
  <div class="row">
     <div class="col-md-6 d-flex">
@@ -275,6 +309,49 @@
 
 
 {% include 'base_desine/chart.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+       const classSelector = document.getElementById('classSelector');
+       
+       // Initialize Chart.js instance
+       let examChart;
+       
+       // Trigger the request based on the initial class selection when the page loads
+       fetchExamResults(classSelector.value);
+
+       // Add an event listener for changes in the class selector
+       classSelector.addEventListener('change', function () {
+           fetchExamResults(this.value);
+       });
+
+       function fetchExamResults(classId) {
+           // Make an AJAX POST request to get filtered exam results by class
+           fetch('{% url "teacher-home" %}', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json',
+                   'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+               },
+               body: JSON.stringify({ class_id: classId })
+           })
+           .then(response => response.json())
+           .then(data => {
+               // Prepare data for chart
+               const examNames = data.results.map(result => result.exam_name);
+               const passPercentages = data.results.map(result => result.pass_percentage);
+               const failPercentages = data.results.map(result => result.fail_percentage);
+
+               // Render or update the chart
+               renderExamChart(examNames, passPercentages, failPercentages);
+           })
+           .catch(error => console.error('Error fetching exam results:', error));
+       }
+
+       })
+</script>
 
 
 {% endblock %}

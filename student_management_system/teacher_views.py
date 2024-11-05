@@ -62,6 +62,14 @@ def HOME(request):
                 'absent': (data['absent'] / total) * 100,
             }
 
+    years = SchoolExamStudentResult.objects.dates('created_at', 'year')
+    classes = Class.objects.all()
+    if request.method == "POST":
+        data = json.loads(request.body)
+        class_id = data.get("class_id")
+        exam_results = SchoolExamStudentResult.objects.filter(student_id__class_id=class_id)
+        for i in exam_results:
+            print(i.exam_id.exam_name)
     context = {
         'student_count':student_count,
         'teacher_count':teacher_count,
@@ -72,7 +80,9 @@ def HOME(request):
         'star_student':star_student,
         'student_activity':student_activity,
         'attendance_percentages': attendance_percentages,  # Pass attendance data to template
-
+        "years": [date.year for date in years],
+        "classes":classes,
+        "exams":exam_results,
     }
     return render(request, 'teacher/home.html',context)
 

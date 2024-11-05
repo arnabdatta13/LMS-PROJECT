@@ -190,9 +190,6 @@ class Student_activity(models.Model):
     
 
 
-
- 
-
 class Teacher_Feedback(models.Model):
     teacher_id= models.ForeignKey(Teacher,on_delete=models.CASCADE)
     feedback = models.TextField()
