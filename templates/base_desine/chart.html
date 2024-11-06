@@ -389,6 +389,38 @@
             var chartOverallAttendance = new ApexCharts(document.querySelector('#overall_attendance_pie_chart'), optionsOverallAttendance);
             chartOverallAttendance.render();
         }
+
+        if ($('#overall_exam_results_data').length > 0) {
+            // Parse the overall exam results data passed from the backend
+            var overallExamResultsData = JSON.parse('{{ overall_exam_results_json|escapejs }}');
+            console.log("Overall Exam Results Data (JS):", overallExamResultsData);
+            
+            // Configure the pie chart with pass and fail percentages
+            var optionsOverallExamResults = {
+                chart: {
+                    type: 'pie',
+                    height: 440
+                },
+                labels: ['Pass', 'Fail'],
+                series: [overallExamResultsData.pass_percentage, overallExamResultsData.fail_percentage],
+                colors: ['#28a745', '#dc3545'],
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(2) + "%";
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            };
+        
+            // Render the chart
+            var chartOverallExamResults = new ApexCharts(document.querySelector('#overall_exam_results_data'), optionsOverallExamResults);
+            chartOverallExamResults.render();
+        }
+        
+
         
     });
     

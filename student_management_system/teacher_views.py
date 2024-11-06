@@ -67,9 +67,78 @@ def HOME(request):
     if request.method == "POST":
         data = json.loads(request.body)
         class_id = data.get("class_id")
-        exam_results = SchoolExamStudentResult.objects.filter(student_id__class_id=class_id)
-        for i in exam_results:
-            print(i.exam_id.exam_name)
+        year = int(data.get("year"))  # Parse the year as an integer
+        
+        exam_results_data = []
+        
+        # Filter by class and year
+        exam_results = SchoolExamStudentResult.objects.filter(
+            student_id__class_id=class_id,
+            created_at__year=year
+        )
+
+        exam_summary = {}
+        for result in exam_results:
+            exam_name = result.exam_id.exam_name
+            
+            if exam_name not in exam_summary:
+                exam_summary[exam_name] = {'total_students': 0, 'pass_count': 0}
+
+            exam_summary[exam_name]['total_students'] += 1
+            
+            # Calculate 33% of exam mark
+            passing_threshold = 0.33 * result.exam_mark
+            
+            # Determine pass/fail based on assignment mark
+            if result.assignment_mark >= passing_threshold:
+                exam_summary[exam_name]['pass_count'] += 1
+
+        # Calculate pass and fail percentages
+        for exam_name, summary in exam_summary.items():
+            total_students = summary['total_students']
+            pass_percentage = (summary['pass_count'] / total_students) * 100
+            fail_percentage = 100 - pass_percentage
+            exam_results_data.append({
+                'exam_name': exam_name,
+                'pass_percentage': pass_percentage,
+                'fail_percentage': fail_percentage
+            })
+
+        return JsonResponse({'results': exam_results_data})
+
+
+    #overall_exam_results
+    overall_exam_results_data = []
+    
+    # Calculate overall pass/fail percentages for all exams
+    exam_results = SchoolExamStudentResult.objects.all()
+    exam_summary = {'total_students': 0, 'pass_count': 0}
+
+    for result in exam_results:
+        exam_summary['total_students'] += 1
+        
+        # Calculate 33% of exam mark for pass threshold
+        passing_threshold = 0.33 * result.exam_mark
+        
+        # Determine pass/fail based on assignment mark
+        if result.assignment_mark >= passing_threshold:
+            exam_summary['pass_count'] += 1
+
+    # Calculate pass and fail percentages
+    total_students = exam_summary['total_students']
+    if total_students > 0:
+        pass_percentage = (exam_summary['pass_count'] / total_students) * 100
+        fail_percentage = 100 - pass_percentage
+    else:
+        pass_percentage = 0
+        fail_percentage = 0
+
+    overall_exam_results_data = {
+        'pass_percentage': pass_percentage,
+        'fail_percentage': fail_percentage
+    }
+    print(overall_exam_results_data)
+
     context = {
         'student_count':student_count,
         'teacher_count':teacher_count,
@@ -82,7 +151,8 @@ def HOME(request):
         'attendance_percentages': attendance_percentages,  # Pass attendance data to template
         "years": [date.year for date in years],
         "classes":classes,
-        "exams":exam_results,
+        "exam_results_json": json.dumps([]),  # Send the exam results to the front-end
+        'overall_exam_results_json': json.dumps(overall_exam_results_data)  # Convert to JSON for JavaScript
     }
     return render(request, 'teacher/home.html',context)
 
