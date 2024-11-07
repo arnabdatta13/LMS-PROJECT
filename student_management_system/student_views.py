@@ -1119,20 +1119,9 @@ def AI_TEACHER_ANSWER(request):
 
         user_query = request.POST.get('message')
         if current_agent == "TrigeAgent":
-            response = handle_user_message(user_query)
+            response = formate_teacher_answer(handle_user_message(user_query),conversation_messages)
             print(response)
-        elif current_agent == "MathAgent":
-            response = handle_math_agent(user_query,conversation_messages)
-            print(response)
-        elif current_agent == "EnglishAgent":
-            response = handle_english_agent(user_query,conversation_messages)
-            print(response)
-        elif current_agent == "ScienceAgent":
-            response = handle_science_agent(user_query,conversation_messages)
-            print(response)
-        elif current_agent == "GeneralKnowledgeAgent":
-            response = handle_general_knowledge_agent(user_query,conversation_messages)
-            print(response)
+        
         return JsonResponse({'answer': response})
     
 

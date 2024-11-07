@@ -506,3 +506,15 @@ class ImageGallery(models.Model):
 
     def __str__(self):
         return self.title if self.title else "Untitled"
+    
+
+
+class Points(models.Model):
+    student_id = models.ForeignKey(Student,on_delete=models.CASCADE)
+    points = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at= models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.student_id.admin.first_name + " " + self.student_id.admin.last_name
+
