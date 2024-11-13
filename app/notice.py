@@ -1,5 +1,6 @@
 # your_app/context_processors.py
-from .models import Add_Notification
+from .models import Add_Notification,CustomUser
+from django.contrib.auth.decorators import login_required
 
 def notice_processor(request):
     # Fetch all notices
@@ -11,9 +12,12 @@ def notice_processor(request):
 from .models import Points,Student
 
 def notice_processor(request):
-    # Fetch all notices
-    student = Student.objects.get(id = request.user.id)
-    points = Points.objects.filter(student_id = student)
-    return {'points': points}
+    if request.user.is_authenticated and request.user.user_type == 3:
+        user = CustomUser.objects.get(id=request.user.id)
+        student = Student.objects.get(admin=user)
+        points = Points.objects.filter(student_id=student)
+        return {'points': points}
+    else:
+        return {'points': None}
 
 

@@ -83,6 +83,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+CSRF_TRUSTED_ORIGINS = ['https://a6d3-43-224-108-175.ngrok-free.app']
 
 
 # Password validation

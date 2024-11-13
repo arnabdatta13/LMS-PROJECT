@@ -257,7 +257,7 @@ class School_Official_Exam(models.Model):
 
 class SchoolExamStudentResult(models.Model):
     exam_id = models.ForeignKey(School_Official_Exam,on_delete=models.CASCADE,default=0)
-    student_id = models.ForeignKey(Student,on_delete=models.CASCADE)
+    student_id = models.ForeignKey(Student,on_delete=models.CASCADE,related_name='studentresult')
     subject_id = models.ForeignKey(Subject,on_delete=models.CASCADE)
     assignment_mark = models.IntegerField()
     exam_mark = models.IntegerField()

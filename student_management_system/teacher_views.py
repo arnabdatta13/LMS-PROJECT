@@ -600,6 +600,7 @@ def TEACHER_ADD_RESULT(request):
                     studentresult__assignment_mark__isnull=True,
                     studentresult__exam_mark__isnull=True,
                 ).order_by('roll_number')
+
                 subject = Subject.objects.filter(class1=student_id)
 
 
