@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam,Notice,StudentQuestion,TeacherTextAnswer,TeacherAudioAnswer,TeacherPhotoAnswer
+from app.models import Course,Session_Year,CustomUser,Student,Teacher,Subject,Star_student,Student_activity,Teacher_Feedback,Student_Notification,Attendance_Report,Attendance,Class,Add_Notification,PracticeExamQuestion,Practice_Exam,OnlineLiveClass,Live_Exam,LiveExamMCQQuestion,Live_Exam_Result,LiveExamWrittenQuestion,LiveExamStudentWrittenAnswer,Live_Exam_Written_Result,Student_Feedback,SchoolExamStudentResult,School_Official_Exam,Notice,StudentQuestion,TeacherTextAnswer,TeacherAudioAnswer,TeacherPhotoAnswer,ImageGallery
 from django.contrib import messages
 from operator import attrgetter
 from django.db.models import Q
@@ -2737,3 +2737,29 @@ def CREATE_AI_GENERATED_QUESTION_POST(request):
             )
         messages.success(request,"Ai Generated MCQ Question has benn created successfully.")
         return redirect("teacher-view-live-exam-mcq-question")
+ 
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def ADD_PHOTO(request):
+
+    
+    return render(request,"teacher/add_photo.html")
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda user: user.user_type == 2, login_url='login')
+def ADD_PHOTO_POST(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        image = request.POST.get("image")
+
+        ImageGallery.objects.create(
+           title = title,
+           description = description,
+           image = image
+        )
+        
+        messages.success(request, 'Image has been added successfully.')
+        return redirect("teacher-add-gallary-photo-post")

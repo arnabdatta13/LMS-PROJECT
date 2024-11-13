@@ -316,6 +316,10 @@ urlpatterns = [
     path('teacher-delete-student-question-answer/<int:id>', teacher_views.TEACHER_DELETE_STUDENT_QUESTION_ANSWER,name='teacher-delete-student-question-answer'),
 
 
+    path('teacher-add-gallary-photo', teacher_views.ADD_PHOTO, name='teacher-add-gallary-photo'),
+    path('teacher-add-gallary-photo-post', teacher_views.ADD_PHOTO_POST, name='teacher-add-gallary-photo-post'),
+
+
     #this is student panel url
     path('student-home', student_views.HOME,name='student-home'),
     path('student-notification', student_views.NOTIFICATION,name='student-notification'),

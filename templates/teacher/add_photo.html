@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "base_desine/loader.html" %}
+
+
+<div class="page-header">
+   <div class="row align-items-center">
+       <div class="col">
+           <h3 class="page-title">Add Image</h3>
+           <ul class="breadcrumb">
+               <li class="breadcrumb-item"><a href="{% url 'admin_home'%}">Dashboard</a></li>
+               <li class="breadcrumb-item active">Add Image</li>
+           </ul>
+       </div>
+
+       <div class="col-auto text-right float-right ml-auto">
+        
+           <a href="{% url 'teacher-student-view' %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+       </div>
+   </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+       <div class="card">
+          <div class="card-body">
+             <form method='post' action='{% url "teacher-student-add" %}' enctype="multipart/form-data" >
+                {% csrf_token%}
+                   <div class="col-12">
+                      <h5 class="form-title"><span>Add Image</span></h5>
+                   </div>
+                   {% include "base_desine/massages.html" %}
+
+                  
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Title</label>
+                         <input type="text" class="form-control" name='title'required>
+                      </div>
+                  </div>
+                   
+                    <div class="col-sm-11">
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" name='description'required></textarea>
+                        </div>
+                    </div>
+                  <div class="col-sm-11">
+                      <div class="form-group">
+                         <label>Image</label>
+                         <input type="file" class="form-control" name='image'>
+                      </div>
+                  </div>
+                   
+
+                   <div class="col-12">
+                      <button type="submit" class="btn btn-primary">Add Image</button>
+                   </div>
+                
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+
+{% endblock %}

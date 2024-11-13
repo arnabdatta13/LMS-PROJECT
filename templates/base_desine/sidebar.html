@@ -16,10 +16,8 @@
                   <li class="submenu {% active_link 'admin-student-add' 'active' %} {% active_link 'admin-student-view' 'active' %}">
                      <a href="#"><i class="fas fa-user-graduate"></i> <span> Students</span> <span class="menu-arrow"></span></a>
                      <ul>
-                      
                         <li><a href="{% url 'admin-student-add'%}">Add Student</a></li>
                         <li><a href="{% url 'admin-student-view'%}">View Student</a></li>
-                        
                      </ul>
                   </li>
                   <li class="submenu {% active_link 'admin-teacher-add' 'active' %} {% active_link 'admin-teacher-view' 'active' %}">
@@ -222,6 +220,10 @@
                   
                   <li class="{% active_link 'teacher-add-notification' 'active' %}">
                      <a href="{% url 'teacher-add-notification'%}"><i class="fas fa-sticky-note"></i> <span>Add Notification</span></a>
+                  </li>
+
+                  <li class="{% active_link 'teacher-add-gallary-photo' 'active' %}">
+                     <a href="{% url 'teacher-add-gallary-photo'%}"><i class="fa fa-image"></i> <span>Gallary Image</span></a>
                   </li>
 
                   <li class="{% active_link 'teacher-student-send-notification' 'active' %}">
